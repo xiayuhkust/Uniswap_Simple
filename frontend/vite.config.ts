@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+const config = {
   plugins: [react()],
   server: {
     cors: true,
@@ -34,4 +34,6 @@ export default defineConfig({
     global: 'globalThis',
     'window.global': 'globalThis'
   }
-})
+}
+
+export default defineConfig(config)
