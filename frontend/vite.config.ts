@@ -18,7 +18,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src'
+      '@': '/src',
+      events: 'events'
     }
   },
   optimizeDeps: {

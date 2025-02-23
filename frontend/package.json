@@ -31,6 +31,7 @@
     "buffer": "^6.0.3",
     "ethers": "^5.7.2",
     "eventemitter3": "^5.0.1",
+    "events": "^3.3.0",
     "framer-motion": "^10.18.0",
     "postcss": "^8.4.14",
     "process": "^0.11.10",
