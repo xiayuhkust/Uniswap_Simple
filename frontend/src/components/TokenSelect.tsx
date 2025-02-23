@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, HStack, Image, Text, Button, useColorModeValue } from '@chakra-ui/react'
 import type { Token } from '../types/token'
 
