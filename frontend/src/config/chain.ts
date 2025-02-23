@@ -8,3 +8,8 @@ export const CHAIN_CONFIG = {
     decimals: 18
   }
 }
+
+export const NETWORK_CONFIG = {
+  chainId: 1337,
+  rpcUrl: 'https://rpc-beta1.turablockchain.com'
+}
