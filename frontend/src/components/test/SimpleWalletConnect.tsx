@@ -1,15 +1,15 @@
 import { Button, useToast } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { injected, TURA_NETWORK } from '../../lib/web3'
 
 declare global {
   interface Window {
-    ethereum?: {
+    ethereum: {
       request: (args: { method: string; params?: any[] }) => Promise<any>
       on: (event: string, callback: (params: any) => void) => void
       removeListener: (event: string, callback: (params: any) => void) => void
-    }
+    } | undefined
   }
 }
 
