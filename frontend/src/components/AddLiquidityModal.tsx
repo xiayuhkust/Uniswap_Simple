@@ -22,7 +22,8 @@ interface AddLiquidityModalProps {
 
 export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
   const tokens = useTokenList()
-  const [selectedTokens, setSelectedTokens] = useState<[number, number]>([-1, -1])
+  const [token0Index, setToken0Index] = useState(0)
+  const [token1Index, setToken1Index] = useState(1)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -34,20 +35,20 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
           <VStack spacing={4}>
             <Text color="whiteAlpha.700">Select Token Pair</Text>
             <TokenSelect 
-              token={tokens[0]} 
-              onSelect={(index) => setSelectedTokens(prev => [index, prev[1]])}
+              token={tokens[token0Index]} 
+              onSelect={() => setToken0Index((prev) => (prev + 1) % tokens.length)}
               disabled={false}
             />
             <TokenSelect 
-              token={tokens[1]} 
-              onSelect={(index) => setSelectedTokens(prev => [prev[0], index])}
+              token={tokens[token1Index]} 
+              onSelect={() => setToken1Index((prev) => (prev + 1) % tokens.length)}
               disabled={false}
             />
             <Button
               w="full"
               size="lg"
               colorScheme="blue"
-              isDisabled={selectedTokens[0] === -1 || selectedTokens[1] === -1}
+              isDisabled={!tokens.length}
             >
               Add Liquidity
             </Button>

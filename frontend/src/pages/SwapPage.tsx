@@ -1,20 +1,23 @@
 import { VStack, Button, Box, Icon } from '@chakra-ui/react'
 import { ArrowDownIcon } from '@chakra-ui/icons'
 import { TokenSelect } from '../components/TokenSelect'
-import { WrapUnwrap } from '../components/WrapUnwrap/WrapUnwrap'
+import { WrapUnwrap } from '../components/WrapUnwrap'
 import { useTokenList } from '../hooks/useTokenList'
 import { useWeb3React } from '@web3-react/core'
+import { useState } from 'react'
 
 export function SwapPage() {
   const tokens = useTokenList()
   const { active } = useWeb3React()
+  const [token0Index, setToken0Index] = useState(0)
+  const [token1Index, setToken1Index] = useState(1)
 
   return (
     <Box maxW="2xl" mx="auto" mt={8}>
       <VStack spacing={4} p={6} bg="brand.surface" borderRadius="xl">
         <TokenSelect 
-          token={tokens[0]} 
-          onSelect={() => {}} 
+          token={tokens[token0Index]} 
+          onSelect={(index) => setToken0Index(index)} 
         />
         <Box py={2}>
           <Icon 
@@ -25,8 +28,8 @@ export function SwapPage() {
           />
         </Box>
         <TokenSelect 
-          token={tokens[1]} 
-          onSelect={() => {}} 
+          token={tokens[token1Index]} 
+          onSelect={(index) => setToken1Index(index)} 
         />
         <Button
           w="full"

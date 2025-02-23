@@ -2,8 +2,8 @@ import { Box, HStack, Image, Text, Button, useColorModeValue } from '@chakra-ui/
 import type { Token } from '../types/token'
 
 interface TokenSelectProps {
-  token: Token
-  onSelect?: (index: number) => void
+  token?: Token
+  onSelect?: () => void
   disabled?: boolean
 }
 
@@ -11,10 +11,12 @@ export function TokenSelect({ token, onSelect, disabled }: TokenSelectProps) {
   const bgColor = useColorModeValue('gray.100', 'whiteAlpha.200')
   const hoverBgColor = useColorModeValue('gray.200', 'whiteAlpha.300')
 
+  if (!token) return null
+
   return (
     <Button
       as={Box}
-      onClick={() => onSelect && onSelect(0)}
+      onClick={onSelect}
       disabled={disabled}
       w="full"
       p={4}
