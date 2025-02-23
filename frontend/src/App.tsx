@@ -21,6 +21,7 @@ function App() {
               <main className="container mx-auto p-4">
                 <Routes>
                   <Route path="/" element={<SwapPage />} />
+                  <Route path="/liquidity" element={<LiquidityPage />} />
                 </Routes>
               </main>
             </div>
