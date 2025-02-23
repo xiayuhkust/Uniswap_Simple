@@ -4,21 +4,16 @@ import { injected } from 'wagmi/connectors'
 import { useEffect, useState } from 'react'
 import { tura } from '../../providers/chains'
 
-interface RequestArguments {
-  method: string;
-  params?: any[];
-}
-
-interface EthereumProvider {
+type WindowProvider = {
   isMetaMask?: boolean;
-  request(args: RequestArguments): Promise<any>;
-  on(eventName: string, handler: (params: any) => void): void;
-  removeListener(eventName: string, handler: (params: any) => void): void;
+  request(args: { method: string; params?: any[] }): Promise<unknown>;
+  on(event: string, handler: (...args: any[]) => void): void;
+  removeListener(event: string, handler: (...args: any[]) => void): void;
 }
 
 declare global {
   interface Window {
-    ethereum?: EthereumProvider;
+    ethereum?: WindowProvider;
   }
 }
 
