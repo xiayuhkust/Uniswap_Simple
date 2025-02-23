@@ -29,46 +29,43 @@ async function setupNetwork() {
     return false
   }
 
-  // Add delay to ensure provider is ready
-  await new Promise(resolve => setTimeout(resolve, 500))
-
-  // Check if provider is initialized
   try {
-    const isInitialized = await provider.request({ method: 'eth_chainId' })
-    if (!isInitialized) {
-      console.error('Provider not initialized')
+    // Check current network first
+    const currentChainId = await provider.request({ method: 'eth_chainId' })
+    
+    // If already on Tura network, return success
+    if (currentChainId === TURA_NETWORK.chainId) {
+      return true
+    }
+
+    // Add delay before network operations
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    try {
+      await provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: TURA_NETWORK.chainId }],
+      })
+      return true
+    } catch (switchError: any) {
+      // Only try to add network if it doesn't exist
+      if (switchError.code === 4902) {
+        try {
+          await provider.request({
+            method: 'wallet_addEthereumChain',
+            params: [TURA_NETWORK],
+          })
+          return true
+        } catch (addError) {
+          console.error('Failed to add network:', addError)
+          return false
+        }
+      }
+      console.error('Failed to switch network:', switchError)
       return false
     }
   } catch (error) {
-    console.error('Failed to check provider initialization:', error)
-    return false
-  }
-
-  try {
-    await provider.request({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: TURA_NETWORK.chainId }],
-    })
-    
-    // Add delay after network switch
-    await new Promise(resolve => setTimeout(resolve, 500))
-    return true
-  } catch (switchError: any) {
-    if (switchError.code === 4902) {
-      try {
-        await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [TURA_NETWORK],
-        })
-        // Add delay after adding network
-        await new Promise(resolve => setTimeout(resolve, 500))
-        return true
-      } catch (addError) {
-        console.error('Failed to add network:', addError)
-        return false
-      }
-    }
-    console.error('Failed to switch network:', switchError)
+    console.error('Failed to setup network:', error)
     return false
   }
 }
@@ -104,9 +101,17 @@ export function useWeb3() {
         return
       }
 
+      // Setup network before activation
+      const networkReady = await setupNetwork()
+      if (!networkReady) {
+        throw new Error('Failed to setup network')
+      }
+
+      // Add delay before activation
+      await new Promise(resolve => setTimeout(resolve, 500))
+
       await activate(injected)
       localStorage.setItem('shouldConnectWallet', 'true')
-      await setupNetwork()
     } catch (error: any) {
       console.error('Connection error:', error)
       toast({
