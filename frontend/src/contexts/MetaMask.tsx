@@ -8,7 +8,7 @@ interface MetaMaskContextType {
   connect: () => Promise<void>;
 }
 
-export const MetaMaskContext = createContext<MetaMaskContextType>({
+const MetaMaskContext = createContext<MetaMaskContextType>({
   status: 'initializing',
   account: null,
   chain: null,
@@ -16,7 +16,7 @@ export const MetaMaskContext = createContext<MetaMaskContextType>({
   connect: async () => {},
 });
 
-export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
+const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<'not_connected' | 'connected' | 'not_installed' | 'initializing'>('initializing');
   const [account, setAccount] = useState<string | null>(null);
   const [chain, setChain] = useState<string | null>(null);
@@ -170,3 +170,5 @@ export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
     </MetaMaskContext.Provider>
   );
 };
+
+export { MetaMaskContext, MetaMaskProvider };
