@@ -1,7 +1,7 @@
 
 import { Button, useToast } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
-import { injected } from '../lib/web3'
+import { injected, TURA_NETWORK } from '../lib/web3'
 
 export function WalletButton() {
   const { active, account, activate, deactivate } = useWeb3React()
@@ -17,25 +17,53 @@ export function WalletButton() {
       }
     } else {
       try {
-        // First try to add the Tura network if it's not already added
         const provider = window.ethereum
-        if (provider) {
-          try {
-            await provider.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: '0x539',  // 1337 in hex
-                chainName: 'Tura Network',
-                nativeCurrency: {
-                  name: 'TURA',
-                  symbol: 'TURA',
-                  decimals: 18
-                },
-                rpcUrls: ['https://rpc-beta1.turablockchain.com']
-              }]
+        if (!provider) {
+          toast({
+            title: 'MetaMask Required',
+            description: 'Please install MetaMask to connect.',
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          })
+          return
+        }
+
+        // First try to switch to the Tura network
+        try {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: TURA_NETWORK.chainId }],
+          })
+        } catch (switchError: any) {
+          // This error code indicates that the chain has not been added to MetaMask
+          if (switchError.code === 4902) {
+            try {
+              await provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [TURA_NETWORK],
+              })
+            } catch (addError: any) {
+              console.error('Failed to add network:', addError)
+              toast({
+                title: 'Network Error',
+                description: 'Failed to add Tura network to MetaMask.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+              })
+              return
+            }
+          } else {
+            console.error('Failed to switch network:', switchError)
+            toast({
+              title: 'Network Error',
+              description: 'Failed to switch to Tura network.',
+              status: 'error',
+              duration: 5000,
+              isClosable: true,
             })
-          } catch (switchError: any) {
-            console.error('Failed to add network:', switchError)
+            return
           }
         }
 
