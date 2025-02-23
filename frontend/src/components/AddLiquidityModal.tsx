@@ -8,8 +8,7 @@ import {
   ModalCloseButton,
   VStack,
   Button,
-  Text,
-  useDisclosure
+  Text
 } from '@chakra-ui/react'
 import { TokenSelect } from './TokenSelect'
 import { useTokenList } from '../hooks/useTokenList'
@@ -25,6 +24,16 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
   const [token0Index, setToken0Index] = useState(0)
   const [token1Index, setToken1Index] = useState(1)
 
+  const handleToken0Select = () => {
+    if (!tokens.length) return
+    setToken0Index((prev) => (prev + 1) % tokens.length)
+  }
+
+  const handleToken1Select = () => {
+    if (!tokens.length) return
+    setToken1Index((prev) => (prev + 1) % tokens.length)
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -36,19 +45,19 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
             <Text color="whiteAlpha.700">Select Token Pair</Text>
             <TokenSelect 
               token={tokens[token0Index]} 
-              onSelect={() => setToken0Index((prev) => (prev + 1) % tokens.length)}
-              disabled={false}
+              onSelect={handleToken0Select}
+              disabled={!tokens.length}
             />
             <TokenSelect 
               token={tokens[token1Index]} 
-              onSelect={() => setToken1Index((prev) => (prev + 1) % tokens.length)}
-              disabled={false}
+              onSelect={handleToken1Select}
+              disabled={!tokens.length}
             />
             <Button
               w="full"
               size="lg"
               colorScheme="blue"
-              isDisabled={!tokens.length}
+              isDisabled={!tokens.length || token0Index === token1Index}
             >
               Add Liquidity
             </Button>
