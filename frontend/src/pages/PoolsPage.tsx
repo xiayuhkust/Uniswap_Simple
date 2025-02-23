@@ -1,3 +1,4 @@
+import React from 'react'
 import { VStack, Box, Text, Button } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { useNavigate } from 'react-router-dom'
