@@ -1,8 +1,8 @@
+import { useState } from 'react'
 import { VStack, Box, Text, Button } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { PositionsList } from '../components/PositionsList'
 import { AddLiquidityModal } from '../components/AddLiquidityModal'
-import { useState } from 'react'
 
 export function LiquidityPage() {
   const { active } = useWeb3React()
