@@ -35,13 +35,14 @@
   - [x] React project initialization with TypeScript 5.3
   - [x] Build tools configuration (Vite 6.1.1)
   - [x] Chakra UI integration for components
-  - [x] MetaMask integration with wagmi 2.14.11
+  - [x] MetaMask integration with wagmi v1.4.13
   - [x] Tura network configuration (Chain ID: 1337)
   - [x] Connection state persistence with localStorage
   - [x] Error handling with Chakra UI toasts
   - [x] Network switching detection
   - [x] Session management (24h timeout)
-  - [x] Empty RPC configuration for MetaMask handling
+  - [x] configureChains with publicProvider
+  - [x] TypeScript type declarations for window.ethereum
 - [ ] Basic swap interface
   - [ ] Token selection component
   - [ ] Amount input with validation
