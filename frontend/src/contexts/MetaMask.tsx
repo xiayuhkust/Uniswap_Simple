@@ -21,22 +21,25 @@ export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (typeof window.ethereum !== 'undefined') {
-      window.ethereum.on('accountsChanged', (accounts: string[]) => {
+      const handleAccountsChanged = (accounts: string[]) => {
         setAccount(accounts[0] || null);
         setStatus(accounts[0] ? 'connected' : 'not_connected');
-      });
+      };
 
-      window.ethereum.on('chainChanged', (chainId: string) => {
+      const handleChainChanged = (chainId: string) => {
         setChain(chainId);
-      });
-    }
+      };
 
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', () => {});
-        window.ethereum.removeListener('chainChanged', () => {});
-      }
-    };
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+
+      return () => {
+        if (window.ethereum) {
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
+        }
+      };
+    }
   }, []);
 
   const connect = async () => {
