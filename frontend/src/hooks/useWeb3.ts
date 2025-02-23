@@ -29,11 +29,29 @@ async function setupNetwork() {
     return false
   }
 
+  // Add delay to ensure provider is ready
+  await new Promise(resolve => setTimeout(resolve, 500))
+
+  // Check if provider is initialized
+  try {
+    const isInitialized = await provider.request({ method: 'eth_chainId' })
+    if (!isInitialized) {
+      console.error('Provider not initialized')
+      return false
+    }
+  } catch (error) {
+    console.error('Failed to check provider initialization:', error)
+    return false
+  }
+
   try {
     await provider.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: TURA_NETWORK.chainId }],
     })
+    
+    // Add delay after network switch
+    await new Promise(resolve => setTimeout(resolve, 500))
     return true
   } catch (switchError: any) {
     if (switchError.code === 4902) {
@@ -42,6 +60,8 @@ async function setupNetwork() {
           method: 'wallet_addEthereumChain',
           params: [TURA_NETWORK],
         })
+        // Add delay after adding network
+        await new Promise(resolve => setTimeout(resolve, 500))
         return true
       } catch (addError) {
         console.error('Failed to add network:', addError)
