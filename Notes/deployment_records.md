@@ -81,6 +81,18 @@
   * Created: February 23, 2025
   * Status: Active
 
+## Frontend Deployments
+### Test Wallet Connection Page
+- **URL**: https://xiayuhkust.github.io/Uniswap_Simple
+- **Deployment Date**: February 23, 2025
+- **Status**: Active
+- **Description**: Test page for wallet connection functionality with Tura blockchain
+- **Features**:
+  * MetaMask integration
+  * Tura network configuration
+  * Connection state management
+  * Error handling
+
 ## Deployment History
 1. Math Libraries (2025-02-17)
    - Deployed core math libraries for price and position calculations
