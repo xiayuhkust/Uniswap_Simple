@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { getLibrary } from './lib/web3'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { WalletButton } from './components/WalletButton'
+import { SwapPage } from './pages/SwapPage'
 import { theme } from './theme'
 
 function App() {
