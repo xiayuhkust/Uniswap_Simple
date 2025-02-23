@@ -90,6 +90,35 @@ export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  const switchToTuraNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x539' }],
+      });
+    } catch (switchError: any) {
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x539',
+              chainName: 'Tura Blockchain',
+              rpcUrls: ['https://rpc-beta1.turablockchain.com'],
+              nativeCurrency: { name: 'TURA', symbol: 'TURA', decimals: 18 },
+            }],
+          });
+        } catch (addError) {
+          console.error('Error adding Tura network:', addError);
+          throw addError;
+        }
+      } else {
+        console.error('Error switching to Tura network:', switchError);
+        throw switchError;
+      }
+    }
+  };
+
   const connect = useCallback(async () => {
     if (!isReady) {
       console.error('MetaMask provider not ready');
