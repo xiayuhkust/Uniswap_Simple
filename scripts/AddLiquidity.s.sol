@@ -7,7 +7,7 @@ import "../src/interfaces/IERC20.sol";
 import "../src/interfaces/IUniswapV3Manager.sol";
 
 contract AddLiquidity is Script {
-    address constant WTURA = 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be;
+    address constant WTURA = 0xc8F7d7989a409472945b00177396f4e9b8601DF3;
     address constant TT1 = 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9;
     address constant TT2 = 0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122;
     address constant MANAGER = 0x3Ca8634383E707Fb465A1bB4d5D6E0cdeaacc6c2;

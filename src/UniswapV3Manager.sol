@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity =0.8.19;
 
+import "forge-std/console.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/IUniswapV3Pool.sol";
 import "./interfaces/IUniswapV3Manager.sol";
+import "./interfaces/IUniswapV3Factory.sol";
 import {LiquidityMath} from "./lib/LiquidityMath.sol";
 import {Path} from "./lib/Path.sol";
 import {PoolAddress} from "./lib/PoolAddress.sol";
@@ -174,16 +176,29 @@ contract UniswapV3Manager is IUniswapV3Manager {
     }
 
     function getPool(
-        address token0,
-        address token1,
+        address tokenA,
+        address tokenB,
         uint24 fee
     ) internal view returns (IUniswapV3Pool pool) {
-        (token0, token1) = token0 < token1
-            ? (token0, token1)
-            : (token1, token0);
-        pool = IUniswapV3Pool(
-            PoolAddress.computeAddress(factory, token0, token1, fee)
-        );
+        console.log("\nGetting pool for tokens:");
+        console.log("TokenA:", tokenA);
+        console.log("TokenB:", tokenB);
+        console.log("Fee:", fee);
+
+        (address token0, address token1) = tokenA < tokenB
+            ? (tokenA, tokenB)
+            : (tokenB, tokenA);
+        
+        console.log("Ordered tokens:");
+        console.log("Token0:", token0);
+        console.log("Token1:", token1);
+
+        address poolAddress = IUniswapV3Factory(factory).getPool(token0, token1, fee);
+        console.log("Pool address from factory:", poolAddress);
+        require(poolAddress != address(0), "Pool does not exist");
+        
+        pool = IUniswapV3Pool(poolAddress);
+        console.log("Final pool address:", address(pool));
     }
 
     function uniswapV3MintCallback(

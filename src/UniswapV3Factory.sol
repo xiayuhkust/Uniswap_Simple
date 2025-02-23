@@ -19,6 +19,17 @@ contract UniswapV3Factory is IUniswapV3PoolDeployer {
     mapping(address => mapping(address => mapping(uint24 => address)))
         public pools;
 
+    function getPool(
+        address tokenA,
+        address tokenB,
+        uint24 fee
+    ) external view returns (address pool) {
+        (address token0, address token1) = tokenA < tokenB 
+            ? (tokenA, tokenB)
+            : (tokenB, tokenA);
+        return pools[token0][token1][fee];
+    }
+
     constructor() {
         fees[500] = 10;
         fees[3000] = 60;

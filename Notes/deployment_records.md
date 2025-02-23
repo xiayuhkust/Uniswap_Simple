@@ -8,14 +8,14 @@
 ## Core Contracts
 
 ### WETH (TuraWETH)
-- Address: 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be
+- Address: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
 - Symbol: WTURA
 - Description: Wrapped Tura implementation
 - Features:
   * ERC20 compliant
   * Deposit/Withdraw native Tura
   * 18 decimals
-- Deployment Date: February 19, 2025
+- Deployment Date: February 23, 2025
 
 ### Test Tokens
 1. Test Token 1 (TT1)
@@ -31,8 +31,8 @@
    - Decimals: 18
 
 ### UniswapV3Factory
-- Address: 0xC2EdBdd3394dA769De72986d06b0C28Ba991341d
-- Deployment Date: February 19, 2025
+- Address: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
+- Deployment Date: February 23, 2025
 - Implementation: Official Uniswap V3
 - Status: Active
 - Owner: 0x08Bb6eA809A2d6c13D57166Fa3ede48C0ae9a70e
@@ -51,40 +51,35 @@
 
 ## Peripheral Contracts
 
-### SwapRouter
-- Address: 0xAC15BD2b9CfC37AA3a2aC78CD41a7abF33476F19
-- Deployment Date: February 20, 2025
+### UniswapV3Manager
+- Address: 0xeA55332dDe678746aCC684D323e357Df05B6F767
+- Deployment Date: February 23, 2025
 - Features:
-  * Single hop swaps
-  * Multi-hop swaps
-  * ETH/WETH handling
+  * Position management
+  * Liquidity provision
+  * Swap execution
 - Dependencies:
-  * Factory: 0xC2EdBdd3394dA769De72986d06b0C28Ba991341d
+  * Factory: 0x38776e4492e63062255C96205038952E815ab56b
   * WETH: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
-
-### NonfungibleTokenPositionDescriptor
-- Address: 0xF6F59FF948F589bcA48295Be1Df1fD202FE5EeD8
-- Deployment Date: February 20, 2025
-- Dependencies:
-  * NFTDescriptor Library: 0x0297b528164dE6eeB0543DED5CBC8048eaf7c1D2
-  * WETH: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
-
-### NonfungiblePositionManager
-- Address: 0x90B834B3027Cd62c76FdAF1c22B21D1D8a2Cc965
-- Deployment Date: February 20, 2025
-- Features:
-  * ERC721 compliant
-  * Liquidity position management
-  * Fee collection
-- Token Name: "Tura Liquidity"
-- Token Symbol: "TURA-LP"
-- Dependencies:
-  * Factory: 0xC2EdBdd3394dA769De72986d06b0C28Ba991341d
-  * WETH: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
-  * Position Descriptor: 0xF6F59FF948F589bcA48295Be1Df1fD202FE5EeD8
 
 ## Test Pools
-- WETH/TestToken1 Pool (0.3%): 0x47cC776b736B5898de24011909dDe0E91e41f88E
+- WTURA/TT1 Pool (0.3%): 0x2044bDb84580aD2Edd74bbCF4106FE5C9D5b50cD
+  * Token0: TT1 (0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9)
+  * Token1: WTURA (0xc8F7d7989a409472945b00177396f4e9b8601DF3)
+  * Created: February 23, 2025
+  * Status: Active
+
+- WTURA/TT2 Pool (0.3%): 0xE8f68FE64dc32A1a3636Ad303fC241154a952D50
+  * Token0: TT2 (0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122)
+  * Token1: WTURA (0xc8F7d7989a409472945b00177396f4e9b8601DF3)
+  * Created: February 23, 2025
+  * Status: Active
+
+- TT1/TT2 Pool (0.3%): 0x279Ec96DEeDfb667C3280021196b2b0289F9BEa9
+  * Token0: TT1 (0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9)
+  * Token1: TT2 (0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122)
+  * Created: February 23, 2025
+  * Status: Active
 
 ## Deployment History
 1. Math Libraries (2025-02-17)
@@ -111,12 +106,7 @@
    - Focus on direct V3 liquidity provision without migration path
 
 7. Core Contract Redeployment (2025-02-23)
-   - Deployed Factory at 0x7443318489164C50C22951Ad1c1a3C7e67714C5e
-     * Transaction: 0x7b120ad0c3125162288c3501866efe2dddfc80367e4c5126102de7cd1e25c563
+   - Deployed Factory at 0x38776e4492e63062255C96205038952E815ab56b
      * Features: Pool creation, 500/3000 fee tiers, 10/60 tick spacing
-   - Deployed Manager at 0x3Ca8634383E707Fb465A1bB4d5D6E0cdeaacc6c2
-     * Transaction: 0xf84c89d7a835b18d1a85d713e649202203495c8618e4b1a7d89b902448e22893
+   - Deployed Manager at 0x3ab101888ebb8098b1E0D39861641134A3593B52
      * Features: Position management, liquidity provision, swaps
-   - Deployed Quoter at 0xa16bA91c8893c9Db769Cf1713f77dba91D42a74a
-     * Transaction: 0x8af8527b999f291f36dfe4e210697a93c811dee383a99c91fcc136b055397c2d
-     * Features: Price quotation, swap simulation

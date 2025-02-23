@@ -42,4 +42,17 @@ interface IUniswapV3Manager {
         bytes path;
         address payer;
     }
+
+    function mint(MintParams calldata params) external returns (uint256 amount0, uint256 amount1);
+    
+    function getPosition(GetPositionParams calldata params)
+        external
+        view
+        returns (
+            uint128 liquidity,
+            uint256 feeGrowthInside0LastX128,
+            uint256 feeGrowthInside1LastX128,
+            uint128 tokensOwed0,
+            uint128 tokensOwed1
+        );
 }

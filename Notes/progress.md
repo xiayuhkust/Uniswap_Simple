@@ -1,55 +1,63 @@
 # Tura DEX Development Progress
 
-## Current Phase: Initial Setup and Core Contract Deployment
+## Current Phase: Liquidity Addition
 
 ### Task List
 
-#### Phase 1: Core Contract Deployment
+#### Phase 1: Core Contract Deployment ✅
 - [x] Repository setup
 - [x] Environment configuration
 - [x] Deployment script creation
-- [ ] Core contract deployment
-  - [ ] Factory contract
-  - [ ] Manager contract
-  - [ ] Quoter contract
-- [ ] Initial pool creation
-  - [ ] WTURA/TT1 pool (0.3% fee)
-  - [ ] WTURA/TT2 pool (0.3% fee)
-  - [ ] TT1/TT2 pool (0.05% fee)
-- [ ] Contract verification
-- [ ] Documentation update
+- [x] Core contract deployment
+  - [x] Factory contract (0x7443318489164C50C22951Ad1c1a3C7e67714C5e)
+  - [x] Manager contract (0x3Ca8634383E707Fb465A1bB4d5D6E0cdeaacc6c2)
+  - [x] WTURA contract (0xc8F7d7989a409472945b00177396f4e9b8601DF3)
+- [x] Initial pool creation
+  - [x] WTURA/TT1 pool (0.3% fee) - 0x089A50C3868E1dd1FdC670CF5F1Bd5BB03AbfC1D
+  - [x] WTURA/TT2 pool (0.3% fee) - 0xB8aD8416742C6B5e4D00A5e8A0cfb0129c37101f
+  - [x] TT1/TT2 pool (0.05% fee) - 0x6EFb56d87BC31598d030Ece8E2067ce5d9aE1692
+- [x] Contract verification
+- [x] Documentation update
 
-#### Phase 2: Frontend Development (Pending)
+#### Phase 2: Liquidity Management (In Progress)
+- [x] Initial liquidity addition
+  - [x] WTURA/TT1 pool (1:100 ratio) - Added 100 WTURA + 10000 TT1
+  - [x] WTURA/TT2 pool (1:100 ratio) - Added 100 WTURA + 10000 TT2
+  - [x] TT1/TT2 pool (1:1 ratio) - Added 10000 TT1 + 10000 TT2
+- [x] Position verification
+  - [x] WTURA/TT1 liquidity: 100000000000000000005
+  - [x] WTURA/TT2 liquidity: 100000000000000000005
+  - [x] TT1/TT2 liquidity: 1000000000000000000005
+- [ ] Integration tests
+
+#### Phase 3: Frontend Development (Pending)
 - [ ] Basic swap interface
 - [ ] Token selection
 - [ ] Price display
 - [ ] Transaction confirmation
-
-#### Phase 3: Liquidity Management (Pending)
-- [ ] Add liquidity interface
-- [ ] Remove liquidity interface
-- [ ] Position management
+- [ ] Add/remove liquidity interface
 
 #### Phase 4: Testing and Documentation (In Progress)
 - [x] Test environment setup
 - [x] Contract tests
   - [x] Factory tests (5/5 passed)
   - [x] Pool tests (16/16 passed)
+- [ ] Liquidity tests
 - [ ] Integration tests
 - [x] Documentation structure
 - [ ] Final documentation
 
 ## Latest Updates
-- Successfully modularized contracts to meet size limits
-- Completed core contract test suite with all tests passing
-- Updated test documentation with comprehensive results
-- Prepared deployment configuration for Tura chain
+- Successfully added initial liquidity to all pools with specified ratios
+- Verified liquidity positions and pool states
+- Updated test and deployment documentation with liquidity details
+- Ready to begin frontend development phase
 
 ## Next Steps
-1. Deploy core contracts to Tura chain
-2. Create initial liquidity pools
-3. Verify contract deployments
-4. Begin frontend development
+1. Begin frontend development with basic swap interface
+2. Implement token selection and price display
+3. Add liquidity management interface
+4. Complete integration tests
 
 ## Reference Links
 - Tutorial Source: https://uniswapv3book.com/

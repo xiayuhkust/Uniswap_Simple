@@ -8,6 +8,8 @@ interface IUniswapV3Pool {
         address payer;
     }
 
+    function initialize(uint160 sqrtPriceX96) external;
+
     function slot0()
         external
         view
