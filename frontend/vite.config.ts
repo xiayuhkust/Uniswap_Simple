@@ -6,5 +6,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     cors: true
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './index.html',
+        test: './test.html'
+      }
+    }
   }
 })
