@@ -4,7 +4,7 @@ import { injected } from 'wagmi/connectors'
 import { useEffect, useState } from 'react'
 import { tura } from '../../providers/chains'
 
-type EthereumProvider = {
+interface EthereumProvider {
   request: (args: { method: string; params?: any[] }) => Promise<any>
   on: (event: string, callback: (params: any) => void) => void
   removeListener: (event: string, callback: (params: any) => void) => void
@@ -12,7 +12,7 @@ type EthereumProvider = {
 
 declare global {
   interface Window {
-    ethereum?: EthereumProvider
+    ethereum: EthereumProvider | undefined
   }
 }
 
