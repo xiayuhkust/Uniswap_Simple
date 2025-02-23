@@ -1,11 +1,13 @@
 import { VStack, Button, Box, Icon } from '@chakra-ui/react'
 import { ArrowDownIcon } from '@chakra-ui/icons'
 import { TokenSelect } from '../components/TokenSelect'
-import { WrapUnwrap } from '../components/WrapUnwrap'
+import { WrapUnwrap } from '../components/WrapUnwrap/WrapUnwrap'
 import { useTokenList } from '../hooks/useTokenList'
+import { useWeb3React } from '@web3-react/core'
 
 export function SwapPage() {
   const tokens = useTokenList()
+  const { active } = useWeb3React()
 
   return (
     <Box maxW="2xl" mx="auto" mt={8}>
@@ -30,9 +32,9 @@ export function SwapPage() {
           w="full"
           size="lg"
           colorScheme="blue"
-          isDisabled={true}
+          isDisabled={!active || tokens.length < 2}
         >
-          Swap
+          {active ? 'Swap' : 'Connect Wallet to Swap'}
         </Button>
       </VStack>
       <Box mt={4}>
