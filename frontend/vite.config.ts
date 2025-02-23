@@ -9,6 +9,13 @@ export default defineConfig({
       overlay: false
     }
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './test.html'
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': '/src'
