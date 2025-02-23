@@ -26,12 +26,22 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
 
   const handleToken0Select = () => {
     if (!tokens.length) return
-    setToken0Index((prev) => (prev + 1) % tokens.length)
+    const nextIndex = (token0Index + 1) % tokens.length
+    if (nextIndex === token1Index) {
+      setToken0Index((nextIndex + 1) % tokens.length)
+    } else {
+      setToken0Index(nextIndex)
+    }
   }
 
   const handleToken1Select = () => {
     if (!tokens.length) return
-    setToken1Index((prev) => (prev + 1) % tokens.length)
+    const nextIndex = (token1Index + 1) % tokens.length
+    if (nextIndex === token0Index) {
+      setToken1Index((nextIndex + 1) % tokens.length)
+    } else {
+      setToken1Index(nextIndex)
+    }
   }
 
   return (
