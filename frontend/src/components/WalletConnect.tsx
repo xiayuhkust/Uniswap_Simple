@@ -1,11 +1,14 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 import { FC, useCallback, useEffect } from 'react';
-import { Button, Text, VStack, Box, Heading, useToast, StackProps } from '@chakra-ui/react';
+import { Button, Text, VStack, Box, Heading, useToast } from '@chakra-ui/react';
+import type { BoxProps } from '@chakra-ui/react';
 
-interface WalletConnectProps extends StackProps {}
+interface WalletConnectProps extends BoxProps {
+  // Extend BoxProps for container styling
+}
 
-export const WalletConnect: FC<WalletConnectProps> = (props) => {
+export const WalletConnect: FC<WalletConnectProps> = ({ ...props }) => {
   const toast = useToast();
   const { address, isConnected } = useAccount();
   const { connect, isPending } = useConnect();
@@ -67,7 +70,7 @@ export const WalletConnect: FC<WalletConnectProps> = (props) => {
   if (isConnected && address) {
     return (
       <Box p={6} borderWidth="1px" borderRadius="lg" width="100%" {...props}>
-        <VStack spacing={4} align="stretch">
+        <VStack spacing={4} width="100%">
           <Heading size="md">Wallet Connected</Heading>
           <Text>Address: {address.slice(0, 6)}...{address.slice(-4)}</Text>
           <Button 
@@ -85,7 +88,7 @@ export const WalletConnect: FC<WalletConnectProps> = (props) => {
 
   return (
     <Box p={6} borderWidth="1px" borderRadius="lg" width="100%" {...props}>
-      <VStack spacing={4} align="stretch">
+      <VStack spacing={4} width="100%">
         <Heading size="md">Connect Your Wallet</Heading>
         <Button
           onClick={handleConnect}

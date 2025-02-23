@@ -1,12 +1,12 @@
 import { PropsWithChildren, useEffect } from 'react';
 import { createConfig, WagmiConfig, useAccount } from 'wagmi';
-import { defineChain, http, createPublicClient, type PublicClient } from 'viem';
+import { defineChain, http, type Chain } from 'viem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from 'wagmi/connectors';
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/toast';
 
 // Define Tura network
-const turaChain = defineChain({
+const turaChain: Chain = defineChain({
   id: Number(import.meta.env.VITE_TURA_CHAIN_ID),
   name: 'Tura',
   network: 'tura',
@@ -25,25 +25,14 @@ const turaChain = defineChain({
   }
 });
 
-const publicClient = createPublicClient({
-  chain: turaChain,
-  transport: http(turaChain.rpcUrls.default.http[0])
-});
+// Remove unused transport variable
 
 const config = createConfig({
   chains: [turaChain],
-  connectors: [
-    injected({
-      shimDisconnect: true,
-      target() {
-        return window.ethereum;
-      },
-    }),
-  ],
-  client: createPublicClient({
-    chain: turaChain,
-    transport: http(turaChain.rpcUrls.default.http[0])
-  })
+  transports: {
+    [turaChain.id]: http(turaChain.rpcUrls.default.http[0])
+  },
+  connectors: [injected()]
 });
 
 const queryClient = new QueryClient();
