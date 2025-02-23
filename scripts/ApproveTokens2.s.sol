@@ -4,15 +4,8 @@ pragma solidity =0.8.19;
 import "forge-std/Script.sol";
 import "../src/interfaces/IERC20.sol";
 
-interface IWETH {
-    function deposit() external payable;
-}
-
-interface ITestToken {
-    function mint(address to, uint256 amount) external;
-}
-
-contract MintTestTokens2 is Script {
+contract ApproveTokens2 is Script {
+    address constant MANAGER = 0x3ab101888ebb8098b1E0D39861641134A3593B52;
     address constant WTURA = 0xc8F7d7989a409472945b00177396f4e9b8601DF3;
     address constant TT1 = 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9;
     address constant TT2 = 0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122;
@@ -21,12 +14,17 @@ contract MintTestTokens2 is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        // Deposit TURA to get WTURA
-        IWETH(WTURA).deposit{value: 1 ether}();
+        // Approve WTURA
+        IERC20(WTURA).approve(MANAGER, type(uint256).max);
+        console.log("Approved WTURA for Manager");
 
-        // Mint test tokens
-        ITestToken(TT1).mint(msg.sender, 100 ether);
-        ITestToken(TT2).mint(msg.sender, 100 ether);
+        // Approve TT1
+        IERC20(TT1).approve(MANAGER, type(uint256).max);
+        console.log("Approved TT1 for Manager");
+
+        // Approve TT2
+        IERC20(TT2).approve(MANAGER, type(uint256).max);
+        console.log("Approved TT2 for Manager");
 
         vm.stopBroadcast();
     }

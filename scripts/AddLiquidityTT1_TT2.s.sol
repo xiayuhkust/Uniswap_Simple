@@ -5,6 +5,7 @@ import "forge-std/Script.sol";
 import "../src/UniswapV3Pool.sol";
 import "../src/UniswapV3Manager.sol";
 import "../src/interfaces/IUniswapV3Pool.sol";
+import "../src/interfaces/IUniswapV3Manager.sol";
 
 contract AddLiquidityTT1_TT2 is Script {
     address constant POOL = 0x6EFb56d87BC31598d030Ece8E2067ce5d9aE1692;
@@ -16,15 +17,20 @@ contract AddLiquidityTT1_TT2 is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        // Add liquidity around current price (1:1)
-        // Using tick range ±10% around current price
+        // Add liquidity with 1:1 ratio (TT1:TT2)
+        // Note: TT1 < TT2, so TT1 is token0
         UniswapV3Manager(MANAGER).mint(
-            POOL,
-            tick(4500),  // Lower tick (~10% below)
-            tick(5500),  // Upper tick (~10% above)
-            100 ether,   // TT1 amount
-            100 ether,   // TT2 amount (1:1 ratio)
-            ""          // Empty callback data
+            IUniswapV3Manager.MintParams({
+                tokenA: TT1,
+                tokenB: TT2,
+                fee: 500,   // 0.05%
+                lowerTick: -887220,  // Full range
+                upperTick: 887220,   // Full range
+                amount0Desired: 100 ether, // TT1 amount (token0)
+                amount1Desired: 100 ether, // TT2 amount (token1)
+                amount0Min: 0,
+                amount1Min: 0
+            })
         );
 
         // Log position details
@@ -35,19 +41,5 @@ contract AddLiquidityTT1_TT2 is Script {
         vm.stopBroadcast();
     }
 
-    function tick(uint256 price) internal pure returns (int24) {
-        return int24(int256(log2(price) * 2**23));
-    }
 
-    function log2(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        uint256 temp = value;
-        
-        while (temp > 1) {
-            temp >>= 1;
-            result += 1;
-        }
-        
-        return result;
-    }
 }
