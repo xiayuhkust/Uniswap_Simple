@@ -1,7 +1,7 @@
 import { VStack, Button, Box, Icon } from '@chakra-ui/react'
 import { ArrowDownIcon } from '@chakra-ui/icons'
 import { TokenSelect } from '../components/TokenSelect'
-import { WrapUnwrap } from '../components/WrapUnwrap/WrapUnwrap'
+import { WrapUnwrap } from '../components/WrapUnwrap'
 import { useTokenList } from '../hooks/useTokenList'
 import { useWeb3React } from '@web3-react/core'
 
