@@ -1,12 +1,12 @@
 import { PropsWithChildren, useEffect } from 'react';
 import { createConfig, WagmiConfig, useAccount } from 'wagmi';
-import { defineChain, type Chain } from 'viem';
+import { defineChain } from 'viem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from 'wagmi/connectors';
 import { useToast } from '@chakra-ui/react';
 
 // Define Tura network
-const turaChain: Chain = defineChain({
+const turaChain = defineChain({
   id: 1337,
   name: 'Tura',
   network: 'tura',
@@ -23,9 +23,15 @@ const turaChain: Chain = defineChain({
 
 // Remove unused transport variable
 
+import { createPublicClient, http } from 'viem';
+
 const config = createConfig({
   chains: [turaChain],
-  connectors: [injected()]
+  connectors: [injected()],
+  client: ({ chain }) => createPublicClient({
+    chain,
+    transport: http()
+  })
 });
 
 const queryClient = new QueryClient();
