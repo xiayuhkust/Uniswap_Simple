@@ -92,8 +92,8 @@ export function useWeb3() {
     try {
       if (typeof window.ethereum === 'undefined') {
         toast({
-          title: 'MetaMask Required',
-          description: 'Please install MetaMask to connect.',
+          title: 'Wallet Required',
+          description: 'Please install a Web3 wallet to connect.',
           status: 'warning',
           duration: null,
           isClosable: true,
