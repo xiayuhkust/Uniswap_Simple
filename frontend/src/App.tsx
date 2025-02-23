@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react'
-import { Web3ReactProvider } from '@web3-react/core'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { getLibrary } from './lib/web3'
+import { Web3Provider } from './providers/Web3Provider'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { WalletButton } from './components/WalletButton'
 import { SwapPage } from './pages/SwapPage'
@@ -13,7 +12,7 @@ import { NavigationBar } from './components/Layout/NavigationBar'
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3Provider>
         <BrowserRouter>
           <ErrorBoundary>
             <div className="App min-h-screen bg-gray-900">
@@ -34,7 +33,7 @@ function App() {
             </div>
           </ErrorBoundary>
         </BrowserRouter>
-      </Web3ReactProvider>
+      </Web3Provider>
     </ChakraProvider>
   )
 }

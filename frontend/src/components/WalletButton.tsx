@@ -1,79 +1,60 @@
 
 import { Button, useToast } from '@chakra-ui/react'
-import { useWeb3React } from '@web3-react/core'
-import { injected, TURA_NETWORK } from '../lib/web3'
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
+import { injected } from 'wagmi/connectors'
 import { useEffect } from 'react'
+import { tura } from '../providers/chains'
 
 export function WalletButton() {
-  const { active, account, activate, deactivate } = useWeb3React()
+  const { address, isConnected, chainId } = useAccount()
+  const { connect, isPending: isConnectPending } = useConnect()
+  const { disconnect } = useDisconnect()
+  const { switchChain, isPending: isSwitchPending } = useSwitchChain()
   const toast = useToast()
 
-  const switchToTuraNetwork = async (provider: any) => {
-    try {
-      await provider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: TURA_NETWORK.chainId }],
-      })
-    } catch (switchError: any) {
-      if (switchError.code === 4902) {
-        try {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [TURA_NETWORK],
-          })
-        } catch (addError: any) {
-          console.error('Failed to add network:', addError)
-          throw new Error('Failed to add Tura network')
-        }
-      } else {
-        console.error('Failed to switch network:', switchError)
-        throw new Error('Failed to switch to Tura network')
-      }
-    }
-  }
+  const isPending = isConnectPending || isSwitchPending
 
-  // Auto-connect if previously connected
   // Auto-connect if previously connected
   useEffect(() => {
     const shouldConnect = localStorage.getItem('shouldConnectWallet')
-    if (shouldConnect === 'true' && !active) {
-      activate(injected).catch((error) => {
-        console.error('Failed to auto-connect:', error)
-        localStorage.removeItem('shouldConnectWallet')
-      })
+    if (shouldConnect === 'true' && !isConnected) {
+      const connectWallet = async () => {
+        try {
+          await connect({ connector: injected() })
+        } catch (error) {
+          console.error('Failed to auto-connect:', error)
+          localStorage.removeItem('shouldConnectWallet')
+        }
+      }
+      connectWallet()
     }
-  }, [active, activate])
+  }, [isConnected, connect])
 
   // Persist wallet connection state
   useEffect(() => {
-    if (active && account) {
-      localStorage.setItem('lastConnectedAddress', account)
-    } else if (!active) {
+    if (isConnected && address) {
+      localStorage.setItem('lastConnectedAddress', address)
+    } else if (!isConnected) {
       localStorage.removeItem('lastConnectedAddress')
     }
-  }, [active, account])
-
-  // Persist wallet connection state
-  useEffect(() => {
-    if (active && account) {
-      localStorage.setItem('lastConnectedAddress', account)
-    } else if (!active) {
-      localStorage.removeItem('lastConnectedAddress')
-    }
-  }, [active, account])
+  }, [isConnected, address])
 
   const handleClick = async () => {
-    if (active) {
+    console.log('Attempting wallet connection...')
+    if (isConnected) {
       try {
-        deactivate()
+        console.log('Disconnecting wallet...')
+        disconnect()
         localStorage.removeItem('shouldConnectWallet')
       } catch (error: any) {
         console.error('Failed to disconnect:', error)
       }
     } else {
       try {
+        console.log('Checking for provider...')
         const provider = window.ethereum
         if (!provider) {
+          console.log('No provider found, showing MetaMask required message')
           toast({
             title: 'MetaMask Required',
             description: 'Please install MetaMask to connect.',
@@ -84,11 +65,11 @@ export function WalletButton() {
           return
         }
 
-        // Check current chain ID
-        const chainId = await provider.request({ method: 'eth_chainId' })
-        if (chainId !== TURA_NETWORK.chainId) {
+        // Check if we need to switch networks
+        if (chainId !== tura.id) {
           try {
-            await switchToTuraNetwork(provider)
+            console.log('Switching to Tura network...')
+            await switchChain({ chainId: tura.id })
           } catch (error: any) {
             console.error('Failed to switch network:', error)
             toast({
@@ -102,7 +83,8 @@ export function WalletButton() {
           }
         }
 
-        await activate(injected)
+        console.log('Attempting to connect with injected provider...')
+        await connect({ connector: injected() })
         localStorage.setItem('shouldConnectWallet', 'true')
       } catch (error: any) {
         console.error('Failed to connect:', error)
@@ -117,17 +99,18 @@ export function WalletButton() {
     }
   }
 
-  const displayAddress = account ? 
-    `${account.slice(0, 6)}...${account.slice(-4)}` : 
+  const displayAddress = address ? 
+    `${address.slice(0, 6)}...${address.slice(-4)}` : 
     'Connect Wallet'
 
   return (
     <Button
       onClick={handleClick}
-      colorScheme={active ? 'gray' : 'blue'}
+      colorScheme={isConnected ? 'gray' : 'blue'}
       variant="solid"
       size="md"
       paddingX={6}
+      isLoading={isPending}
       data-testid="wallet-button"
       data-devinid="connect-wallet"
     >
