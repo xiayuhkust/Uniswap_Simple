@@ -1,8 +1,7 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 import { FC, useCallback, useEffect } from 'react';
-import { Button, Text, VStack, Box, Heading, useToast } from '@chakra-ui/react';
-import type { BoxProps } from '@chakra-ui/react';
+import { Button, Text, VStack, Box, Heading, useToast, BoxProps } from '@chakra-ui/react';
 
 interface WalletConnectProps extends BoxProps {
   // Extend BoxProps for container styling

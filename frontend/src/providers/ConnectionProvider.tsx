@@ -3,7 +3,7 @@ import { createConfig, WagmiConfig, useAccount } from 'wagmi';
 import { defineChain, http, type Chain } from 'viem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from 'wagmi/connectors';
-import { useToast } from '@chakra-ui/toast';
+import { useToast } from '@chakra-ui/react';
 
 // Define Tura network
 const turaChain: Chain = defineChain({
