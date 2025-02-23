@@ -26,6 +26,15 @@ export function NavigationBar() {
       >
         Liquidity
       </ChakraLink>
+      <ChakraLink
+        as={Link}
+        to="/pools"
+        color={isActive('/pools') ? 'blue.400' : 'whiteAlpha.900'}
+        fontWeight={isActive('/pools') ? 'bold' : 'normal'}
+        _hover={{ color: 'blue.400' }}
+      >
+        Pools
+      </ChakraLink>
     </HStack>
   )
 }

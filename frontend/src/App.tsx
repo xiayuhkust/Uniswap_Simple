@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { WalletButton } from './components/WalletButton'
 import { SwapPage } from './pages/SwapPage'
 import { LiquidityPage } from './pages/LiquidityPage'
+import { PoolsPage } from './pages/PoolsPage'
 import { theme } from './theme'
 import { NavigationBar } from './components/Layout/NavigationBar'
 
@@ -27,6 +28,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<SwapPage />} />
                   <Route path="/liquidity" element={<LiquidityPage />} />
+                  <Route path="/pools" element={<PoolsPage />} />
                 </Routes>
               </main>
             </div>
