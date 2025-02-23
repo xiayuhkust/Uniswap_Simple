@@ -1,42 +1,53 @@
 import { Button, useToast } from '@chakra-ui/react'
-import { useWeb3React } from '@web3-react/core'
+import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
+import { injected } from 'wagmi/connectors'
 import { useEffect, useState } from 'react'
-import { injected, TURA_NETWORK } from '../../lib/web3'
+import { tura } from '../../providers/chains'
+
+interface EthereumProvider {
+  request: (args: { method: string; params?: any[] }) => Promise<any>;
+  on: (event: string, callback: (params: any) => void) => void;
+  removeListener: (event: string, callback: (params: any) => void) => void;
+}
 
 declare global {
   interface Window {
-    ethereum: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>
-      on: (event: string, callback: (params: any) => void) => void
-      removeListener: (event: string, callback: (params: any) => void) => void
-    } | undefined
+    ethereum?: EthereumProvider;
   }
 }
 
 export function SimpleWalletConnect() {
-  const { activate, active, account, deactivate } = useWeb3React()
+  const { address, isConnected, chainId } = useAccount()
+  const { connect, isPending: isConnectPending } = useConnect()
+  const { disconnect } = useDisconnect()
+  const { switchChain, isPending: isSwitchPending } = useSwitchChain()
   const [isConnecting, setIsConnecting] = useState(false)
   const toast = useToast()
 
   useEffect(() => {
     const shouldConnect = localStorage.getItem('shouldConnectWallet')
-    if (shouldConnect === 'true' && !active) {
-      activate(injected).catch((error) => {
-        console.error('Failed to auto-connect:', error)
-        localStorage.removeItem('shouldConnectWallet')
-      })
+    if (shouldConnect === 'true' && !isConnected) {
+      const connectWallet = async () => {
+        try {
+          await connect({ connector: injected() })
+        } catch (error) {
+          console.error('Failed to auto-connect:', error)
+          localStorage.removeItem('shouldConnectWallet')
+        }
+      }
+      connectWallet()
     }
-  }, [active, activate])
+  }, [isConnected, connect])
 
   useEffect(() => {
-    if (active && account) {
-      localStorage.setItem('lastConnectedAddress', account)
-    } else if (!active) {
+    if (isConnected && address) {
+      localStorage.setItem('lastConnectedAddress', address)
+    } else if (!isConnected) {
       localStorage.removeItem('lastConnectedAddress')
     }
-  }, [active, account])
+  }, [isConnected, address])
 
-  const connect = async () => {
+  const handleConnect = async () => {
     setIsConnecting(true)
     try {
       const { ethereum } = window
@@ -51,34 +62,15 @@ export function SimpleWalletConnect() {
         return
       }
 
-      try {
-        await ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: TURA_NETWORK.chainId }],
-        })
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          try {
-            await ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [TURA_NETWORK],
-            })
-          } catch (addError) {
-            console.error('Failed to add network:', addError)
-            toast({
-              title: 'Network Error',
-              description: 'Failed to add Tura network',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            })
-            return
-          }
-        } else {
-          console.error('Failed to switch network:', switchError)
+      // Check if we need to switch networks
+      if (chainId !== tura.id) {
+        try {
+          await switchChain({ chainId: tura.id })
+        } catch (error: any) {
+          console.error('Failed to switch network:', error)
           toast({
             title: 'Network Error',
-            description: 'Failed to switch to Tura network',
+            description: error.message || 'Failed to switch to Tura network',
             status: 'error',
             duration: 5000,
             isClosable: true,
@@ -87,7 +79,7 @@ export function SimpleWalletConnect() {
         }
       }
 
-      await activate(injected)
+      await connect({ connector: injected() })
       localStorage.setItem('shouldConnectWallet', 'true')
     } catch (error: any) {
       console.error('Failed to connect:', error)
@@ -104,28 +96,30 @@ export function SimpleWalletConnect() {
   }
 
   const handleClick = async () => {
-    if (active) {
+    if (isConnected) {
       try {
-        deactivate()
+        disconnect()
         localStorage.removeItem('shouldConnectWallet')
       } catch (error: any) {
         console.error('Failed to disconnect:', error)
       }
     } else {
-      await connect()
+      await handleConnect()
     }
   }
+
+  const isPending = isConnectPending || isSwitchPending || isConnecting
 
   return (
     <Button
       onClick={handleClick}
-      colorScheme={active ? 'gray' : 'blue'}
-      isLoading={isConnecting}
+      colorScheme={isConnected ? 'gray' : 'blue'}
+      isLoading={isPending}
       loadingText="Connecting..."
       data-testid="wallet-button"
       data-devinid="connect-wallet"
     >
-      {active ? `Connected: ${account?.slice(0, 6)}...${account?.slice(-4)}` : 'Connect Wallet'}
+      {isConnected ? `Connected: ${address?.slice(0, 6)}...${address?.slice(-4)}` : 'Connect Wallet'}
     </Button>
   )
 }
