@@ -82,17 +82,16 @@
   * Status: Active
 
 ## Frontend Deployments
-### Test Wallet Connection Page
-- **URL**: https://xiayuhkust.github.io/Uniswap_Simple
-- **Deployment Date**: February 23, 2025
+### Wallet Connection Implementation
+- **Date**: February 23, 2025
 - **Status**: Active
-- **Description**: Test page for wallet connection functionality with Tura blockchain
 - **Features**:
   * MetaMask integration with wagmi/viem hooks
-  * Tura network configuration and switching
-  * Connection state management with localStorage persistence
-  * Comprehensive error handling
-  * Improved UI with Tailwind CSS styling
+  * Tura network configuration (Chain ID: 1337)
+  * Connection state persistence with localStorage
+  * Error handling with Chakra UI toasts
+  * Auto-network switching to Tura
+  * UI integration with existing components
 
 ## Deployment History
 1. Math Libraries (2025-02-17)
