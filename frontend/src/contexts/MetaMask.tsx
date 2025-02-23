@@ -44,7 +44,12 @@ const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const initializeProvider = () => {
-      if (typeof window.ethereum !== 'undefined') {
+      // Check if MetaMask is installed
+      const checkMetaMaskInstalled = () => {
+        return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
+      };
+
+      if (checkMetaMaskInstalled()) {
         setIsReady(true);
         checkMetaMask();
         return;
@@ -52,7 +57,7 @@ const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
 
       // Wait for provider to be injected
       checkInterval = setInterval(() => {
-        if (typeof window.ethereum !== 'undefined') {
+        if (checkMetaMaskInstalled()) {
           clearInterval(checkInterval!);
           if (timeoutId) clearTimeout(timeoutId);
           setIsReady(true);
@@ -60,11 +65,11 @@ const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
         }
       }, 200);
 
-      // Timeout after 5 seconds
+      // Timeout after 3 seconds
       timeoutId = setTimeout(() => {
         if (checkInterval) clearInterval(checkInterval);
         setStatus('not_installed');
-      }, 5000);
+      }, 3000);
     };
 
     // Start initialization
