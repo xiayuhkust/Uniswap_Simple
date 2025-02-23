@@ -49,10 +49,10 @@ export function WrapUnwrap() {
       toast({
         title: `${isWrapping ? 'Wrap' : 'Unwrap'} Successful`,
         description: `${amount} ${isWrapping ? 'Tura → WTURA' : 'WTURA → Tura'}
-To see WTURA in MetaMask:
-1. Click "Import Tokens"
-2. Enter address: ${wethAddress}
-3. Click "Add Custom Token"
+To see WTURA in your wallet:
+1. Click "Import Tokens" or "Add Token"
+2. Enter contract address: ${wethAddress}
+3. Click "Add" or "Import"
 4. Wait a few seconds for balance to update`,
         status: 'success',
         duration: 15000,
