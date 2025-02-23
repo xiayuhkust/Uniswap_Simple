@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   VStack,
   HStack,
@@ -11,8 +11,7 @@ import {
 } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
-import { CONTRACT_ADDRESSES } from '../constants/addresses'
-import { TOKEN_ABI } from '../constants/abis'
+import { CONTRACT_ADDRESSES } from '../../constants/addresses'
 
 export function WrapUnwrap() {
   const wethAddress = CONTRACT_ADDRESSES.WETH
