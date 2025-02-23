@@ -4,16 +4,16 @@ import { injected } from 'wagmi/connectors'
 import { useEffect, useState } from 'react'
 import { tura } from '../../providers/chains'
 
-type EthereumProvider = Readonly<{
+type EthereumProvider = {
   isMetaMask?: boolean;
-  request: <T = unknown>(args: { readonly method: string; readonly params?: readonly any[] }) => Promise<T>;
+  request: (args: { method: string; params?: any[] }) => Promise<unknown>;
   on: (event: string, handler: (params: any) => void) => void;
   removeListener: (event: string, handler: (params: any) => void) => void;
-}>
+}
 
 declare global {
   interface Window {
-    ethereum?: EthereumProvider;
+    ethereum?: EthereumProvider | null;
   }
 }
 
