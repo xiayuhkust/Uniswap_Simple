@@ -7,7 +7,7 @@ import { useToast } from '@chakra-ui/react';
 
 // Define Tura network
 const turaChain: Chain = defineChain({
-  id: Number(import.meta.env.VITE_TURA_CHAIN_ID),
+  id: 1337,
   name: 'Tura',
   network: 'tura',
   nativeCurrency: {
@@ -17,10 +17,10 @@ const turaChain: Chain = defineChain({
   },
   rpcUrls: {
     default: {
-      http: [import.meta.env.VITE_TURA_RPC_URL],
+      http: ['https://rpc-beta1.turablockchain.com'],
     },
     public: {
-      http: [import.meta.env.VITE_TURA_RPC_URL],
+      http: ['https://rpc-beta1.turablockchain.com'],
     },
   }
 });
