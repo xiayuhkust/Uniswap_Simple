@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 
 interface MetaMaskContextType {
   status: 'not_connected' | 'connected' | 'not_installed' | 'initializing';
