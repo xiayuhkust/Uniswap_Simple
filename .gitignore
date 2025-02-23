@@ -2,3 +2,6 @@ broadcast/
 cache/
 out/
 frontend/.env
+frontend/dist/
+frontend/node_modules/
+frontend/pnpm-lock.yaml
