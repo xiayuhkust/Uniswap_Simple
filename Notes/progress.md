@@ -36,6 +36,8 @@
   - [x] Build tools configuration (Vite, TailwindCSS)
   - [x] Contract ABIs setup
   - [x] MetaMask integration
+  - [x] Fix MetaMask connection handling
+  - [x] Add Tura network configuration
 - [ ] Basic swap interface
 - [ ] Token selection
 - [ ] Price display
