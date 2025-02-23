@@ -1,10 +1,37 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    cors: true
+    cors: true,
+    hmr: {
+      overlay: false
+    }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: './test.html'
+      }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': '/src',
+      events: 'events'
+    }
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    }
+  },
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+    'window.global': 'globalThis'
   }
 })
