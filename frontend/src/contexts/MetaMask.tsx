@@ -90,51 +90,41 @@ export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const connect = async () => {
+  const connect = useCallback(async () => {
+    if (!isReady) {
+      console.error('MetaMask provider not ready');
+      return;
+    }
+
     if (typeof window.ethereum === 'undefined') {
       setStatus('not_installed');
       return;
     }
 
     try {
+      setStatus('initializing');
+      
       // Request account access
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      
-      // Check if we're on Tura network
-      if (chainId !== '0x539') { // 1337 in hex
-        try {
-          // Switch to Tura network
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x539' }],
-          });
-        } catch (switchError: any) {
-          // Add Tura network if it doesn't exist
-          if (switchError.code === 4902) {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: '0x539',
-                chainName: 'Tura Blockchain',
-                rpcUrls: ['https://rpc-beta1.turablockchain.com'],
-                nativeCurrency: { name: 'TURA', symbol: 'TURA', decimals: 18 },
-              }],
-            });
-          } else {
-            throw switchError;
-          }
-        }
+      if (!accounts?.[0]) {
+        throw new Error('No accounts returned');
       }
+      
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
       
       setAccount(accounts[0]);
       setChain(chainId);
       setStatus('connected');
+      
+      // Handle Tura network switch after successful connection
+      if (chainId !== '0x539') {
+        await switchToTuraNetwork();
+      }
     } catch (error) {
       console.error('Error connecting to MetaMask:', error);
       setStatus('not_connected');
     }
-  };
+  }, [isReady]);
 
   return (
     <MetaMaskContext.Provider value={{ status, account, chain, isReady, connect }}>
