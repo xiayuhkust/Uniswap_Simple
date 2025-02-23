@@ -1,8 +1,14 @@
-import { useToast } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/toast'
 import { useCallback, useEffect } from 'react'
-import { Web3Provider } from '@ethersproject/providers'
+import { Web3Provider, ExternalProvider } from '@ethersproject/providers'
 import { useWeb3React } from '@web3-react/core'
 import { InjectedConnector } from '@web3-react/injected-connector'
+
+declare global {
+  interface Window {
+    ethereum?: ExternalProvider;
+  }
+}
 
 // Network configuration
 const CHAIN_ID = 1337 // Tura Network
@@ -24,7 +30,7 @@ export const injected = new InjectedConnector({
 
 async function setupNetwork() {
   const provider = window.ethereum
-  if (!provider) {
+  if (!provider?.request) {
     console.error('No crypto wallet found')
     return false
   }
@@ -90,7 +96,7 @@ export function useWeb3() {
 
   const connect = useCallback(async () => {
     try {
-      if (typeof window.ethereum === 'undefined') {
+      if (!window.ethereum?.request) {
         toast({
           title: 'Wallet Required',
           description: 'Please install a Web3 wallet to connect.',

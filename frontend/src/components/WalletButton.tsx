@@ -1,6 +1,6 @@
 
 import { Button } from '@chakra-ui/react'
-import { useWeb3 } from '../hooks/useWeb3'
+import { useWeb3 } from '../hooks/useWeb3.js'
 
 export function WalletButton() {
   const { active, account, connect, disconnect } = useWeb3()
