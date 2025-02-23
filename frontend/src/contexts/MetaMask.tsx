@@ -23,32 +23,10 @@ export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const initializeProvider = async () => {
-      // Wait for provider to be ready
-      if (typeof window.ethereum === 'undefined') {
-        const checkInterval = setInterval(() => {
-          if (typeof window.ethereum !== 'undefined') {
-            clearInterval(checkInterval);
-            setIsReady(true);
-            checkMetaMask();
-          }
-        }, 1000);
-        
-        // Cleanup after 10 seconds if provider not found
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          setStatus('not_installed');
-        }, 10000);
-        
-        return;
-      }
-      
-      setIsReady(true);
-      checkMetaMask();
-    };
-    
+    let checkInterval: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+
     const checkMetaMask = async () => {
-      // Check if already connected
       try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
         if (accounts?.[0]) {
@@ -64,8 +42,39 @@ export const MetaMaskProvider = ({ children }: { children: ReactNode }) => {
         setStatus('not_connected');
       }
     };
-    
+
+    const initializeProvider = () => {
+      if (typeof window.ethereum !== 'undefined') {
+        setIsReady(true);
+        checkMetaMask();
+        return;
+      }
+
+      // Wait for provider to be injected
+      checkInterval = setInterval(() => {
+        if (typeof window.ethereum !== 'undefined') {
+          clearInterval(checkInterval!);
+          if (timeoutId) clearTimeout(timeoutId);
+          setIsReady(true);
+          checkMetaMask();
+        }
+      }, 200);
+
+      // Timeout after 5 seconds
+      timeoutId = setTimeout(() => {
+        if (checkInterval) clearInterval(checkInterval);
+        setStatus('not_installed');
+      }, 5000);
+    };
+
+    // Start initialization
     initializeProvider();
+
+    // Cleanup
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
 
     if (typeof window.ethereum !== 'undefined') {
       const handleAccountsChanged = (accounts: string[]) => {
