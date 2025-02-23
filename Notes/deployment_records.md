@@ -109,3 +109,14 @@
    - Decided not to deploy V3Migrator contract as this is a fresh V3-only deployment
    - No V2 infrastructure required
    - Focus on direct V3 liquidity provision without migration path
+
+7. Core Contract Redeployment (2025-02-23)
+   - Deployed Factory at 0x7443318489164C50C22951Ad1c1a3C7e67714C5e
+     * Transaction: 0x7b120ad0c3125162288c3501866efe2dddfc80367e4c5126102de7cd1e25c563
+     * Features: Pool creation, 500/3000 fee tiers, 10/60 tick spacing
+   - Deployed Manager at 0x3Ca8634383E707Fb465A1bB4d5D6E0cdeaacc6c2
+     * Transaction: 0xf84c89d7a835b18d1a85d713e649202203495c8618e4b1a7d89b902448e22893
+     * Features: Position management, liquidity provision, swaps
+   - Deployed Quoter at 0xa16bA91c8893c9Db769Cf1713f77dba91D42a74a
+     * Transaction: 0x8af8527b999f291f36dfe4e210697a93c811dee383a99c91fcc136b055397c2d
+     * Features: Price quotation, swap simulation
