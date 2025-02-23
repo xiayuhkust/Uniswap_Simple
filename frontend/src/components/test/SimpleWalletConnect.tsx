@@ -4,16 +4,14 @@ import { injected } from 'wagmi/connectors'
 import { useEffect, useState } from 'react'
 import { tura } from '../../providers/chains'
 
-type WindowProvider = {
-  isMetaMask?: boolean;
-  request(args: { method: string; params?: any[] }): Promise<unknown>;
-  on(event: string, handler: (...args: any[]) => void): void;
-  removeListener(event: string, handler: (...args: any[]) => void): void;
-}
-
 declare global {
   interface Window {
-    ethereum?: WindowProvider;
+    ethereum?: {
+      isMetaMask?: boolean;
+      request: <T = unknown>(args: { method: string; params?: any[] }) => Promise<T>;
+      on: (event: string, handler: (params: any) => void) => void;
+      removeListener: (event: string, handler: (params: any) => void) => void;
+    };
   }
 }
 
