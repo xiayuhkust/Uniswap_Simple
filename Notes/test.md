@@ -51,6 +51,36 @@ Status: ✅ Passed
   - Address: 0x6EFb56d87BC31598d030Ece8E2067ce5d9aE1692
   - Already deployed and initialized
 
+## Pool Creation and Initialization Tests
+Status: ✅ Passed
+- [x] Pool Creation
+  - Test: scripts/CreatePools4.s.sol
+  - Result: Successfully created all pools
+  - Pool Addresses:
+    * WTURA/TT1: 0x2044bDb84580aD2Edd74bbCF4106FE5C9D5b50cD
+    * WTURA/TT2: 0xE8f68FE64dc32A1a3636Ad303fC241154a952D50
+    * TT1/TT2: 0x279Ec96DEeDfb667C3280021196b2b0289F9BEa9
+
+- [x] Pool Initialization
+  - Test: scripts/InitializePools5.s.sol, scripts/VerifyPoolInitialization2.s.sol
+  - Result: All pools initialized with correct sqrt prices
+  - Price Ratios:
+    * WTURA/TT1: 79228162514264337593543950336 (1:100)
+    * WTURA/TT2: 79228162514264337593543950336 (1:100)
+    * TT1/TT2: 792281625142643375935439503360 (1:1)
+
+- [x] Liquidity Addition
+  - Test: scripts/AddLiquidity6.s.sol, scripts/VerifyLiquidity.s.sol
+  - Result: Successfully added liquidity to all pools
+  - Liquidity Values:
+    * WTURA/TT1: 100000000000000000005
+    * WTURA/TT2: 100000000000000000005
+    * TT1/TT2: 1000000000000000000005
+  - Token Amounts:
+    * WTURA/TT1: 100 WTURA + 10000 TT1
+    * WTURA/TT2: 100 WTURA + 10000 TT2
+    * TT1/TT2: 10000 TT1 + 10000 TT2
+
 ## Next Tests to Run
 ### Token Tests
 - [ ] TT1 balance check
