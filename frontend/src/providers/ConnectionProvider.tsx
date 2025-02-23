@@ -1,13 +1,13 @@
 import { PropsWithChildren, useEffect } from 'react';
 import { createConfig, WagmiConfig, useAccount } from 'wagmi';
-import { defineChain, http, type Chain } from 'viem';
+import { defineChain } from 'viem';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { injected } from 'wagmi/connectors';
 import { useToast } from '@chakra-ui/react';
 
 // Define Tura network
-const turaChain: Chain = defineChain({
-  id: Number(import.meta.env.VITE_TURA_CHAIN_ID),
+const turaChain = defineChain({
+  id: 1337,
   name: 'Tura',
   network: 'tura',
   nativeCurrency: {
@@ -16,23 +16,22 @@ const turaChain: Chain = defineChain({
     symbol: 'TURA',
   },
   rpcUrls: {
-    default: {
-      http: [import.meta.env.VITE_TURA_RPC_URL],
-    },
-    public: {
-      http: [import.meta.env.VITE_TURA_RPC_URL],
-    },
+    default: { http: [] },
+    public: { http: [] }
   }
 });
 
 // Remove unused transport variable
 
+import { createPublicClient, http } from 'viem';
+
 const config = createConfig({
   chains: [turaChain],
-  transports: {
-    [turaChain.id]: http(turaChain.rpcUrls.default.http[0])
-  },
-  connectors: [injected()]
+  connectors: [injected()],
+  client: ({ chain }) => createPublicClient({
+    chain,
+    transport: http()
+  })
 });
 
 const queryClient = new QueryClient();
@@ -42,7 +41,7 @@ function NetworkChecker() {
   const toast = useToast();
 
   useEffect(() => {
-    if (chain && chain.id !== Number(import.meta.env.VITE_TURA_CHAIN_ID)) {
+    if (chain && chain.id !== 1337) {
       toast({
         title: 'Wrong Network',
         description: 'Please switch to Tura Network',

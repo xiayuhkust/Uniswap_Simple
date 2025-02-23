@@ -41,6 +41,7 @@
   - [x] Error handling with Chakra UI toasts
   - [x] Network switching detection
   - [x] Session management (24h timeout)
+  - [x] Empty RPC configuration for MetaMask handling
 - [ ] Basic swap interface
   - [ ] Token selection component
   - [ ] Amount input with validation

@@ -92,6 +92,7 @@
   * Wallet address display and truncation
   * Disconnect functionality
   * Network switching detection
+  * Empty RPC configuration
 - Results:
   * All wallet connection features working as expected
   * Network configuration properly handled
@@ -101,3 +102,4 @@
     - Wrong network
     - Connection failures
   * Session timeout after 24 hours verified
+  * MetaMask handles RPC configuration successfully
