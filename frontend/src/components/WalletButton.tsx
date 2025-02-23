@@ -1,8 +1,6 @@
 
-import { Button, useToast } from '@chakra-ui/react'
-import { useWeb3React } from '@web3-react/core'
-import { injected, TURA_NETWORK } from '../lib/web3'
-import { useEffect } from 'react'
+import { Button } from '@chakra-ui/react'
+import { useWeb3 } from '../hooks/useWeb3'
 
 export function WalletButton() {
   const { active, account, connect, disconnect } = useWeb3()
