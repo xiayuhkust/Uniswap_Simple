@@ -9,10 +9,15 @@ import { useToast } from '@chakra-ui/react';
 const turaChain: Chain = defineChain({
   id: 1337,
   name: 'Tura',
+  network: 'tura',
   nativeCurrency: {
     decimals: 18,
     name: 'Tura',
     symbol: 'TURA',
+  },
+  rpcUrls: {
+    default: { http: [] },
+    public: { http: [] }
   }
 });
 
@@ -20,8 +25,7 @@ const turaChain: Chain = defineChain({
 
 const config = createConfig({
   chains: [turaChain],
-  connectors: [injected()],
-  transports: {}
+  connectors: [injected()]
 });
 
 const queryClient = new QueryClient();
