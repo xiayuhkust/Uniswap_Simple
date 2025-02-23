@@ -1,11 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { Web3ReactProvider } from '@web3-react/core'
-import { ethers } from 'ethers'
 import { SimpleWalletConnect } from './SimpleWalletConnect'
-
-function getLibrary(provider: any) {
-  return new ethers.providers.Web3Provider(provider)
-}
+import { getLibrary } from '../../lib/web3'
 
 export function TestApp() {
   return (

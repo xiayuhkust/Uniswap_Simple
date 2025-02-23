@@ -1,54 +1,125 @@
-import { Button } from '@chakra-ui/react'
+import { Button, useToast } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
-import { InjectedConnector } from '@web3-react/injected-connector'
-import { CHAIN_CONFIG, NETWORK_CONFIG } from '../../config/chain'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { injected, TURA_NETWORK } from '../../lib/web3'
 
-const injected = new InjectedConnector({
-  supportedChainIds: [NETWORK_CONFIG.chainId],
-})
+declare global {
+  interface Window {
+    ethereum?: {
+      request: (args: { method: string; params?: any[] }) => Promise<any>
+      on: (event: string, callback: (params: any) => void) => void
+      removeListener: (event: string, callback: (params: any) => void) => void
+    }
+  }
+}
 
 export function SimpleWalletConnect() {
   const { activate, active, account, deactivate } = useWeb3React()
-  const [isConnecting, setIsConnecting] = React.useState(false)
+  const [isConnecting, setIsConnecting] = useState(false)
+  const toast = useToast()
+
+  useEffect(() => {
+    const shouldConnect = localStorage.getItem('shouldConnectWallet')
+    if (shouldConnect === 'true' && !active) {
+      activate(injected).catch((error) => {
+        console.error('Failed to auto-connect:', error)
+        localStorage.removeItem('shouldConnectWallet')
+      })
+    }
+  }, [active, activate])
+
+  useEffect(() => {
+    if (active && account) {
+      localStorage.setItem('lastConnectedAddress', account)
+    } else if (!active) {
+      localStorage.removeItem('lastConnectedAddress')
+    }
+  }, [active, account])
 
   const connect = async () => {
     setIsConnecting(true)
     try {
-      const { ethereum } = window as any
+      const { ethereum } = window
       if (!ethereum) {
-        alert('Please install MetaMask to connect your wallet')
+        toast({
+          title: 'MetaMask Required',
+          description: 'Please install MetaMask to connect.',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+        })
         return
       }
-
-      await activate(injected)
 
       try {
         await ethereum.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: CHAIN_CONFIG.chainId }],
+          params: [{ chainId: TURA_NETWORK.chainId }],
         })
       } catch (switchError: any) {
         if (switchError.code === 4902) {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [CHAIN_CONFIG],
-          })
+          try {
+            await ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [TURA_NETWORK],
+            })
+          } catch (addError) {
+            console.error('Failed to add network:', addError)
+            toast({
+              title: 'Network Error',
+              description: 'Failed to add Tura network',
+              status: 'error',
+              duration: 5000,
+              isClosable: true,
+            })
+            return
+          }
         } else {
-          throw switchError
+          console.error('Failed to switch network:', switchError)
+          toast({
+            title: 'Network Error',
+            description: 'Failed to switch to Tura network',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
+          return
         }
       }
+
+      await activate(injected)
+      localStorage.setItem('shouldConnectWallet', 'true')
     } catch (error: any) {
-      alert(error.message || 'Failed to connect wallet')
+      console.error('Failed to connect:', error)
+      toast({
+        title: 'Connection Failed',
+        description: error.message || 'Failed to connect wallet',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setIsConnecting(false)
     }
   }
 
+  const handleClick = async () => {
+    if (active) {
+      try {
+        deactivate()
+        localStorage.removeItem('shouldConnectWallet')
+      } catch (error: any) {
+        console.error('Failed to disconnect:', error)
+      }
+    } else {
+      await connect()
+    }
+  }
+
   return (
     <Button
-      onClick={active ? deactivate : connect}
-      colorScheme="blue"
+      onClick={handleClick}
+      colorScheme={active ? 'gray' : 'blue'}
       isLoading={isConnecting}
       loadingText="Connecting..."
       data-testid="wallet-button"
