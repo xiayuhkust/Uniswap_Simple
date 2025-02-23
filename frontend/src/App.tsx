@@ -19,7 +19,7 @@ function App() {
               </nav>
               <main className="container mx-auto p-4">
                 <Routes>
-                  {/* Routes will be added here */}
+                  <Route path="/" element={<SwapPage />} />
                 </Routes>
               </main>
             </div>
