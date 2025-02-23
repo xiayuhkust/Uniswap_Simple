@@ -8,10 +8,12 @@ import {
   ModalCloseButton,
   VStack,
   Button,
-  Text
+  Text,
+  useDisclosure
 } from '@chakra-ui/react'
 import { TokenSelect } from './TokenSelect'
 import { useTokenList } from '../hooks/useTokenList'
+import { useState } from 'react'
 
 interface AddLiquidityModalProps {
   isOpen: boolean
@@ -20,6 +22,7 @@ interface AddLiquidityModalProps {
 
 export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
   const tokens = useTokenList()
+  const [selectedTokens, setSelectedTokens] = useState<[number, number]>([-1, -1])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -32,17 +35,19 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
             <Text color="whiteAlpha.700">Select Token Pair</Text>
             <TokenSelect 
               token={tokens[0]} 
-              onSelect={() => {}} 
+              onSelect={(index) => setSelectedTokens(prev => [index, prev[1]])}
+              disabled={false}
             />
             <TokenSelect 
               token={tokens[1]} 
-              onSelect={() => {}} 
+              onSelect={(index) => setSelectedTokens(prev => [prev[0], index])}
+              disabled={false}
             />
             <Button
               w="full"
               size="lg"
               colorScheme="blue"
-              isDisabled={true}
+              isDisabled={selectedTokens[0] === -1 || selectedTokens[1] === -1}
             >
               Add Liquidity
             </Button>

@@ -3,7 +3,7 @@ import type { Token } from '../types/token'
 
 interface TokenSelectProps {
   token: Token
-  onSelect?: () => void
+  onSelect?: (index: number) => void
   disabled?: boolean
 }
 
@@ -14,7 +14,7 @@ export function TokenSelect({ token, onSelect, disabled }: TokenSelectProps) {
   return (
     <Button
       as={Box}
-      onClick={onSelect}
+      onClick={() => onSelect && onSelect(0)}
       disabled={disabled}
       w="full"
       p={4}

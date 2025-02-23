@@ -1,7 +1,7 @@
 
 import { Button, useToast } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
-import { injected } from '../hooks/useWeb3'
+import { injected } from '../lib/web3'
 
 export function WalletButton() {
   const { active, account, activate, deactivate } = useWeb3React()
