@@ -17,6 +17,28 @@ export function WalletButton() {
       }
     } else {
       try {
+        // First try to add the Tura network if it's not already added
+        const provider = window.ethereum
+        if (provider) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x539',  // 1337 in hex
+                chainName: 'Tura Network',
+                nativeCurrency: {
+                  name: 'TURA',
+                  symbol: 'TURA',
+                  decimals: 18
+                },
+                rpcUrls: ['https://rpc-beta1.turablockchain.com']
+              }]
+            })
+          } catch (switchError: any) {
+            console.error('Failed to add network:', switchError)
+          }
+        }
+
         await activate(injected)
         localStorage.setItem('shouldConnectWallet', 'true')
       } catch (error: any) {
