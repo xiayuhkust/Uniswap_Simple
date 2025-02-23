@@ -6,12 +6,14 @@
 - **Network**: Tura Blockchain (Chain ID: 1337)
 - **RPC URL**: https://rpc-beta1.turablockchain.com
 - **Features Tested**:
-  * MetaMask detection
-  * Network switching/adding
-  * Chain configuration
-  * Connection state management
-  * Loading states
-  * Error handling
+  * MetaMask detection and connection
+  * Network switching and chain configuration
+  * Connection state persistence in localStorage
+  * Loading states and user feedback
+  * Error handling for various scenarios
+  * UI/UX with Tailwind CSS styling
+  * TypeScript type safety
+  * wagmi/viem hooks integration
 
 ## Test Environment
 - Network: Tura Blockchain
