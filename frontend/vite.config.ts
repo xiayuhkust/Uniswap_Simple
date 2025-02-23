@@ -12,7 +12,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: './test.html'
+        main: './index.html',
+        test: './test.html'
       }
     }
   },
