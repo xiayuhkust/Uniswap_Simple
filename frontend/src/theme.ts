@@ -43,7 +43,11 @@ export const theme = extendTheme({
         uniswap: {
           bg: 'uniswap.pink',
           color: 'white',
-          _hover: { opacity: 0.8 },
+          _hover: { 
+            opacity: 0.8,
+            bg: 'uniswap.pink', // Ensure background color stays during hover
+            color: 'white' // Ensure text color stays during hover
+          },
           borderRadius: '16px',
           padding: '16px 24px',
           fontWeight: 600
