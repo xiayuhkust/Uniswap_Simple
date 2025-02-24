@@ -89,6 +89,9 @@
 - Added input validation for all forms
 - Fixed UI component syntax errors
 - All UI components match Uniswap V3 patterns
+- Updated factory contract address
+- Improved text visibility in dark theme
+- Verified pool querying functionality
 
 ## Next Steps
 1. Complete liquidity management interface

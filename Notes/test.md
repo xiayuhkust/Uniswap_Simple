@@ -13,6 +13,21 @@
   * React 18 with TypeScript 5.3
   * Chakra UI for components
   * wagmi v1.4.13 for contract interactions
+
+### Factory Contract Integration (✅ Passed - 2025-02-24)
+- Test Environment:
+  * Tura Blockchain (Chain ID: 1337)
+  * Factory Address: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
+- Features Tested:
+  * Factory contract address verification
+  * Pool querying functionality
+  * Event listening for pool creation
+  * UI text visibility in dark theme
+- Results:
+  * Factory contract address correctly configured
+  * Pool querying works (no pools found)
+  * UI text colors updated for better visibility
+  * All components properly styled in dark theme
 - Features Tested:
   * Separate pages for Swap and Pool
   * Wallet connection in top right corner
