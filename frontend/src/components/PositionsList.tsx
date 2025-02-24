@@ -31,7 +31,7 @@ export function PositionsList() {
 
   return (
     <VStack spacing={4} align="stretch">
-      {positions.map((position: Position) => (
+      {positions?.map((position: Position) => (
         <Box 
           key={position.tokenId}
           p={6}

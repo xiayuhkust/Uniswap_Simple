@@ -15,6 +15,7 @@ export function usePoolList() {
   const { library } = useWeb3React()
   const [pools, setPools] = useState<Pool[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPools = async () => {
