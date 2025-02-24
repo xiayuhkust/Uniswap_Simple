@@ -23,10 +23,17 @@
   * Pool querying functionality
   * Event listening for pool creation
   * UI text visibility in dark theme
+  * Component type safety
 - Results:
   * Factory contract address correctly configured
   * Pool querying works (no pools found)
-  * UI text colors updated for better visibility
+  * UI text colors updated for better visibility:
+    - Button text using gray.100
+    - Input fields with improved contrast
+    - TokenSelect with proper dark theme support
+  * TypeScript type safety verified:
+    - TokenSelect props properly typed
+    - PositionsList with correct ReactElement usage
   * All components properly styled in dark theme
 - Features Tested:
   * Separate pages for Swap and Pool

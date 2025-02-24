@@ -90,7 +90,15 @@
 - Fixed UI component syntax errors
 - All UI components match Uniswap V3 patterns
 - Updated factory contract address
-- Improved text visibility in dark theme
+- Improved text visibility in dark theme:
+  * Updated button text colors to gray.100
+  * Enhanced input field visibility with better borders
+  * Fixed TokenSelect component contrast
+  * Improved placeholder text readability
+- Fixed TypeScript errors in components:
+  * Updated TokenSelect prop types
+  * Fixed ReactElement imports and usage
+  * Improved type safety in PositionsList
 - Implemented pool querying with getPool for TT1/TT2, TT1/WTURA, and TT2/WTURA pairs
 - Added proper error handling for pool queries
 

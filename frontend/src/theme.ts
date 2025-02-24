@@ -24,6 +24,14 @@ export const theme = extendTheme({
       defaultProps: {
         colorScheme: 'blue',
       },
+      variants: {
+        solid: {
+          color: 'gray.100',
+          _hover: {
+            color: 'gray.100',
+          },
+        },
+      },
     },
     Input: {
       defaultProps: {
@@ -33,8 +41,15 @@ export const theme = extendTheme({
         outline: {
           field: {
             color: 'gray.100',
+            borderColor: 'whiteAlpha.300',
             _placeholder: {
               color: 'gray.400',
+            },
+            _hover: {
+              borderColor: 'whiteAlpha.400',
+            },
+            _focus: {
+              borderColor: 'blue.500',
             },
           },
         },

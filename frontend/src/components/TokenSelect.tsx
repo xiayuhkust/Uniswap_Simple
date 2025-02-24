@@ -26,8 +26,8 @@ export function TokenSelect({
   return (
     <>
       <Box width="100%">
-        {label && <Text fontSize="sm" color="gray.500" mb={2}>{label}</Text>}
-        <Box p={4} borderRadius="xl" borderWidth="1px" borderColor="gray.200">
+        {label && <Text fontSize="sm" color="gray.400" mb={2}>{label}</Text>}
+        <Box p={4} borderRadius="xl" borderWidth="1px" borderColor="whiteAlpha.300">
           <HStack spacing={4}>
             <Box flex={1}>
               <NumberInput
@@ -41,9 +41,10 @@ export function TokenSelect({
               onClick={onOpen}
               isDisabled={isDisabled}
               variant="ghost"
-              _hover={{ bg: 'gray.100' }}
+              _hover={{ bg: 'whiteAlpha.200' }}
               px={4}
               height="40px"
+              color="gray.100"
             >
               {selectedToken ? (
                 <HStack spacing={2}>
@@ -53,12 +54,12 @@ export function TokenSelect({
                     borderRadius="full"
                     fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
                   />
-                  <Text fontWeight="medium">
+                  <Text fontWeight="medium" color="gray.100">
                     {selectedToken.address === WTURA_ADDRESS ? 'TURA' : selectedToken.symbol}
                   </Text>
                 </HStack>
               ) : (
-                <Text>Select Token</Text>
+                <Text color="gray.100">Select Token</Text>
               )}
             </Button>
           </HStack>
