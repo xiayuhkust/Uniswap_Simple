@@ -1,6 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { WagmiConfig, createConfig, configureChains } from 'wagmi'
+import { WagmiConfig, createConfig, configureChains, createStorage } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { publicProvider } from 'wagmi/providers/public'
 import { SwapPage } from './pages/SwapPage'
@@ -29,8 +29,10 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 )
 
+const storage = createStorage({ storage: window.localStorage })
+
 const config = createConfig({
-  autoConnect: false, // Disable auto-connect to force new signature
+  autoConnect: true, // Enable automatic reconnection
   connectors: [
     new InjectedConnector({
       chains,
@@ -41,6 +43,7 @@ const config = createConfig({
     }),
   ],
   publicClient,
+  storage,
 })
 
 function App() {

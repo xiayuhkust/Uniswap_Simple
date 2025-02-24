@@ -101,6 +101,11 @@
   * Improved type safety in PositionsList
 - Implemented pool querying with getPool for TT1/TT2, TT1/WTURA, and TT2/WTURA pairs
 - Added proper error handling for pool queries
+- Fixed wallet connection issues:
+  * Added proper storage configuration for persistence
+  * Enabled automatic reconnection
+  * Added proper error handling
+  * Fixed account and chain switching
 - Updated UI styling to match Uniswap's official design:
   * Implemented Uniswap's color scheme with vibrant pink buttons
   * Enhanced table styling with proper borders and hover effects
@@ -108,11 +113,6 @@
   * Added consistent spacing and border radius
   * Created custom theme with Uniswap's official colors and components
   * Fixed button hover effects
-- Fixed wallet connection issues:
-  * Added proper storage configuration for persistence
-  * Enabled automatic reconnection
-  * Added proper error handling
-  * Fixed account and chain switching
 
 ## Next Steps
 1. Complete liquidity management interface

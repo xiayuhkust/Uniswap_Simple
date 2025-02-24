@@ -4,7 +4,7 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 export function useWeb3() {
   const { address, isConnected } = useAccount()
   const config = useConfig()
-  const { connect, isLoading: isConnecting } = useConnect({
+  const { connect, isLoading: isConnecting, error } = useConnect({
     connector: new InjectedConnector({
       chains: config.chains,
       options: {
@@ -20,6 +20,7 @@ export function useWeb3() {
     disconnect,
     account: address,
     isConnected,
-    isConnecting
+    isConnecting,
+    error
   }
 }
