@@ -50,7 +50,7 @@ export function usePoolList() {
           // For demo purposes, using a random number for volume
           const volume7d = BigInt(Math.floor(Math.random() * 1000000))
 
-          return {
+          const poolData: Pool = {
             address: poolAddress,
             token0,
             token1,
@@ -59,9 +59,11 @@ export function usePoolList() {
             fee,
             volume7d
           }
+          return poolData
         })
 
-        const poolList = (await Promise.all(poolPromises)).filter((pool): pool is Pool => pool !== null)
+        const results = await Promise.all(poolPromises)
+        const poolList = results.filter((pool): pool is Pool => pool !== null)
 
         setPools(poolList)
       } catch (error) {
