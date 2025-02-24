@@ -6,7 +6,6 @@ import { type Token } from '../types/token';
 import { usePublicClient } from 'wagmi';
 import { parseAbi, type Address, getContract } from 'viem';
 import { FEE_TIERS } from '../hooks/usePoolVolume';
-import { type Contract } from 'viem';
 
 const FactoryABI = parseAbi([
   'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
@@ -28,9 +27,8 @@ export const CreatePoolPage: FC = () => {
     const factory = getContract({
       address: FACTORY_ADDRESS,
       abi: FactoryABI,
-      client: publicClient,
-      chainId: publicClient.chain.id
-    }) as Contract;
+      client: publicClient
+    });
 
     const pool = await factory.read.getPool([
       token0.address as Address,
