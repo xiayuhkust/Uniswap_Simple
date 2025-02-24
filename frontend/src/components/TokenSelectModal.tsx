@@ -58,10 +58,10 @@ export function TokenSelectModal({
                     fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
                   />
                   <VStack spacing={0} align="flex-start">
-                    <Text fontWeight="medium">
+                    <Text fontWeight="medium" color="gray.700">
                       {token.address === WTURA_ADDRESS ? 'TURA' : token.symbol}
                     </Text>
-                    <Text fontSize="sm" color="uniswap.gray.500">
+                    <Text fontSize="sm" color="gray.700">
                       {token.name}
                     </Text>
                   </VStack>
