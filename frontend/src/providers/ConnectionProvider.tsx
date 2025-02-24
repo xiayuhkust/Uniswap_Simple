@@ -24,7 +24,7 @@ const { chains, publicClient } = configureChains(
   [turaChain],
   [
     jsonRpcProvider({
-      rpc: (chain) => ({
+      rpc: () => ({
         http: import.meta.env.VITE_TURA_RPC_URL,
       }),
     }),
