@@ -2,54 +2,50 @@ import { Box, HStack, Image, Text, Button, useColorModeValue } from '@chakra-ui/
 import type { Token } from '../types/token'
 
 interface TokenSelectProps {
-  token?: Token
-  onSelect?: () => void
-  disabled?: boolean
+  value: string
+  onChange: (value: string) => void
+  label?: string
+  selectedToken?: Token
+  onTokenSelect?: (token: Token) => void
+  isDisabled?: boolean
 }
 
-export function TokenSelect({ token, onSelect, disabled }: TokenSelectProps) {
+export function TokenSelect({ 
+  value,
+  onChange,
+  label,
+  selectedToken,
+  onTokenSelect,
+  isDisabled 
+}: TokenSelectProps) {
   const bgColor = useColorModeValue('gray.100', 'whiteAlpha.200')
   const hoverBgColor = useColorModeValue('gray.200', 'whiteAlpha.300')
 
-  if (!token) return null
-
   return (
-    <Button
-      as={Box}
-      onClick={onSelect}
-      disabled={disabled}
-      w="full"
-      p={4}
-      bg={bgColor}
-      _hover={{ bg: hoverBgColor }}
-      borderRadius="xl"
-      display="block"
-      textAlign="left"
-    >
-      <HStack spacing={3}>
-        <Image 
-          src={token.logoURI} 
-          boxSize="24px" 
-          borderRadius="full"
-          fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
-        />
-        <Box flex={1} overflow="hidden">
-          <Text 
-            fontSize="md" 
-            fontWeight="medium"
-            isTruncated
+    <VStack spacing={2} width="100%" align="start">
+      {label && <Text fontSize="sm" color="gray.500">{label}</Text>}
+      <Box width="100%" p={4} borderRadius="xl" borderWidth="1px">
+        <HStack spacing={4}>
+          <NumberInput
+            value={value}
+            onChange={onChange}
+            placeholder="0.0"
+            isDisabled={isDisabled}
+          />
+          <Button
+            onClick={() => onTokenSelect?.({
+              address: '0x...',
+              symbol: 'TOKEN',
+              decimals: 18,
+              name: 'Token',
+              logoURI: ''
+            })}
+            isDisabled={isDisabled}
           >
-            {token.symbol === 'WTURA' ? 'Tura' : token.symbol}
-          </Text>
-          <Text 
-            fontSize="sm" 
-            color="gray.500"
-            isTruncated
-          >
-            {token.name}
-          </Text>
-        </Box>
-      </HStack>
-    </Button>
+            {selectedToken ? selectedToken.symbol : 'Select Token'}
+          </Button>
+        </HStack>
+      </Box>
+    </VStack>
   )
 }
