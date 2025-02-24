@@ -60,14 +60,14 @@ export function CreatePoolPage() {
           <TokenSelect
             value={token0Amount}
             onChange={setToken0Amount}
-            label="Token 1"
+            label="token1"
             selectedToken={token0}
             onTokenSelect={handleToken0Select}
           />
           <TokenSelect
             value={token1Amount}
             onChange={setToken1Amount}
-            label="Token 2"
+            label="token2"
             selectedToken={token1}
             onTokenSelect={handleToken1Select}
           />
