@@ -5,9 +5,9 @@
 - **Build System**: Vite 6.1.1
 - **UI Library**: Chakra UI
 - **Web3 Stack**:
-  * wagmi v2.14.11
-  * viem v2.23.4
-  * @tanstack/react-query v5.66.9
+  * wagmi v1.4.13
+  * viem v1.21.4
+  * @tanstack/react-query v4.36.1
 
 ### Features
 - MetaMask integration with wagmi/viem hooks
@@ -20,8 +20,9 @@
 - Session timeout after 24 hours
 
 ### Chain Configuration
-- Minimal chain configuration using `defineChain`
-- No hardcoded RPC URLs (handled by MetaMask)
+- Uses configureChains from wagmi
+- Public provider configuration
+- InjectedConnector with MetaMask options
 - Required properties:
   * id: 1337
   * name: 'Tura'
@@ -39,3 +40,4 @@
   * Wrong network
   * Connection failures
 - Session timeout verification
+- Build verification with TypeScript

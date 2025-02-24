@@ -114,11 +114,12 @@
 8. Frontend Implementation (2025-02-23)
    - Initialized React 18 project with TypeScript and Vite
    - Integrated Chakra UI for component styling
-   - Configured wagmi/viem for Web3 interactions
+   - Configured wagmi v1.4.13 with viem v1.21.4 for Web3 interactions
    - Set up MetaMask connection with Tura network (Chain ID: 1337)
    - Implemented wallet connection persistence with localStorage
    - Added comprehensive error handling with toasts
-   - Configured RPC URL: https://rpc-beta1.turablockchain.com
+   - Configured chain using configureChains and publicProvider
+   - Added TypeScript type declarations for window.ethereum
    - Integrated with deployed contracts:
      * Factory: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
      * Manager: 0xeA55332dDe678746aCC684D323e357Df05B6F767

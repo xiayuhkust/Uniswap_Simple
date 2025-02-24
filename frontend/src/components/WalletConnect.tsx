@@ -1,5 +1,5 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { injected } from 'wagmi/connectors';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 import { FC, useCallback, useEffect } from 'react';
 import { Button, Text, VStack, Box, Heading, useToast, BoxProps } from '@chakra-ui/react';
 
@@ -10,7 +10,9 @@ interface WalletConnectProps extends BoxProps {
 export const WalletConnect: FC<WalletConnectProps> = ({ ...props }) => {
   const toast = useToast();
   const { address, isConnected } = useAccount();
-  const { connect, isPending } = useConnect();
+  const { connect, isLoading } = useConnect({
+    connector: new InjectedConnector()
+  });
   const { disconnect } = useDisconnect();
 
   // Save wallet info to localStorage and handle session
@@ -44,7 +46,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({ ...props }) => {
 
   const handleConnect = useCallback(async () => {
     try {
-      if (!window.ethereum) {
+      if (typeof window.ethereum === 'undefined') {
         toast({
           title: 'MetaMask Not Found',
           description: 'Please install MetaMask to connect your wallet',
@@ -54,7 +56,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({ ...props }) => {
         });
         return;
       }
-      await connect({ connector: injected() });
+      await connect();
     } catch (err) {
       toast({
         title: 'Connection Error',
@@ -91,7 +93,7 @@ export const WalletConnect: FC<WalletConnectProps> = ({ ...props }) => {
         <Heading size="md">Connect Your Wallet</Heading>
         <Button
           onClick={handleConnect}
-          isLoading={isPending}
+          isLoading={isLoading}
           loadingText="Connecting..."
           colorScheme="blue"
           width="100%"
