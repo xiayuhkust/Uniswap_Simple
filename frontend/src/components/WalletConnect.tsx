@@ -1,17 +1,33 @@
 import { Button, Alert, AlertIcon, VStack } from '@chakra-ui/react'
-import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork, useConfig } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 
 export function WalletConnect() {
   const { address, isConnected } = useAccount()
-  const { connect, isLoading: isConnecting } = useConnect({
-    connector: new InjectedConnector(),
+  const config = useConfig()
+  const { connect, isLoading: isConnecting, error } = useConnect({
+    connector: new InjectedConnector({
+      chains: config.chains,
+      options: {
+        name: 'Tura DEX',
+        shimDisconnect: true,
+      },
+    }),
   })
   const { disconnect } = useDisconnect()
   const { chain } = useNetwork()
   const { switchNetwork, isLoading: isSwitching } = useSwitchNetwork()
 
   if (isConnected && address) {
+    if (error) {
+      return (
+        <Alert status="error" borderRadius="md">
+          <AlertIcon />
+          {error.message}
+        </Alert>
+      )
+    }
+
     if (chain?.id !== 1337) {
       return (
         <VStack spacing={2}>

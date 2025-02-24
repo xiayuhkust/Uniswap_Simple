@@ -108,7 +108,11 @@
   * Added consistent spacing and border radius
   * Created custom theme with Uniswap's official colors and components
   * Fixed button hover effects
-  * Improved wallet connection handling with proper signature requirements
+- Fixed wallet connection issues:
+  * Added proper storage configuration for persistence
+  * Enabled automatic reconnection
+  * Added proper error handling
+  * Fixed account and chain switching
 
 ## Next Steps
 1. Complete liquidity management interface
