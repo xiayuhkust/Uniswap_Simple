@@ -12,7 +12,7 @@ interface TokenSelectProps {
   isDisabled?: boolean
 }
 
-const WTURA_ADDRESS = '0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be'
+import { WTURA_ADDRESS } from './Swap/TokenList'
 
 export function TokenSelect({ 
   value,
