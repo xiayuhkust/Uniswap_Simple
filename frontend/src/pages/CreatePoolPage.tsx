@@ -6,6 +6,8 @@ import { type Token } from '../types/token'
 export function CreatePoolPage() {
   const [token0, setToken0] = useState<Token>()
   const [token1, setToken1] = useState<Token>()
+  const [token0Amount, setToken0Amount] = useState('')
+  const [token1Amount, setToken1Amount] = useState('')
   const [fee, setFee] = useState<string>('')
   const toast = useToast()
 
@@ -56,15 +58,15 @@ export function CreatePoolPage() {
         <VStack spacing={4}>
           <Text fontSize="xl" fontWeight="bold" color="black">Create New Pool</Text>
           <TokenSelect
-            value=""
-            onChange={() => {}}
+            value={token0Amount}
+            onChange={setToken0Amount}
             label="Token 1"
             selectedToken={token0}
             onTokenSelect={handleToken0Select}
           />
           <TokenSelect
-            value=""
-            onChange={() => {}}
+            value={token1Amount}
+            onChange={setToken1Amount}
             label="Token 2"
             selectedToken={token1}
             onTokenSelect={handleToken1Select}
