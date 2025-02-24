@@ -78,7 +78,7 @@ export const usePoolVolume = (poolAddress: string) => {
     return () => {
       unwatch();
     };
-  }, [poolAddress, provider]);
+  }, [poolAddress, publicClient]);
 
   return { volume, isLoading };
 };
