@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Box, VStack, Button, IconButton, useToast } from '@chakra-ui/react'
 import { ArrowDownIcon } from '@chakra-ui/icons'
 import { useAccount, useConnect } from 'wagmi'
+import { injected } from 'wagmi/connectors/injected'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
 
@@ -93,7 +94,7 @@ export function SwapInterface() {
 
         {!isConnected ? (
           <Button 
-            onClick={() => connect()} 
+            onClick={() => connect({ connector: injected() })} 
             width="100%" 
             size="lg"
             colorScheme="blue"
