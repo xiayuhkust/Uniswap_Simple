@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 import { createConfig, WagmiConfig, configureChains } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { publicProvider } from 'wagmi/providers/public';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 // Define Tura network
 const turaChain = {
@@ -15,14 +15,20 @@ const turaChain = {
     symbol: 'TURA',
   },
   rpcUrls: {
-    default: { http: [] },
-    public: { http: [] }
+    default: { http: [import.meta.env.VITE_TURA_RPC_URL] },
+    public: { http: [import.meta.env.VITE_TURA_RPC_URL] }
   }
 };
 
 const { chains, publicClient } = configureChains(
   [turaChain],
-  [publicProvider()]
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: import.meta.env.VITE_TURA_RPC_URL,
+      }),
+    }),
+  ]
 );
 
 const config = createConfig({
