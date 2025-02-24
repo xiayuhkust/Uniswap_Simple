@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { Contract } from '@ethersproject/contracts'
-import { FACTORY_ADDRESS, FACTORY_ABI, POOL_ABI } from '../constants/pools'
+import { FACTORY_ADDRESS, FACTORY_ABI, POOL_ABI, TOKEN_PAIRS, FEE_TIERS } from '../constants/pools'
 
 interface Pool {
   address: string
@@ -28,36 +28,40 @@ export function usePoolList() {
 
       try {
         const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, library)
-        const TT1 = '0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9'
-        const TT2 = '0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122'
-        const FEE_TIER = 3000 // 0.3%
-        
-        const poolAddress = await factory.getPool(TT1, TT2, FEE_TIER)
-        
-        if (poolAddress === '0x0000000000000000000000000000000000000000') {
-          console.log('No pool found for TT1/TT2')
-          return []
-        }
+        const poolPromises = TOKEN_PAIRS.map(async (pair) => {
+          const poolAddress = await factory.getPool(
+            pair.token0,
+            pair.token1,
+            FEE_TIERS.MEDIUM
+          )
 
-        const pool = new Contract(poolAddress, POOL_ABI, library)
-        const [token0, token1, fee] = await Promise.all([
-          pool.token0(),
-          pool.token1(),
-          pool.fee()
-        ])
+          if (poolAddress === '0x0000000000000000000000000000000000000000') {
+            console.log(`No pool found for ${pair.token0Symbol}/${pair.token1Symbol}`)
+            return null
+          }
 
-        // For demo purposes, using a random number for volume
-        const volume7d = BigInt(Math.floor(Math.random() * 1000000))
+          const pool = new Contract(poolAddress, POOL_ABI, library)
+          const [token0, token1, fee] = await Promise.all([
+            pool.token0(),
+            pool.token1(),
+            pool.fee()
+          ])
 
-        const poolList = [{
-          address: poolAddress,
-          token0,
-          token1,
-          token0Symbol: 'TT1',
-          token1Symbol: 'TT2',
-          fee,
-          volume7d
-        }]
+          // For demo purposes, using a random number for volume
+          const volume7d = BigInt(Math.floor(Math.random() * 1000000))
+
+          return {
+            address: poolAddress,
+            token0,
+            token1,
+            token0Symbol: pair.token0Symbol,
+            token1Symbol: pair.token1Symbol,
+            fee,
+            volume7d
+          }
+        })
+
+        const poolList = (await Promise.all(poolPromises)).filter((pool): pool is Pool => pool !== null)
 
         setPools(poolList)
       } catch (error) {
