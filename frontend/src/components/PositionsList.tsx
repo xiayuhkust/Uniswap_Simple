@@ -6,7 +6,7 @@ import type { Position } from '../types/position.js'
 
 export function PositionsList() {
   const { active } = useWeb3React()
-  const { positions, isLoading } = usePositions()
+  const { positions, isLoading } = usePositions() || { positions: [], isLoading: false }
 
   if (!active) return null
 
