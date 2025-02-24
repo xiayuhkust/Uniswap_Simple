@@ -15,11 +15,8 @@
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
-    "@chakra-ui/react": "^2.10.6",
     "@chakra-ui/theme": "^3.4.8",
     "@chakra-ui/theme-tools": "^2.2.8",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
     "@ethersproject/bignumber": "^5.7.0",
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
@@ -47,6 +44,9 @@
     "wagmi": "^1.4.13"
   },
   "devDependencies": {
+    "@chakra-ui/react": "^2.10.6",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@eslint/js": "^9.19.0",
     "@types/node": "^22.13.5",
     "@types/react": "^19.0.8",

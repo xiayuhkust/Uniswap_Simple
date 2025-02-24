@@ -11,21 +11,12 @@ importers:
       '@chakra-ui/icons':
         specifier: ^2.1.1
         version: 2.1.1(@chakra-ui/system@2.6.2(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(react@18.3.1))(react@18.3.1))(react@18.3.1)
-      '@chakra-ui/react':
-        specifier: ^2.10.6
-        version: 2.10.6(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(framer-motion@10.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@chakra-ui/theme':
         specifier: ^3.4.8
         version: 3.4.8(@chakra-ui/styled-system@2.12.2(react@18.3.1))(react@18.3.1)
       '@chakra-ui/theme-tools':
         specifier: ^2.2.8
         version: 2.2.8(@chakra-ui/styled-system@2.12.2(react@18.3.1))(react@18.3.1)
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.0.8)(react@18.3.1)
-      '@emotion/styled':
-        specifier: ^11.14.0
-        version: 11.14.0(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(react@18.3.1)
       '@ethersproject/bignumber':
         specifier: ^5.7.0
         version: 5.7.0
@@ -102,6 +93,15 @@ importers:
         specifier: ^1.4.13
         version: 1.4.13(@types/react@19.0.8)(bufferutil@4.0.9)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@1.19.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10))
     devDependencies:
+      '@chakra-ui/react':
+        specifier: ^2.10.6
+        version: 2.10.6(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(framer-motion@10.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.0.8)(react@18.3.1)
+      '@emotion/styled':
+        specifier: ^11.14.0
+        version: 11.14.0(@emotion/react@11.14.0(@types/react@19.0.8)(react@18.3.1))(@types/react@19.0.8)(react@18.3.1)
       '@eslint/js':
         specifier: ^9.19.0
         version: 9.21.0
