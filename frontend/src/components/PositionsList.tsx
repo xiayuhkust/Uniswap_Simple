@@ -14,7 +14,7 @@ export function PositionsList() {
       <Box p={6} bg="whiteAlpha.100" borderRadius="xl">
         <VStack>
           <Spinner />
-          <Text color="whiteAlpha.700">Loading positions...</Text>
+          <Text color="gray.400">Loading positions...</Text>
         </VStack>
       </Box>
     )
@@ -23,7 +23,7 @@ export function PositionsList() {
   if (!positions?.length) {
     return (
       <Box p={6} bg="whiteAlpha.100" borderRadius="xl">
-        <Text color="whiteAlpha.700">No active positions found.</Text>
+        <Text color="gray.400">No active positions found.</Text>
       </Box>
     )
   }
@@ -37,10 +37,10 @@ export function PositionsList() {
           bg="whiteAlpha.100"
           borderRadius="xl"
         >
-          <Text color="white" fontSize="lg" fontWeight="bold">
+          <Text color="gray.100" fontSize="lg" fontWeight="bold">
             {position.token0Symbol}/{position.token1Symbol}
           </Text>
-          <Text color="whiteAlpha.700">
+          <Text color="gray.400">
             Fee tier: {position.fee / 10000}%
           </Text>
         </Box>

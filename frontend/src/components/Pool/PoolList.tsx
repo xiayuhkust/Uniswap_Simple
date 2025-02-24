@@ -23,7 +23,7 @@ export const PoolList: FC = () => {
           {isLoading ? (
             <Spinner />
           ) : pools.length === 0 ? (
-            <Text color="gray.500">No pools found</Text>
+            <Text color="gray.400">No pools found</Text>
           ) : (
             <Table variant="simple">
               <Thead>
