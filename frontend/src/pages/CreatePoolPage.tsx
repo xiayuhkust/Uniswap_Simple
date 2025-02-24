@@ -73,10 +73,10 @@ export function CreatePoolPage() {
       createPool?.({
         args: [token0.address as Address, token1.address as Address, feeValue],
       })
-    } catch (err: any) {
+    } catch (err) {
       toast({
         title: "Error creating pool",
-        description: err.message || "Unknown error occurred",
+        description: err instanceof Error ? err.message : "Unknown error occurred",
         status: "error",
         duration: 5000,
         isClosable: true,
