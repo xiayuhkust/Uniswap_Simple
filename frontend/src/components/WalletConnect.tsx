@@ -9,10 +9,10 @@ export function WalletConnect() {
     connector: new InjectedConnector({
       chains: config.chains,
       options: {
-        name: 'Tura DEX',
-        shimDisconnect: true,
-      },
-    }),
+        name: 'Injected',
+        shimDisconnect: true
+      }
+    })
   })
   const { disconnect } = useDisconnect()
   const { chain } = useNetwork()

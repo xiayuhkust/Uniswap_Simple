@@ -1,7 +1,11 @@
 import { VStack, Button, Box, Text, useToast } from '@chakra-ui/react'
 import { TokenSelect } from '../components/TokenSelect'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { type Token } from '../types/token'
+import { TickRangeInput } from '../components/TickRangeInput'
+import { useAccount } from 'wagmi'
+import type { Address } from 'wagmi'
+import { useGetPool, useCreatePool } from '../utils/contracts'
 
 export function CreatePoolPage() {
   const [token0, setToken0] = useState<Token>()
@@ -9,7 +13,81 @@ export function CreatePoolPage() {
   const [token0Amount, setToken0Amount] = useState('')
   const [token1Amount, setToken1Amount] = useState('')
   const [fee, setFee] = useState<string>('')
+  const [lowerTick, setLowerTick] = useState(-887220)
+  const [upperTick, setUpperTick] = useState(887220)
   const toast = useToast()
+  const { isConnected } = useAccount()
+
+  const { data: existingPool } = useGetPool(
+    token0?.address as Address,
+    token1?.address as Address,
+    fee ? parseInt(fee.replace('%', '')) * 10000 : 0
+  )
+
+  const { write: createPool, isSuccess, isError } = useCreatePool()
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "Success",
+        description: "Pool created successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+    if (isError) {
+      toast({
+        title: "Error",
+        description: "Failed to create pool",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+  }, [isSuccess, isError, toast])
+
+  const handleCreatePool = async () => {
+    if (!isConnected) {
+      toast({
+        title: "Connection Error",
+        description: "Please connect your wallet",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+      return
+    }
+
+    try {
+      const feeValue = parseInt(fee.replace('%', '')) * 10000
+      
+      if (existingPool && existingPool !== '0x0000000000000000000000000000000000000000') {
+        throw new Error('Pool already exists')
+      }
+
+      if (!token0?.address || !token1?.address) {
+        throw new Error('Invalid token addresses')
+      }
+
+      createPool?.({
+        args: [token0.address as Address, token1.address as Address, feeValue],
+      })
+    } catch (err: any) {
+      toast({
+        title: "Error creating pool",
+        description: err.message || "Unknown error occurred",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+  }
+
+  const handleTickRangeChange= (lower: number, upper: number) => {
+    setLowerTick(lower)
+    setUpperTick(upper)
+  }
 
   const handleToken0Select = (token: Token) => {
     if (token1 && token.address === token1.address) {
@@ -49,6 +127,9 @@ export function CreatePoolPage() {
     if (!fee) {
       return "Please select a fee tier"
     }
+    if (lowerTick >= upperTick) {
+      return "Invalid price range"
+    }
     return null
   }
 
@@ -71,6 +152,7 @@ export function CreatePoolPage() {
             selectedToken={token1}
             onTokenSelect={handleToken1Select}
           />
+          <TickRangeInput onRangeChange={handleTickRangeChange} />
           <Box width="100%">
             <Text mb={2} color="black">Fee Tier</Text>
             <VStack spacing={2}>
@@ -91,7 +173,7 @@ export function CreatePoolPage() {
           <Button
             width="100%"
             variant="uniswap"
-            isDisabled={!token0 || !token1 || !fee}
+            isDisabled={!token0 || !token1 || !fee || !token0Amount || !token1Amount || parseFloat(token0Amount) <= 0 || parseFloat(token1Amount) <= 0 || lowerTick >= upperTick}
             onClick={() => {
               const error = validatePool()
               if (error) {
@@ -104,7 +186,7 @@ export function CreatePoolPage() {
                 })
                 return
               }
-              // Pool creation logic will be handled later
+              handleCreatePool()
             }}
             _hover={{ opacity: 0.8 }}
           >

@@ -28,8 +28,8 @@ const { chains, publicClient } = configureChains(
   [turaChain],
   [
     jsonRpcProvider({
-      rpc: () => ({
-        http: 'https://rpc-beta1.turablockchain.com',
+      rpc: (chain) => ({
+        http: chain.rpcUrls.default.http[0],
       }),
     }),
   ]
@@ -38,13 +38,13 @@ const { chains, publicClient } = configureChains(
 const storage = createStorage({ storage: window.localStorage })
 
 const config = createConfig({
-  autoConnect: false, // Disable auto-connect to force new signature
+  autoConnect: true,
   connectors: [
     new InjectedConnector({
       chains,
       options: {
-        name: 'Tura DEX',
-        shimDisconnect: true,
+        name: 'Injected',
+        shimDisconnect: true
       },
     }),
   ],
