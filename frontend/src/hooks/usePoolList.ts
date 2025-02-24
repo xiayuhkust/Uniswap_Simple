@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address, type Hash, type Log } from 'viem';
-import { getContract } from 'viem';
+import { parseAbi, type Address, type Log } from 'viem';
+import { getContract, type PublicClient } from 'viem';
 import { usePoolVolume } from './usePoolVolume';
 
 const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS as Address;
@@ -45,10 +45,12 @@ export const usePoolList = () => {
     const fetchPools = async () => {
       try {
         setIsLoading(true);
+        if (!publicClient) return;
+
         const factory = getContract({
-          address: process.env.FACTORY_ADDRESS as `0x${string}`,
+          address: FACTORY_ADDRESS,
           abi: FactoryABI,
-          publicClient
+          client: publicClient
         });
 
         // Get all PoolCreated events
