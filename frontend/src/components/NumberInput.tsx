@@ -1,5 +1,4 @@
 import { type FC, type ChangeEvent } from 'react';
-import React from 'react';
 import { Input, type InputProps } from '@chakra-ui/react';
 
 interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange'> {

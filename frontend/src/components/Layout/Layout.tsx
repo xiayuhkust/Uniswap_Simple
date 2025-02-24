@@ -1,9 +1,10 @@
 import { Container, Flex, HStack, Link as ChakraLink, Box, useColorModeValue } from '@chakra-ui/react';
+import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { WalletButton } from '../WalletButton';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const Layout = ({ children }: LayoutProps) => {
