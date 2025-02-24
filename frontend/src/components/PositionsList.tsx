@@ -4,6 +4,7 @@ import { useWeb3React } from '@web3-react/core'
 import { usePositions } from '../hooks/usePositions'
 import type { Position } from '../types/position'
 import type { ReactElement } from 'react'
+import React from 'react'
 
 export function PositionsList(): ReactElement | null {
   const { active } = useWeb3React()
@@ -32,7 +33,7 @@ export function PositionsList(): ReactElement | null {
 
   return (
     <VStack spacing={4} align="stretch">
-      {positions?.map((position: Position): JSX.Element => (
+      {positions?.map((position: Position, index: number): React.ReactElement => (
         <Box 
           key={position.tokenId}
           p={6}
