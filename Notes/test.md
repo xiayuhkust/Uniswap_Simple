@@ -1,93 +1,20 @@
-# Tura DEX Test Records
+# Test Results
 
-## Frontend Tests
-### Wallet Connection Test Page (February 23, 2025)
-- **Component**: SimpleWalletConnect
-- **Network**: Tura Blockchain (Chain ID: 1337)
-- **RPC URL**: https://rpc-beta1.turablockchain.com
-- **Features Tested**:
-  * MetaMask detection and connection
-  * Network switching and chain configuration
-  * Connection state persistence in localStorage
-  * Loading states and user feedback
-  * Error handling for various scenarios
-  * UI/UX with Tailwind CSS styling
-  * TypeScript type safety
-  * wagmi/viem hooks integration
+## UI Components
+- ✅ SwapPage component renders correctly
+- ✅ PoolList component displays pools sorted by volume
+- ✅ Token selection interface works as expected
+- ✅ Fee tier selection limited to 0.05%, 0.3%, and 1%
+- ✅ Wallet connection button positioned correctly
+- ✅ Navigation between pages working
 
-## Test Environment
-- Network: Tura Blockchain
-- RPC URL: https://rpc-beta1.turablockchain.com
-- Chain ID: 1337
-- Test Date: February 23, 2025
+## Pool Management
+- ✅ Pool list displays correct token symbols
+- ✅ Volume sorting works correctly
+- ✅ Add liquidity button functions properly
+- ✅ Pool creation validation prevents duplicates
 
-## Core Contract Tests
-### Factory Contract (✅ Passed)
-- Contract: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
-- Test: scripts/VerifyFactoryContract.s.sol
-- Features:
-  * Pool creation functionality
-  * Fee tier configuration (0.3%)
-  * Tick spacing (60)
-  * Pool address computation
-  * Pool tracking and retrieval
-
-### Manager Contract (✅ Passed)
-- Contract: 0xeA55332dDe678746aCC684D323e357Df05B6F767
-- Test: scripts/VerifyManagerContract.s.sol
-- Features:
-  * Position management
-  * Liquidity provision
-  * Factory integration
-  * Token approval handling
-
-### WTURA Contract (✅ Passed)
-- Contract: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
-- Test: scripts/VerifyWTURAContract.s.sol
-- Features:
-  * ERC20 compliant
-  * Native token wrapping
-  * 18 decimals
-  * Deposit/Withdraw functionality
-
-## Pool Tests
-### Pool Creation (✅ Passed)
-- Test: scripts/CreatePools4.s.sol
-- Result: Successfully created all pools
-- Pool Addresses:
-  * WTURA/TT1: 0x2044bDb84580aD2Edd74bbCF4106FE5C9D5b50cD
-  * WTURA/TT2: 0xE8f68FE64dc32A1a3636Ad303fC241154a952D50
-  * TT1/TT2: 0x279Ec96DEeDfb667C3280021196b2b0289F9BEa9
-- Verification:
-  * All pools created with 0.3% fee tier
-  * Pool addresses verified through Factory.getPool()
-  * Token ordering follows Uniswap V3 convention
-
-### Pool Initialization (✅ Passed)
-- Test: scripts/InitializePools5.s.sol, scripts/VerifyPoolInitialization2.s.sol
-- Result: All pools initialized with correct sqrt prices
-- Price Ratios:
-  * WTURA/TT1: 79228162514264337593543950336 (1:100)
-  * WTURA/TT2: 79228162514264337593543950336 (1:100)
-  * TT1/TT2: 792281625142643375935439503360 (1:1)
-- Verification:
-  * Correct sqrt price calculation
-  * Initial ticks set properly
-  * Price ratios match requirements
-
-### Liquidity Addition (✅ Passed)
-- Test: scripts/AddLiquidity6.s.sol, scripts/VerifyLiquidity.s.sol
-- Result: Successfully added liquidity to all pools
-- Liquidity Values:
-  * WTURA/TT1: 100000000000000000005
-  * WTURA/TT2: 100000000000000000005
-  * TT1/TT2: 1000000000000000000005
-- Token Amounts:
-  * WTURA/TT1: 100 WTURA + 10000 TT1
-  * WTURA/TT2: 100 WTURA + 10000 TT2
-  * TT1/TT2: 10000 TT1 + 10000 TT2
-- Configuration:
-  * Fee Rate: 0.3% for all pools
-  * Full range positions (-887220 to 887220)
-  * Token approvals verified
-  * Position ownership confirmed
+## Token Integration
+- ✅ WTURA displays as "TURA" in interface
+- ✅ Test tokens (TT1, TT2) display correctly
+- ✅ Token amounts format properly

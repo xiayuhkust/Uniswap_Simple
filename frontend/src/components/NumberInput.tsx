@@ -1,25 +1,29 @@
-import { type FC, type ChangeEvent } from 'react';
-import { Input, type InputProps } from '@chakra-ui/react';
+import { Input, InputProps } from '@chakra-ui/react'
 
-interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: string;
-  onChange: (value: string) => void;
+interface NumberInputProps extends Omit<InputProps, 'onChange'> {
+  value: string
+  onChange: (value: string) => void
 }
 
-export const NumberInput: FC<NumberInputProps> = ({ value, onChange, ...props }) => {
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (val === '' || (/^\d*\.?\d*$/.test(val) && Number(val) >= 0)) {
-      onChange(val);
+export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    // Only allow positive numbers and decimals
+    if (newValue === '' || /^\d*\.?\d*$/.test(newValue)) {
+      onChange(newValue)
     }
-  };
+  }
 
   return (
     <Input
       type="text"
       value={value}
       onChange={handleChange}
+      variant="unstyled"
+      fontSize="2xl"
+      fontWeight="medium"
+      placeholder="0.0"
       {...props}
     />
-  );
-};
+  )
+}

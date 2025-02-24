@@ -1,27 +1,36 @@
-import { WagmiProvider, createConfig, http } from 'wagmi'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { tura } from './chains'
-import { type ReactNode } from 'react'
+import { WagmiConfig, createConfig, configureChains } from 'wagmi'
+import { publicProvider } from 'wagmi/providers/public'
+
+const turaChain = {
+  id: 1337,
+  name: 'Tura',
+  network: 'tura',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Tura',
+    symbol: 'TURA',
+  },
+  rpcUrls: {
+    public: { http: ['https://rpc-beta1.turablockchain.com'] },
+    default: { http: ['https://rpc-beta1.turablockchain.com'] },
+  }
+} as const
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [turaChain],
+  [publicProvider()]
+)
 
 const config = createConfig({
-  chains: [tura],
-  transports: {
-    [tura.id]: http('https://rpc-beta1.turablockchain.com')
-  }
+  autoConnect: true,
+  publicClient,
+  webSocketPublicClient,
 })
 
-const queryClient = new QueryClient()
-
-interface Web3ProviderProps {
-  children: ReactNode
-}
-
-export function Web3Provider({ children }: Web3ProviderProps) {
+export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </WagmiProvider>
+    <WagmiConfig config={config}>
+      {children}
+    </WagmiConfig>
   )
 }

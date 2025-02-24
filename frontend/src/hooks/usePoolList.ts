@@ -1,89 +1,64 @@
-import { useState, useEffect } from 'react';
-import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address, type Log, getContract } from 'viem';
-
-
-const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS as Address;
+import { useState, useEffect } from 'react'
+import { useWeb3React } from '@web3-react/core'
+import { Contract } from '@ethersproject/contracts'
+import { FACTORY_ADDRESS, FACTORY_ABI, POOL_ABI } from '../constants/pools'
 
 interface Pool {
-  address: Address;
-  token0: Address;
-  token1: Address;
-  fee: number;
-  volume7d: bigint;
+  address: string
+  token0: string
+  token1: string
+  fee: number
+  volume7d: bigint
 }
 
-interface PoolCreatedLog extends Log {
-  args: {
-    token0: Address;
-    token1: Address;
-    fee: number;
-    pool: Address;
-  };
-}
-
-const FactoryABI = parseAbi([
-  'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)',
-  'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)'
-] as const);
-
-export const usePoolList = () => {
-  const [pools, setPools] = useState<Pool[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const publicClient = usePublicClient();
+export function usePoolList() {
+  const { library } = useWeb3React()
+  const [pools, setPools] = useState<Pool[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchPools = async () => {
-      try {
-        setIsLoading(true);
-        if (!publicClient) return;
-
-        getContract({
-          address: FACTORY_ADDRESS,
-          abi: FactoryABI,
-          client: publicClient
-        });
-
-        // Get all PoolCreated events
-        const logs = await publicClient.getLogs({
-          address: FACTORY_ADDRESS,
-          event: FactoryABI[1],
-          fromBlock: 0n,
-          toBlock: 'latest'
-        }) as unknown as PoolCreatedLog[];
-
-        // Create Pool objects with volume
-        const poolsWithVolume = await Promise.all(
-          logs.map(async (log) => {
-            const { token0, token1, fee, pool: address } = log.args;
-            const pool: Pool = {
-              address: address as Address,
-              token0: token0 as Address,
-              token1: token1 as Address,
-              fee: Number(fee),
-              volume7d: 0n
-            };
-            return pool;
-          })
-        );
-
-        // Sort by 7-day volume
-        const sortedPools = [...poolsWithVolume].sort((a, b) => {
-          if (b.volume7d > a.volume7d) return 1;
-          if (b.volume7d < a.volume7d) return -1;
-          return 0;
-        });
-
-        setPools(sortedPools);
-      } catch (error) {
-        console.error('Error fetching pools:', error);
-      } finally {
-        setIsLoading(false);
+      if (!library) {
+        setIsLoading(false)
+        return
       }
-    };
 
-    fetchPools();
-  }, [publicClient]);
+      try {
+        const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, library)
+        const filter = factory.filters.PoolCreated()
+        const events = await factory.queryFilter(filter)
 
-  return { pools, isLoading };
-};
+        const poolPromises = events.map(async (event) => {
+          const pool = new Contract(event.args.pool, POOL_ABI, library)
+          const [token0, token1, fee] = await Promise.all([
+            pool.token0(),
+            pool.token1(),
+            pool.fee()
+          ])
+
+          // For demo purposes, using a random number for volume
+          const volume7d = BigInt(Math.floor(Math.random() * 1000000))
+
+          return {
+            address: event.args.pool,
+            token0,
+            token1,
+            fee,
+            volume7d
+          }
+        })
+
+        const poolList = await Promise.all(poolPromises)
+        setPools(poolList)
+      } catch (error) {
+        console.error('Error fetching pools:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchPools()
+  }, [library])
+
+  return { pools, isLoading }
+}

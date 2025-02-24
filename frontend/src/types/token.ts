@@ -4,7 +4,4 @@ export interface Token {
   name: string
   decimals: number
   logoURI: string
-  balance?: string
-  price?: string
-  priceChange24h?: string
 }

@@ -1,52 +1,55 @@
-import { Container, Flex, HStack, Link as ChakraLink, Box, useColorModeValue } from '@chakra-ui/react';
-import { type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { WalletButton } from '../WalletButton';
+import { Box, Container, Flex, Link as ChakraLink, Spacer, useColorModeValue } from '@chakra-ui/react'
+import { Link as RouterLink, useLocation } from 'react-router-dom'
+import { WalletConnect } from '../WalletConnect'
 
 interface LayoutProps {
-  children: ReactNode;
+  children: React.ReactNode
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export function Layout({ children }: LayoutProps) {
+  const location = useLocation()
+  const activeBg = useColorModeValue('blue.50', 'blue.900')
+  const hoverBg = useColorModeValue('gray.100', 'gray.700')
+
+  const isActive = (path: string) => location.pathname === path
+
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')}>
-      <Box 
-        bg={useColorModeValue('white', 'gray.800')} 
-        py={4} 
-        borderBottom="1px"
-        borderColor={useColorModeValue('gray.200', 'gray.700')}
-      >
+    <Box minH="100vh" bg="gray.50">
+      <Box bg="white" borderBottom="1px" borderColor="gray.200" py={4}>
         <Container maxW="container.xl">
-          <Flex justify="space-between" align="center">
-            <HStack spacing={4}>
-              <ChakraLink 
-                as={Link} 
-                to="/" 
-                color={useColorModeValue('gray.800', 'white')}
+          <Flex align="center">
+            <Flex gap={4}>
+              <ChakraLink
+                as={RouterLink}
+                to="/"
                 fontWeight="medium"
-                _hover={{ color: 'blue.500' }}
+                px={4}
+                py={2}
+                borderRadius="md"
+                bg={isActive('/') ? activeBg : 'transparent'}
+                _hover={{ bg: hoverBg }}
               >
                 Swap
               </ChakraLink>
-              <ChakraLink 
-                as={Link} 
-                to="/pool" 
-                color={useColorModeValue('gray.800', 'white')}
+              <ChakraLink
+                as={RouterLink}
+                to="/pool"
                 fontWeight="medium"
-                _hover={{ color: 'blue.500' }}
+                px={4}
+                py={2}
+                borderRadius="md"
+                bg={isActive('/pool') ? activeBg : 'transparent'}
+                _hover={{ bg: hoverBg }}
               >
                 Pool
               </ChakraLink>
-            </HStack>
-            <Box>
-              <WalletButton />
-            </Box>
+            </Flex>
+            <Spacer />
+            <WalletConnect />
           </Flex>
         </Container>
       </Box>
-      <Container maxW="container.xl" py={8}>
-        {children}
-      </Container>
+      {children}
     </Box>
-  );
-};
+  )
+}

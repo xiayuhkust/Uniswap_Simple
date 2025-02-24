@@ -1,31 +1,64 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Web3Provider } from './providers/Web3Provider'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import { WagmiConfig, createConfig, configureChains } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { publicProvider } from 'wagmi/providers/public'
 import { SwapPage } from './pages/SwapPage'
 import { PoolPage } from './pages/PoolPage'
-import { theme } from './theme'
-import { Layout } from './components/Layout/Layout'
 import { CreatePoolPage } from './pages/CreatePoolPage'
+import { Layout } from './components/Layout/Layout'
+import { theme } from './theme'
+
+const turaChain = {
+  id: 1337,
+  name: 'Tura',
+  network: 'tura',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Tura',
+    symbol: 'TURA',
+  },
+  rpcUrls: {
+    public: { http: ['https://rpc-beta1.turablockchain.com'] },
+    default: { http: ['https://rpc-beta1.turablockchain.com'] },
+  }
+} as const
+
+const { chains, publicClient } = configureChains(
+  [turaChain],
+  [publicProvider()]
+)
+
+const config = createConfig({
+  autoConnect: true,
+  connectors: [
+    new InjectedConnector({
+      chains,
+      options: {
+        name: 'Tura DEX',
+        shimDisconnect: true,
+      },
+    }),
+  ],
+  publicClient,
+})
 
 function App() {
   return (
-    <ChakraProvider theme={theme}>
-      <Web3Provider>
+    <WagmiConfig config={config}>
+      <ChakraProvider theme={theme}>
         <BrowserRouter>
-          <ErrorBoundary>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<SwapPage />} />
-                <Route path="/pool" element={<PoolPage />} />
-                <Route path="/pool/create" element={<CreatePoolPage />} />
-              </Routes>
-            </Layout>
-          </ErrorBoundary>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<SwapPage />} />
+              <Route path="/pool" element={<PoolPage />} />
+              <Route path="/pool/create" element={<CreatePoolPage />} />
+            </Routes>
+          </Layout>
         </BrowserRouter>
-      </Web3Provider>
-    </ChakraProvider>
+      </ChakraProvider>
+    </WagmiConfig>
   )
 }
 
-export default App;
+export default App
