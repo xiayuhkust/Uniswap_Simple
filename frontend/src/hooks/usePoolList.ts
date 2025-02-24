@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { JsonRpcProvider } from '@ethersproject/providers'
+import { useWeb3React } from '@web3-react/core'
 import { Contract } from '@ethersproject/contracts'
 import { FACTORY_ADDRESS, FACTORY_ABI, POOL_ABI, TOKEN_PAIRS, FEE_TIERS } from '../constants/pools'
-import { NETWORK_CONFIG } from '../config/chain'
 
 interface Pool {
   address: string
@@ -15,16 +14,26 @@ interface Pool {
 }
 
 export function usePoolList() {
+  const { library, account, chainId } = useWeb3React()
   const [pools, setPools] = useState<Pool[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPools = async () => {
+      if (!library || !account) {
+        setIsLoading(false)
+        return
+      }
+
+      if (chainId !== 1337) {
+        setError('Please connect to Tura network')
+        setIsLoading(false)
+        return
+      }
+
       try {
-        const provider = new JsonRpcProvider(NETWORK_CONFIG.rpcUrl)
-        const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, provider)
-        
+        const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, library)
         const poolPromises = TOKEN_PAIRS.map(async (pair) => {
           const poolAddress = await factory.getPool(
             pair.token0,
@@ -37,7 +46,7 @@ export function usePoolList() {
             return null
           }
 
-          const pool = new Contract(poolAddress, POOL_ABI, provider)
+          const pool = new Contract(poolAddress, POOL_ABI, library)
           const [token0, token1, fee] = await Promise.all([
             pool.token0(),
             pool.token1(),
@@ -61,6 +70,7 @@ export function usePoolList() {
 
         const results = await Promise.all(poolPromises)
         const poolList = results.filter((pool): pool is Pool => pool !== null)
+
         setPools(poolList)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -72,7 +82,7 @@ export function usePoolList() {
     }
 
     fetchPools()
-  }, [])
+  }, [library])
 
   return { pools, isLoading, error } as const
 }
