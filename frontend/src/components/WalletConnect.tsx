@@ -11,6 +11,7 @@ export function WalletConnect() {
       options: {
         name: 'Tura DEX',
         shimDisconnect: true,
+        UNSTABLE_shimOnConnectSelectAccount: true,
       },
     }),
   })
