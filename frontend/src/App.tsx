@@ -30,13 +30,14 @@ const { chains, publicClient } = configureChains(
 )
 
 const config = createConfig({
-  autoConnect: true,
+  autoConnect: false, // Disable auto-connect to force new signature
   connectors: [
     new InjectedConnector({
       chains,
       options: {
         name: 'Tura DEX',
         shimDisconnect: true,
+        shimChainChangedDisconnect: true, // Handle chain changes properly
       },
     }),
   ],
