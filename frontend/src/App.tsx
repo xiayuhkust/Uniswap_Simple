@@ -6,6 +6,7 @@ import { SwapPage } from './pages/SwapPage'
 import { PoolPage } from './pages/PoolPage'
 import { theme } from './theme'
 import { Layout } from './components/Layout/Layout'
+import { CreatePoolPage } from './pages/CreatePoolPage'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<SwapPage />} />
                 <Route path="/pool" element={<PoolPage />} />
+                <Route path="/pool/create" element={<CreatePoolPage />} />
               </Routes>
             </Layout>
           </ErrorBoundary>
