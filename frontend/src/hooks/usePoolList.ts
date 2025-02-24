@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address, type Log, type PublicClient } from 'viem';
+import { parseAbi, type Address, type Log } from 'viem';
 import { getContract } from 'viem';
 import { usePoolVolume } from './usePoolVolume';
 
