@@ -11,6 +11,23 @@
   - Address: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
   - Expected: Contract code exists and is correct
 
+## Token Selection Tests
+- [ ] Token List Configuration
+  - Expected: All test tokens loaded correctly
+  - Expected: Token addresses match deployed contracts
+- [ ] Token Search Functionality
+  - Expected: Search by symbol works
+  - Expected: Search by name works
+  - Expected: Case-insensitive matching
+- [ ] Token Balance Display
+  - Expected: Balances update in real-time
+  - Expected: Correct decimal handling
+  - Expected: Loading states shown
+- [ ] Token Approval Management
+  - Expected: Approval transactions work
+  - Expected: Allowance updates correctly
+  - Expected: Error handling works
+
 ## Token Tests
 - [ ] WTURA balance check and wrapping test
   - Expected: Can wrap TURA to WTURA

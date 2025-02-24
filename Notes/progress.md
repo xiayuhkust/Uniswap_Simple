@@ -45,12 +45,12 @@
   - [x] TypeScript type declarations for window.ethereum
 
 #### Phase 4: Token Selection and Liquidity Management (Next)
-- [ ] Token Selection Interface
-  - [ ] Token list configuration
-  - [ ] Token search functionality
-  - [ ] Token balance display
-  - [ ] Token approval management
-  - [ ] Integration with contract tokens:
+- [x] Token Selection Interface
+  - [x] Token list configuration
+  - [x] Token search functionality
+  - [x] Token balance display
+  - [x] Token approval management
+  - [x] Integration with contract tokens:
     * WTURA: 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be
     * TT1: 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9
     * TT2: 0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122
