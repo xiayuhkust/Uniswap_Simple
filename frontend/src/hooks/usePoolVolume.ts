@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address } from 'viem';
-import { getContract } from 'viem';
+import { parseAbi, type Address, getContract } from 'viem';
 
 const PoolABI = parseAbi([
   'event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)'

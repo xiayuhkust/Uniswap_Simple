@@ -9,7 +9,7 @@ import { FEE_TIERS } from '../hooks/usePoolVolume';
 
 const FactoryABI = parseAbi([
   'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
-]);
+] as const);
 
 const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS as Address;
 
@@ -34,7 +34,7 @@ export const CreatePoolPage: FC = () => {
     const pool = await factory.read.getPool([
       token0.address as Address,
       token1.address as Address,
-      fee as number
+      fee
     ]);
 
     return pool !== '0x0000000000000000000000000000000000000000';
