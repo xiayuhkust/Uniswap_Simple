@@ -1,9 +1,8 @@
-import { ChakraProvider, Container, VStack, Heading, extendTheme, ThemeConfig, Text } from '@chakra-ui/react';
+import { ChakraProvider, Container, VStack, Heading, extendTheme, ThemeConfig } from '@chakra-ui/react';
 import { ConnectionProvider } from './providers/ConnectionProvider';
 import { WalletConnect } from './components/WalletConnect';
 import { TokenSelect } from './components/TokenSelect';
-import { FC, useState } from 'react';
-import { Token } from './types/token';
+import { FC } from 'react';
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
