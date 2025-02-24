@@ -78,3 +78,6 @@ export function usePoolList() {
 
   return { pools, isLoading, error } as const
 }
+
+// Export types for use in other components
+export type { Pool }
