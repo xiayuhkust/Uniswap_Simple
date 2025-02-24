@@ -32,6 +32,10 @@
 - Pool list with 7-day volume sorting
 - Token selection with search and balance display
 - Support for 0.05%, 0.3%, and 1% fee tiers
+- Dark theme optimizations:
+  * Enhanced text visibility with gray.100 colors
+  * Improved input field contrast
+  * Better button and border visibility
 
 ### Technical Stack
 - React 18 with TypeScript 5.3
