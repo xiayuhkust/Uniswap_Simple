@@ -6,8 +6,12 @@ import type { Position } from '../types/position'
 import { type FC } from 'react'
 
 export const PositionsList: FC = () => {
+  type PositionWithSymbols = Position & {
+    token0Symbol: string
+    token1Symbol: string
+  }
   const { active } = useWeb3React()
-  const { positions = [], isLoading = false } = usePositions() ?? {}
+  const { positions = [], isLoading = false } = usePositions() as { positions: PositionWithSymbols[], isLoading: boolean } ?? {}
 
   if (!active) return null
 
