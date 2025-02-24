@@ -2,7 +2,7 @@ import { Box, HStack, Text, Button, useColorModeValue, VStack, Image, useDisclos
 import { NumberInput } from './NumberInput'
 import type { Token } from '../types/token'
 import { TokenSelectModal } from './TokenSelectModal'
-import { WTURA_ADDRESS } from '../components/Swap/TokenList'
+import { WTURA_ADDRESS } from './Swap/TokenList'
 
 interface TokenSelectProps {
   value: string
