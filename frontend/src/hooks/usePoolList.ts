@@ -13,10 +13,6 @@ interface Pool {
   volume7d: bigint;
 }
 
-type GetPoolCreatedEventType = typeof FactoryABI[1];
-
-interface PoolCreatedEvent extends GetPoolCreatedEventType {}
-
 interface PoolCreatedLog extends Log {
   args: {
     token0: Address;
@@ -61,10 +57,10 @@ export const usePoolList = () => {
           logs.map(async (log) => {
             const { token0, token1, fee, pool: address } = log.args;
             return {
-              address,
-              token0,
-              token1,
-              fee: BigInt(fee),
+              address: address as Address,
+              token0: token0 as Address,
+              token1: token1 as Address,
+              fee,
               volume7d: 0n
             } as Pool;
           })
