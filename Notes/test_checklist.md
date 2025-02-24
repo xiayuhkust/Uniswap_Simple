@@ -12,18 +12,18 @@
   - Expected: Contract code exists and is correct
 
 ## Token Selection Tests
-- [ ] Token List Configuration
+- [x] Token List Configuration
   - Expected: All test tokens loaded correctly
   - Expected: Token addresses match deployed contracts
-- [ ] Token Search Functionality
+- [x] Token Search Functionality
   - Expected: Search by symbol works
   - Expected: Search by name works
   - Expected: Case-insensitive matching
-- [ ] Token Balance Display
+- [x] Token Balance Display
   - Expected: Balances update in real-time
   - Expected: Correct decimal handling
   - Expected: Loading states shown
-- [ ] Token Approval Management
+- [x] Token Approval Management
   - Expected: Approval transactions work
   - Expected: Allowance updates correctly
   - Expected: Error handling works

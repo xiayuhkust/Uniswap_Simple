@@ -1,8 +1,10 @@
+import React, { FC } from 'react';
 import { ChakraProvider, Container, VStack, Heading, extendTheme, ThemeConfig } from '@chakra-ui/react';
 import { ConnectionProvider } from './providers/ConnectionProvider';
 import { WalletConnect } from './components/WalletConnect';
-import { TokenSelect } from './components/TokenSelect';
-import { FC } from 'react';
+import { TabLayout } from './components/Layout/TabLayout';
+import { SwapInterface } from './components/Swap/SwapInterface';
+import { PoolList } from './components/Pool/PoolList';
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -21,8 +23,9 @@ const App: FC = () => {
           <VStack spacing={4} width="100%">
             <Heading textAlign="center" size="xl">Tura DEX</Heading>
             <WalletConnect />
-            <TokenSelect
-              onSelect={(token) => console.log('Selected token:', token)}
+            <TabLayout
+              swapContent={<SwapInterface />}
+              poolContent={<PoolList />}
             />
           </VStack>
         </Container>
