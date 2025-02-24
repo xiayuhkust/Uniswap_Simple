@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ChakraProvider, Container, VStack, Heading, extendTheme, ThemeConfig } from '@chakra-ui/react';
 import { ConnectionProvider } from './providers/ConnectionProvider';
 import { WalletConnect } from './components/WalletConnect';
