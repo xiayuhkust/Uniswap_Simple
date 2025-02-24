@@ -1,4 +1,5 @@
-import { Box, HStack, Image, Text, Button, useColorModeValue } from '@chakra-ui/react'
+import { Box, HStack, Text, Button, useColorModeValue, VStack } from '@chakra-ui/react'
+import { NumberInput } from './NumberInput'
 import type { Token } from '../types/token'
 
 interface TokenSelectProps {
