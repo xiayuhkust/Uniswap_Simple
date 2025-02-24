@@ -41,20 +41,50 @@
   - [x] Error handling with Chakra UI toasts
   - [x] Network switching detection
   - [x] Session management (24h timeout)
-  - [x] configureChains with publicProvider
+  - [x] configureChains with jsonRpcProvider
   - [x] TypeScript type declarations for window.ethereum
-- [ ] Basic swap interface
-  - [ ] Token selection component
-  - [ ] Amount input with validation
-  - [ ] Price impact display
-  - [ ] Slippage settings
-- [ ] Liquidity management
-  - [ ] Position creation form
-  - [ ] Fee tier selection
-  - [ ] Range selection
-  - [ ] Position management
-- [ ] Transaction confirmation
-- [ ] Add/remove liquidity interface
+
+#### Phase 4: Token Selection and Liquidity Management (Next)
+- [ ] Token Selection Interface
+  - [ ] Token list configuration
+  - [ ] Token search functionality
+  - [ ] Token balance display
+  - [ ] Token approval management
+  - [ ] Integration with contract tokens:
+    * WTURA: 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be
+    * TT1: 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9
+    * TT2: 0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122
+
+- [ ] Liquidity Management Interface
+  - [ ] Position Creation
+    * Fee tier selection (500/3000)
+    * Price range configuration
+    * Initial liquidity input
+    * Position preview
+  - [ ] Position Management
+    * View active positions
+    * Add liquidity to position
+    * Remove liquidity from position
+    * Collect fees
+  - [ ] Position Analytics
+    * Current price range
+    * Fee earnings
+    * Position value
+    * APR calculation
+
+#### Phase 5: Testing and Integration
+- [ ] Unit Tests
+  - [ ] Token selection components
+  - [ ] Liquidity management components
+  - [ ] Price calculation utilities
+- [ ] Integration Tests
+  - [ ] Contract interaction tests
+  - [ ] Transaction flow tests
+  - [ ] Error handling scenarios
+- [ ] End-to-End Testing
+  - [ ] Complete liquidity provision flow
+  - [ ] Complete withdrawal flow
+  - [ ] Fee collection process
 
 #### Phase 4: Testing and Documentation (In Progress)
 - [x] Test environment setup
