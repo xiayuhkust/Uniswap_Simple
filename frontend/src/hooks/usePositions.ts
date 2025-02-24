@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
-
-interface Position {
-  id: string
-  owner: string
-  token0: string
-  token1: string
-  fee: number
-  liquidity: bigint
-}
+import type { Position } from '../types/position'
 
 export function usePositions() {
   const { library, account } = useWeb3React()
