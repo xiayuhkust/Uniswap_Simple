@@ -1,4 +1,5 @@
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 import { publicProvider } from 'wagmi/providers/public'
 
 const turaChain = {
@@ -16,15 +17,23 @@ const turaChain = {
   }
 } as const
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
+const { publicClient } = configureChains(
   [turaChain],
   [publicProvider()]
 )
 
 const config = createConfig({
   autoConnect: true,
+  connectors: [
+    new InjectedConnector({
+      chains: [turaChain],
+      options: {
+        name: 'Tura DEX',
+        shimDisconnect: true,
+      },
+    }),
+  ],
   publicClient,
-  webSocketPublicClient,
 })
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {

@@ -12,29 +12,46 @@ import {
   Spinner,
   HStack,
   Button
-} from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
-import { usePoolList } from '../../../hooks/usePoolList';
-import { useMemo } from 'react';
-import { formatFeeAmount, formatTokenAmount, getTokenSymbol } from '../../../utils/format';
+} from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { usePoolList } from '../../../hooks/usePoolList'
+import { formatUnits } from 'viem'
+import { useMemo } from 'react'
+import { TEST_TOKENS } from '../../Swap/TokenList'
+
+function formatFeeAmount(fee: number): string {
+  return `${(fee / 10000).toFixed(2)}%`
+}
+
+function formatTokenAmount(amount: bigint): string {
+  return Number(formatUnits(amount, 18)).toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  })
+}
+
+function getTokenSymbol(address: string): string {
+  const token = TEST_TOKENS.find(t => t.address.toLowerCase() === address.toLowerCase())
+  return token?.symbol || `${address.slice(0, 6)}...${address.slice(-4)}`
+}
 
 export function PoolList() {
-  const navigate = useNavigate();
-  const { pools, isLoading } = usePoolList();
+  const navigate = useNavigate()
+  const { pools, isLoading } = usePoolList()
 
   const sortedPools = useMemo(() => 
-    [...pools].sort((a, b) => Number(b.volume7d - a.volume7d))
-  , [pools]);
+    [...(pools || [])].sort((a, b) => Number(b.volume7d - a.volume7d))
+  , [pools])
 
   if (isLoading) {
     return (
       <VStack spacing={4} width="100%">
         <Spinner />
       </VStack>
-    );
+    )
   }
 
-  if (pools.length === 0) {
+  if (!pools || pools.length === 0) {
     return (
       <VStack spacing={4} width="100%" p={8}>
         <Text color="gray.500">No pools found</Text>
@@ -45,7 +62,7 @@ export function PoolList() {
           Create First Pool
         </Button>
       </VStack>
-    );
+    )
   }
 
   return (
@@ -89,5 +106,5 @@ export function PoolList() {
         </Box>
       </VStack>
     </Box>
-  );
+  )
 }
