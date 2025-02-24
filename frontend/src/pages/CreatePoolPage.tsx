@@ -34,7 +34,7 @@ export const CreatePoolPage: FC = () => {
     const pool = await factory.read.getPool([
       token0.address as Address,
       token1.address as Address,
-      fee
+      fee as unknown as number
     ]);
 
     return pool !== '0x0000000000000000000000000000000000000000';

@@ -56,13 +56,14 @@ export const usePoolList = () => {
         const poolsWithVolume = await Promise.all(
           logs.map(async (log) => {
             const { token0, token1, fee, pool: address } = log.args;
-            return {
+            const pool: Pool = {
               address: address as Address,
               token0: token0 as Address,
               token1: token1 as Address,
-              fee,
+              fee: Number(fee),
               volume7d: 0n
-            } as Pool;
+            };
+            return pool;
           })
         );
 
