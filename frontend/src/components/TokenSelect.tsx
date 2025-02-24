@@ -1,4 +1,4 @@
-import { Box, HStack, Text, Button, useColorModeValue, VStack } from '@chakra-ui/react'
+import { Box, HStack, Text, Button, useColorModeValue, VStack, Image } from '@chakra-ui/react'
 import { NumberInput } from './NumberInput'
 import type { Token } from '../types/token'
 
@@ -10,6 +10,31 @@ interface TokenSelectProps {
   onTokenSelect?: (token: Token) => void
   isDisabled?: boolean
 }
+
+const WTURA_ADDRESS = '0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be'
+const TEST_TOKENS: Token[] = [
+  {
+    address: WTURA_ADDRESS,
+    symbol: 'WTURA',
+    name: 'Wrapped TURA',
+    decimals: 18,
+    logoURI: ''
+  },
+  {
+    address: '0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9',
+    symbol: 'TT1',
+    name: 'Test Token 1',
+    decimals: 18,
+    logoURI: ''
+  },
+  {
+    address: '0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122',
+    symbol: 'TT2',
+    name: 'Test Token 2',
+    decimals: 18,
+    logoURI: ''
+  }
+]
 
 export function TokenSelect({ 
   value,
@@ -34,16 +59,29 @@ export function TokenSelect({
             isDisabled={isDisabled}
           />
           <Button
-            onClick={() => onTokenSelect?.({
-              address: '0x...',
-              symbol: 'TOKEN',
-              decimals: 18,
-              name: 'Token',
-              logoURI: ''
-            })}
+            onClick={() => {
+              const token = TEST_TOKENS[0]
+              onTokenSelect?.(token)
+            }}
             isDisabled={isDisabled}
+            display="flex"
+            alignItems="center"
           >
-            {selectedToken ? selectedToken.symbol : 'Select Token'}
+            {selectedToken ? (
+              <HStack spacing={2}>
+                <Image 
+                  src={selectedToken.logoURI || 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png'} 
+                  boxSize="24px" 
+                  borderRadius="full"
+                  fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
+                />
+                <Text>
+                  {selectedToken.address === WTURA_ADDRESS ? 'TURA' : selectedToken.symbol}
+                </Text>
+              </HStack>
+            ) : (
+              'Select Token'
+            )}
           </Button>
         </HStack>
       </Box>
