@@ -15,6 +15,7 @@ export function usePoolList() {
   const { library } = useWeb3React()
   const [pools, setPools] = useState<Pool[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPools = async () => {
@@ -29,6 +30,10 @@ export function usePoolList() {
         const events = await factory.queryFilter(filter)
 
         const poolPromises = events.map(async (event) => {
+          if (!event.args?.pool) {
+            console.warn('Event args undefined for event:', event)
+            return null
+          }
           const pool = new Contract(event.args.pool, POOL_ABI, library)
           const [token0, token1, fee] = await Promise.all([
             pool.token0(),
@@ -48,10 +53,12 @@ export function usePoolList() {
           }
         })
 
-        const poolList = await Promise.all(poolPromises)
+        const poolList = (await Promise.all(poolPromises)).filter((pool): pool is Pool => pool !== null)
         setPools(poolList)
       } catch (error) {
-        console.error('Error fetching pools:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        setError(errorMessage)
+        console.error('Error fetching pools:', errorMessage)
       } finally {
         setIsLoading(false)
       }
@@ -60,5 +67,5 @@ export function usePoolList() {
     fetchPools()
   }, [library])
 
-  return { pools, isLoading }
+  return { pools, isLoading, error } as const
 }

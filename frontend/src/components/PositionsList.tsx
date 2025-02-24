@@ -2,10 +2,12 @@
 import { VStack, Box, Text, Spinner } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { usePositions } from '../hooks/usePositions'
+import type { Position } from '../types/position.js'
+import type { ReactElement } from 'react'
 
-export function PositionsList() {
+export function PositionsList(): ReactElement | null {
   const { active } = useWeb3React()
-  const { positions, isLoading } = usePositions()
+  const { positions = [], isLoading = false } = usePositions() ?? {}
 
   if (!active) return null
 
@@ -30,7 +32,7 @@ export function PositionsList() {
 
   return (
     <VStack spacing={4} align="stretch">
-      {positions.map((position) => (
+      {positions?.map((position: Position) => (
         <Box 
           key={position.tokenId}
           p={6}
