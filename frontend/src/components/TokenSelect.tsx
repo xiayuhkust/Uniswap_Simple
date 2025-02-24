@@ -57,12 +57,12 @@ export function TokenSelect({
                     borderRadius="full"
                     fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
                   />
-                  <Text fontWeight="medium" color="gray.100">
+                  <Text fontWeight="medium" color="gray.700">
                     {selectedToken.address === WTURA_ADDRESS ? 'TURA' : selectedToken.symbol}
                   </Text>
                 </HStack>
               ) : (
-                <Text color="gray.100">Select Token</Text>
+                <Text color="gray.700">Select Token</Text>
               )}
             </Button>
           </HStack>
