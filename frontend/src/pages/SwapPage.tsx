@@ -1,5 +1,5 @@
 import { VStack } from '@chakra-ui/react'
-import { SwapInterface } from '../components/SwapInterface'
+import { SwapInterface } from '../components/Swap/SwapInterface'
 
 export function SwapPage() {
   return (
