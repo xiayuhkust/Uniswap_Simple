@@ -47,6 +47,7 @@ export function CreatePoolPage() {
             width="100%"
             variant="uniswap"
             isDisabled={!token0 || !token1 || !fee}
+            _hover={{ opacity: 0.8 }}
           >
             Create Pool
           </Button>
