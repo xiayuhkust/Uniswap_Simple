@@ -43,6 +43,7 @@ const config = createConfig({
   ],
   publicClient,
 })
+})
 
 function App() {
   return (
