@@ -32,7 +32,7 @@ const { chains, publicClient } = configureChains(
 const storage = createStorage({ storage: window.localStorage })
 
 const config = createConfig({
-  autoConnect: true, // Enable automatic reconnection
+  autoConnect: false, // Disable auto-connect to force new signature
   connectors: [
     new InjectedConnector({
       chains,
