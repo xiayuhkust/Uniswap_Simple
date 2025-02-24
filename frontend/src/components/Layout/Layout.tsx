@@ -8,14 +8,11 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const location = useLocation()
-  const activeBg = useColorModeValue('blue.50', 'blue.900')
-  const hoverBg = useColorModeValue('gray.100', 'gray.700')
-
   const isActive = (path: string) => location.pathname === path
 
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Box bg="white" borderBottom="1px" borderColor="gray.200" py={4}>
+    <Box minH="100vh" bg="white">
+      <Box bg="white" borderBottom="1px" borderColor="uniswap.gray.200" py={4}>
         <Container maxW="container.xl">
           <Flex align="center">
             <Flex gap={4}>
@@ -25,9 +22,10 @@ export function Layout({ children }: LayoutProps) {
                 fontWeight="medium"
                 px={4}
                 py={2}
-                borderRadius="md"
-                bg={isActive('/') ? activeBg : 'transparent'}
-                _hover={{ bg: hoverBg }}
+                borderRadius="16px"
+                color="black"
+                bg={isActive('/') ? 'uniswap.gray.100' : 'transparent'}
+                _hover={{ bg: 'uniswap.gray.100' }}
               >
                 Swap
               </ChakraLink>
@@ -37,9 +35,10 @@ export function Layout({ children }: LayoutProps) {
                 fontWeight="medium"
                 px={4}
                 py={2}
-                borderRadius="md"
-                bg={isActive('/pool') ? activeBg : 'transparent'}
-                _hover={{ bg: hoverBg }}
+                borderRadius="16px"
+                color="black"
+                bg={isActive('/pool') ? 'uniswap.gray.100' : 'transparent'}
+                _hover={{ bg: 'uniswap.gray.100' }}
               >
                 Pool
               </ChakraLink>

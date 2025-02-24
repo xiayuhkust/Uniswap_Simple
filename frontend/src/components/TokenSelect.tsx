@@ -26,8 +26,8 @@ export function TokenSelect({
   return (
     <>
       <Box width="100%">
-        {label && <Text fontSize="sm" color="gray.400" mb={2}>{label}</Text>}
-        <Box p={4} borderRadius="xl" borderWidth="1px" borderColor="whiteAlpha.300">
+        {label && <Text fontSize="sm" color="black" mb={2}>{label}</Text>}
+        <Box p={4} borderRadius="16px" borderWidth="1px" borderColor="uniswap.gray.200">
           <HStack spacing={4}>
             <Box flex={1}>
               <NumberInput
@@ -35,16 +35,17 @@ export function TokenSelect({
                 onChange={onChange}
                 placeholder="0.0"
                 isDisabled={isDisabled}
+                color="black"
               />
             </Box>
             <Button
               onClick={onOpen}
               isDisabled={isDisabled}
               variant="ghost"
-              _hover={{ bg: 'whiteAlpha.200' }}
+              _hover={{ bg: 'uniswap.gray.100' }}
               px={4}
               height="40px"
-              color="gray.100"
+              color="black"
             >
               {selectedToken ? (
                 <HStack spacing={2}>

@@ -28,15 +28,12 @@ export function TokenSelectModal({
   onSelect,
   selectedToken
 }: TokenSelectModalProps) {
-  const bgColor = useColorModeValue('gray.50', 'gray.700')
-  const hoverBgColor = useColorModeValue('gray.100', 'gray.600')
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Select Token</ModalHeader>
-        <ModalCloseButton />
+      <ModalContent bg="white">
+        <ModalHeader color="black">Select Token</ModalHeader>
+        <ModalCloseButton color="black" />
         <ModalBody pb={6}>
           <VStack spacing={2} align="stretch">
             {TEST_TOKENS.map((token) => (
@@ -50,8 +47,9 @@ export function TokenSelectModal({
                 height="auto"
                 py={2}
                 justifyContent="flex-start"
-                bg={token.address === selectedToken?.address ? bgColor : 'transparent'}
-                _hover={{ bg: hoverBgColor }}
+                bg={token.address === selectedToken?.address ? 'uniswap.gray.100' : 'transparent'}
+                _hover={{ bg: 'uniswap.gray.100' }}
+                color="black"
               >
                 <HStack spacing={3}>
                   <Image
@@ -64,7 +62,7 @@ export function TokenSelectModal({
                     <Text fontWeight="medium">
                       {token.address === WTURA_ADDRESS ? 'TURA' : token.symbol}
                     </Text>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text fontSize="sm" color="uniswap.gray.500">
                       {token.name}
                     </Text>
                   </VStack>

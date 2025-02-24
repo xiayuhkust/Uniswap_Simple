@@ -51,11 +51,11 @@ export function SwapInterface() {
   return (
     <Box 
       p={6} 
-      borderRadius="xl" 
+      borderRadius="16px" 
       bg="white" 
       boxShadow="xl"
       border="1px"
-      borderColor="gray.200"
+      borderColor="uniswap.gray.200"
     >
       <VStack spacing={4}>
         <TokenSelect
@@ -71,6 +71,8 @@ export function SwapInterface() {
           aria-label="Switch tokens"
           icon={<ArrowDownIcon />}
           variant="ghost"
+          color="uniswap.gray.500"
+          _hover={{ bg: 'uniswap.gray.100' }}
           onClick={() => {
             const tempToken = inputToken
             setInputToken(outputToken)
@@ -96,7 +98,7 @@ export function SwapInterface() {
             onClick={() => connect()} 
             width="100%" 
             size="lg"
-            colorScheme="blue"
+            variant="uniswap"
           >
             Connect Wallet
           </Button>
@@ -104,7 +106,7 @@ export function SwapInterface() {
           <Button
             width="100%"
             size="lg"
-            colorScheme="blue"
+            variant="uniswap"
             isDisabled={!inputAmount || !outputAmount || !inputToken || !outputToken}
             onClick={handleSwap}
           >
