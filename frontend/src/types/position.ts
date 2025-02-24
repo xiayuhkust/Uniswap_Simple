@@ -11,8 +11,3 @@ export interface Position {
   amount0: BigNumber
   amount1: BigNumber
 }
-
-export type PositionWithSymbols = Position & {
-  token0Symbol: string
-  token1Symbol: string
-}
