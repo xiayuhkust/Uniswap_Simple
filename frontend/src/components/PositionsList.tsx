@@ -3,13 +3,13 @@ import { VStack, Box, Text, Spinner } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { usePositions } from '../hooks/usePositions'
 import type { Position } from '../types/position.js'
-import type { JSX } from 'react'
+import type { ReactNode } from 'react'
 
-export function PositionsList(): JSX.Element {
+export function PositionsList(): ReactNode {
   const { active } = useWeb3React()
   const { positions = [], isLoading = false } = usePositions() ?? {}
 
-  if (!active) return null as JSX.Element
+  if (!active) return null
 
   if (isLoading) {
     return (
