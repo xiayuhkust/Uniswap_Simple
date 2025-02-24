@@ -45,8 +45,9 @@ export function TokenSelect({
               _hover={{ bg: 'uniswap.gray.100' }}
               px={4}
               height="40px"
-              color="black"
+              color="gray.700"
               borderColor="uniswap.gray.200"
+              _active={{ bg: 'uniswap.gray.100' }}
             >
               {selectedToken ? (
                 <HStack spacing={2}>
