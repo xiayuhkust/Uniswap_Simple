@@ -14,14 +14,20 @@ interface Pool {
 }
 
 export function usePoolList() {
-  const { library } = useWeb3React()
+  const { library, account, chainId } = useWeb3React()
   const [pools, setPools] = useState<Pool[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPools = async () => {
-      if (!library) {
+      if (!library || !account) {
+        setIsLoading(false)
+        return
+      }
+
+      if (chainId !== 1337) {
+        setError('Please connect to Tura network')
         setIsLoading(false)
         return
       }
