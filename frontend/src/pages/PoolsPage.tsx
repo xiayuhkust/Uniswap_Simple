@@ -13,10 +13,10 @@ export function PoolsPage() {
       <VStack spacing={6} align="stretch">
         <Box p={6} bg="whiteAlpha.100" borderRadius="xl">
           <VStack spacing={4} align="stretch">
-            <Text fontSize="2xl" fontWeight="bold" color="white">
+            <Text fontSize="2xl" fontWeight="bold" color="gray.100">
               Pools Overview
             </Text>
-            <Text color="whiteAlpha.700">
+            <Text color="gray.300">
               {active 
                 ? isLoading 
                   ? 'Loading pools...' 

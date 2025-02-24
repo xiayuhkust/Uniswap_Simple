@@ -19,9 +19,25 @@ export const theme = extendTheme({
     Button: {
       baseStyle: {
         fontWeight: 'bold',
+        color: 'gray.100',
       },
       defaultProps: {
         colorScheme: 'blue',
+      },
+    },
+    Input: {
+      defaultProps: {
+        focusBorderColor: 'blue.500',
+      },
+      variants: {
+        outline: {
+          field: {
+            color: 'gray.100',
+            _placeholder: {
+              color: 'gray.400',
+            },
+          },
+        },
       },
     },
   },
