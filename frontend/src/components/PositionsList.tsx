@@ -3,7 +3,7 @@ import { VStack, Box, Text, Spinner } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { usePositions } from '../hooks/usePositions'
 import type { Position } from '../types/position'
-import { type FC } from 'react'
+import type { FC } from 'react'
 
 export const PositionsList: FC = () => {
   const { active } = useWeb3React()
