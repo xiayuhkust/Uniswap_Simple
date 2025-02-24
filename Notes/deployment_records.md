@@ -28,14 +28,16 @@
 ## Frontend Implementation (2025-02-24)
 ### Core Features
 - Separate pages for Swap and Pool functionality
-- Wallet connection in top right corner
+- Wallet connection with proper persistence and signature handling
 - Pool list with 7-day volume sorting
 - Token selection with search and balance display
 - Support for 0.05%, 0.3%, and 1% fee tiers
-- Dark theme optimizations:
-  * Enhanced text visibility with gray.100 colors
-  * Improved input field contrast
-  * Better button and border visibility
+- UI optimizations:
+  * Uniswap color scheme with vibrant pink buttons
+  * Enhanced text visibility with black text colors
+  * Improved input field contrast with gray.700 placeholders
+  * Consistent border radius (16px) and spacing
+  * Better button hover effects and visibility
 
 ### Technical Stack
 - React 18 with TypeScript 5.3
