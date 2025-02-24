@@ -32,7 +32,7 @@ export const PositionsList: FC = () => {
 
   return (
     <VStack spacing={4} align="stretch">
-      {positions?.map((position) => (
+      {(positions as Position[])?.map((position: Position) => (
         <Box 
           key={position.tokenId}
           p={6}
