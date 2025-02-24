@@ -7,7 +7,7 @@ import { type FC } from 'react'
 
 export const PositionsList: FC = () => {
   const { active } = useWeb3React()
-  const { positions = [], isLoading = false } = usePositions() ?? {}
+  const { positions = [] as Position[], isLoading = false } = usePositions() ?? {}
 
   if (!active) return null
 
