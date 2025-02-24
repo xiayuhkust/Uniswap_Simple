@@ -3,12 +3,12 @@ import { VStack, IconButton, Text, Button, useToast } from '@chakra-ui/react'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
 import { useAccount, useConnect } from 'wagmi'
-import { InjectedConnector } from '@wagmi/core'
+import { injected } from 'wagmi/connectors'
 
 export function SwapInterface() {
   const { isConnected: active } = useAccount()
   const { connect: connectWallet } = useConnect({
-    connector: new InjectedConnector()
+    connector: injected()
   })
   const [inputAmount, setInputAmount] = useState<string>('')
   const [outputAmount, setOutputAmount] = useState<string>('')
