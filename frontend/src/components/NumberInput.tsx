@@ -24,7 +24,7 @@ export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
       fontWeight="medium"
       color="black"
       placeholder="0.0"
-      _placeholder={{ color: 'gray.600' }}
+      _placeholder={{ color: 'gray.700' }}
       {...props}
     />
   )
