@@ -56,7 +56,9 @@ export function usePoolList() {
         const poolList = (await Promise.all(poolPromises)).filter((pool): pool is Pool => pool !== null)
         setPools(poolList)
       } catch (error) {
-        console.error('Error fetching pools:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        setError(errorMessage)
+        console.error('Error fetching pools:', errorMessage)
       } finally {
         setIsLoading(false)
       }
@@ -65,5 +67,5 @@ export function usePoolList() {
     fetchPools()
   }, [library])
 
-  return { pools, isLoading }
+  return { pools, isLoading, error }
 }
