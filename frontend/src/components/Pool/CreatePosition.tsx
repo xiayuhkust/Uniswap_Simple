@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { VStack, Button, Text, Box } from '@chakra-ui/react';
 import { TokenSelect } from '../TokenSelect';
 import { Token } from '../../types/token';
