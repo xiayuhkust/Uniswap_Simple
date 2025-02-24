@@ -37,6 +37,7 @@ export function CreatePoolPage() {
                   variant={fee === feeOption ? 'uniswap' : 'outline'}
                   color={fee === feeOption ? 'white' : 'gray.700'}
                   onClick={() => setFee(feeOption)}
+                  _hover={fee === feeOption ? { opacity: 0.8 } : { bg: 'uniswap.gray.100' }}
                 >
                   {feeOption}
                 </Button>
