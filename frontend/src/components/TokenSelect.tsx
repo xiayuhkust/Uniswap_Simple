@@ -2,7 +2,7 @@ import { Box, HStack, Text, Button, useColorModeValue, VStack, Image, useDisclos
 import { NumberInput } from './NumberInput'
 import type { Token } from '../types/token'
 import { TokenSelectModal } from './TokenSelectModal'
-import { WTURA_ADDRESS } from './Swap/TokenList'
+import { WTURA_ADDRESS } from '../components/Swap/TokenList'
 
 interface TokenSelectProps {
   value: string
@@ -22,8 +22,8 @@ export function TokenSelect({
   isDisabled 
 }: TokenSelectProps) {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const bgColor = useColorModeValue('gray.100', 'whiteAlpha.200')
-  const hoverBgColor = useColorModeValue('gray.200', 'whiteAlpha.300')
+  const buttonBgColor = useColorModeValue('gray.100', 'whiteAlpha.200')
+  const buttonHoverBgColor = useColorModeValue('gray.200', 'whiteAlpha.300')
 
   return (
     <>
@@ -42,6 +42,8 @@ export function TokenSelect({
               isDisabled={isDisabled}
               display="flex"
               alignItems="center"
+              bg={buttonBgColor}
+              _hover={{ bg: buttonHoverBgColor }}
             >
               {selectedToken ? (
                 <HStack spacing={2}>

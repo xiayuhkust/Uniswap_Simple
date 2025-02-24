@@ -13,7 +13,7 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import type { Token } from '../types/token'
-import { WTURA_ADDRESS, TEST_TOKENS } from './Swap/TokenList'
+import { WTURA_ADDRESS, TEST_TOKENS } from '../components/Swap/TokenList'
 
 interface TokenSelectModalProps {
   isOpen: boolean
