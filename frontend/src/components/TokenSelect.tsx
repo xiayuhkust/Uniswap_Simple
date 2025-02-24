@@ -2,6 +2,7 @@ import { Box, HStack, Text, Button, useColorModeValue, VStack, Image, useDisclos
 import { NumberInput } from './NumberInput'
 import type { Token } from '../types/token'
 import { TokenSelectModal } from './TokenSelectModal'
+import { WTURA_ADDRESS } from './Swap/TokenList'
 
 interface TokenSelectProps {
   value: string
@@ -11,8 +12,6 @@ interface TokenSelectProps {
   onTokenSelect?: (token: Token) => void
   isDisabled?: boolean
 }
-
-import { WTURA_ADDRESS } from './Swap/TokenList'
 
 export function TokenSelect({ 
   value,
