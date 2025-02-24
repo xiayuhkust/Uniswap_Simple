@@ -9,7 +9,7 @@ export function PositionsList(): JSX.Element {
   const { active } = useWeb3React()
   const { positions = [], isLoading = false } = usePositions() ?? {}
 
-  if (!active) return null
+  if (!active) return null as JSX.Element
 
   if (isLoading) {
     return (
