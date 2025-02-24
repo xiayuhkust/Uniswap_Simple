@@ -67,5 +67,5 @@ export function usePoolList() {
     fetchPools()
   }, [library])
 
-  return { pools, isLoading, error }
+  return { pools, isLoading, error } as const
 }
