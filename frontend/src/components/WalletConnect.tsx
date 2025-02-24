@@ -1,15 +1,31 @@
 import { Button, Alert, AlertIcon, VStack } from '@chakra-ui/react'
-import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useNetwork, useSwitchNetwork, useConfig } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 
 export function WalletConnect() {
   const { address, isConnected } = useAccount()
-  const { connect, isLoading: isConnecting } = useConnect({
-    connector: new InjectedConnector()
+  const config = useConfig()
+  const { connect, isLoading: isConnecting, error } = useConnect({
+    connector: new InjectedConnector({
+      chains: config.chains,
+      options: {
+        name: 'Tura DEX',
+        shimDisconnect: true,
+      },
+    }),
   })
   const { disconnect } = useDisconnect()
   const { chain } = useNetwork()
   const { switchNetwork, isLoading: isSwitching } = useSwitchNetwork()
+
+  if (error) {
+    return (
+      <Alert status="error" borderRadius="md">
+        <AlertIcon />
+        {error.message}
+      </Alert>
+    )
+  }
 
   if (isConnected && address) {
     if (chain?.id !== 1337) {
@@ -22,7 +38,7 @@ export function WalletConnect() {
           <Button
             onClick={() => switchNetwork?.(1337)}
             size="md"
-            colorScheme="orange"
+            variant="uniswap"
             isLoading={isSwitching}
           >
             Switch Network
@@ -35,7 +51,8 @@ export function WalletConnect() {
       <Button
         onClick={() => disconnect()}
         size="md"
-        variant="outline"
+        variant="uniswap"
+        _hover={{ opacity: 0.8 }}
       >
         {`${address.slice(0, 6)}...${address.slice(-4)}`}
       </Button>
@@ -46,7 +63,7 @@ export function WalletConnect() {
     <Button
       onClick={() => connect()}
       size="md"
-      colorScheme="blue"
+      variant="uniswap"
       isLoading={isConnecting}
     >
       Connect Wallet

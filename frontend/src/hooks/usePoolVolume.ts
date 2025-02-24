@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address, getContract } from 'viem';
+import { parseAbi, type Address } from 'viem';
 
 const PoolABI = parseAbi([
   'event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)'
@@ -25,12 +25,6 @@ export const usePoolVolume = (poolAddress: Address) => {
 
     const startTime = BigInt(Math.floor(Date.now() / 1000) - 7 * 24 * 60 * 60); // 7 days ago
     if (!publicClient) return;
-
-    getContract({
-      address: poolAddress,
-      abi: PoolABI,
-      client: publicClient
-    });
 
     const fetchVolume = async () => {
       try {
