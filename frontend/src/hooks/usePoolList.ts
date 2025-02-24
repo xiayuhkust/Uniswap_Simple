@@ -29,6 +29,10 @@ export function usePoolList() {
         const events = await factory.queryFilter(filter)
 
         const poolPromises = events.map(async (event) => {
+          if (!event.args?.pool) {
+            console.warn('Event args undefined for event:', event)
+            return null
+          }
           const pool = new Contract(event.args.pool, POOL_ABI, library)
           const [token0, token1, fee] = await Promise.all([
             pool.token0(),
@@ -48,7 +52,7 @@ export function usePoolList() {
           }
         })
 
-        const poolList = await Promise.all(poolPromises)
+        const poolList = (await Promise.all(poolPromises)).filter((pool): pool is Pool => pool !== null)
         setPools(poolList)
       } catch (error) {
         console.error('Error fetching pools:', error)
