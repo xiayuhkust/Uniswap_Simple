@@ -32,7 +32,7 @@ export function PositionsList(): React.ReactElement | null {
 
   return (
     <VStack spacing={4} align="stretch">
-      {positions?.map((position: Position): ReactElement => (
+      {positions?.map((position: Position): React.ReactElement => (
         <Box 
           key={position.tokenId}
           p={6}
