@@ -7,7 +7,7 @@ import { type FC } from 'react'
 
 export const PositionsList: FC = () => {
   const { active } = useWeb3React()
-  const { positions = [], isLoading = false } = usePositions() ?? {}
+  const { positions = [], isLoading = false } = usePositions() ?? { positions: [] as Position[], isLoading: false }
 
   if (!active) return null
 
@@ -32,7 +32,7 @@ export const PositionsList: FC = () => {
 
   return (
     <VStack spacing={4} align="stretch">
-      {typedPositions?.map((position: Position) => (
+      {positions?.map((position) => (
         <Box 
           key={position.tokenId}
           p={6}
