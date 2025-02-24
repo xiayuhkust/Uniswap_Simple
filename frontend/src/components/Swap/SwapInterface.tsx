@@ -59,7 +59,7 @@ export function SwapInterface() {
     <VStack spacing={4} width="100%">
       <TokenSelect
         value={inputAmount}
-        onChange={setInputAmount}
+        onChange={(value: string) => setInputAmount(value)}
         label="You Pay"
         selectedToken={inputToken}
         onTokenSelect={(token: Token) => setInputToken(token)}
@@ -83,7 +83,7 @@ export function SwapInterface() {
       
       <TokenSelect
         value={outputAmount}
-        onChange={setOutputAmount}
+        onChange={(value: string) => setOutputAmount(value)}
         label="You Receive"
         selectedToken={outputToken}
         onTokenSelect={(token: Token) => setOutputToken(token)}
