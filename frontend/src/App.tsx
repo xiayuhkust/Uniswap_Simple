@@ -37,7 +37,7 @@ const config = createConfig({
       options: {
         name: 'Tura DEX',
         shimDisconnect: true,
-        shimChainChangedDisconnect: true, // Handle chain changes properly
+        shimChainChanged: true, // Handle chain changes properly
       },
     }),
   ],
