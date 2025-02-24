@@ -10,9 +10,9 @@ export function CreatePoolPage() {
 
   return (
     <VStack spacing={4} maxW="container.sm" mx="auto" py={8}>
-      <Box width="100%" p={4} borderRadius="xl" borderWidth="1px">
+      <Box width="100%" p={4} borderRadius="16px" borderWidth="1px" borderColor="uniswap.gray.200">
         <VStack spacing={4}>
-          <Text fontSize="xl" fontWeight="bold">Create New Pool</Text>
+          <Text fontSize="xl" fontWeight="bold" color="black">Create New Pool</Text>
           <TokenSelect
             value=""
             onChange={() => {}}
@@ -28,13 +28,14 @@ export function CreatePoolPage() {
             onTokenSelect={setToken1}
           />
           <Box width="100%">
-            <Text mb={2}>Fee Tier</Text>
+            <Text mb={2} color="black">Fee Tier</Text>
             <VStack spacing={2}>
               {['0.05%', '0.3%', '1%'].map((feeOption) => (
                 <Button
                   key={feeOption}
                   width="100%"
-                  variant={fee === feeOption ? 'solid' : 'outline'}
+                  variant={fee === feeOption ? 'uniswap' : 'outline'}
+                  color={fee === feeOption ? 'white' : 'gray.700'}
                   onClick={() => setFee(feeOption)}
                 >
                   {feeOption}
@@ -44,7 +45,7 @@ export function CreatePoolPage() {
           </Box>
           <Button
             width="100%"
-            colorScheme="blue"
+            variant="uniswap"
             isDisabled={!token0 || !token1 || !fee}
           >
             Create Pool
