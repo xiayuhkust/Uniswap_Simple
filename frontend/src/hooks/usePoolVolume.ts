@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Contract } from 'ethers';
-import { useProvider } from 'wagmi';
-import { BigNumber } from 'ethers';
+import { Contract, BigNumber } from 'ethers';
+import { usePublicClient } from 'wagmi';
 import PoolABI from '../abi/Pool.json';
+
+interface SwapEvent {
+  args: {
+    amount0: BigNumber;
+    amount1: BigNumber;
+    sender: string;
+    recipient: string;
+  };
+}
 
 export const FEE_TIERS = {
   LOW: 500,    // 0.05%
@@ -13,7 +21,7 @@ export const FEE_TIERS = {
 export const usePoolVolume = (poolAddress: string) => {
   const [volume, setVolume] = useState<BigNumber>(BigNumber.from(0));
   const [isLoading, setIsLoading] = useState(true);
-  const provider = useProvider();
+  const provider = usePublicClient();
 
   useEffect(() => {
     if (!poolAddress) {
@@ -27,7 +35,7 @@ export const usePoolVolume = (poolAddress: string) => {
     const fetchVolume = async () => {
       try {
         setIsLoading(true);
-        const events = await pool.queryFilter('Swap', startTime, 'latest');
+        const events = await pool.queryFilter('Swap', startTime, 'latest') as SwapEvent[];
         const totalVolume = events.reduce((acc, event) => {
           const amount0 = BigNumber.from(event.args.amount0);
           const amount1 = BigNumber.from(event.args.amount1);
@@ -47,7 +55,7 @@ export const usePoolVolume = (poolAddress: string) => {
     fetchVolume();
 
     // Subscribe to new swap events
-    const handleSwap = (sender: string, recipient: string, amount0: BigNumber, amount1: BigNumber) => {
+    const handleSwap = (_: string, __: string, amount0: BigNumber, amount1: BigNumber) => {
       setVolume(prev => prev
         .add(BigNumber.from(amount0).abs())
         .add(BigNumber.from(amount1).abs())
