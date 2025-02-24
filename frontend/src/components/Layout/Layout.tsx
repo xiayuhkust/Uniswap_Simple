@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Link as ChakraLink, Spacer, useColorModeValue } from '@chakra-ui/react'
+import { Box, Container, Flex, Link as ChakraLink, Spacer } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { WalletConnect } from '../WalletConnect'
 
