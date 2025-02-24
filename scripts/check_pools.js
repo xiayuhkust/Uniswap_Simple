@@ -28,6 +28,19 @@ async function main() {
         console.log(`No pool found for ${pair.name}`);
       }
     }
+    
+    // Check for PoolCreated events
+    const filter = factory.filters.PoolCreated();
+    const events = await factory.queryFilter(filter);
+    
+    console.log(`\nFound ${events.length} pools in events:`);
+    for (const event of events) {
+      console.log(`Pool address: ${event.args.pool}`);
+      console.log(`Token0: ${event.args.token0}`);
+      console.log(`Token1: ${event.args.token1}`);
+      console.log(`Fee: ${event.args.fee}`);
+      console.log('---');
+    }
   } catch (error) {
     console.error('Error:', error);
   }

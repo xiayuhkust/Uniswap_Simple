@@ -37,7 +37,7 @@ export const PoolList: FC = () => {
               <Tbody>
                 {pools.map((pool) => (
                   <Tr key={pool.address}>
-                    <Td>{`${pool.token0.slice(0, 6)}...${pool.token0.slice(-4)} / ${pool.token1.slice(0, 6)}...${pool.token1.slice(-4)}`}</Td>
+                    <Td>{`${pool.token0Symbol} / ${pool.token1Symbol}`}</Td>
                     <Td>{(Number(pool.fee) / 10000).toFixed(2)}%</Td>
                     <Td>{formatUnits(pool.volume7d, 18)}</Td>
                     <Td>
