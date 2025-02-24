@@ -17,6 +17,7 @@ export const CreatePoolPage: FC = () => {
   const [token0, setToken0] = useState<Token>();
   const [token1, setToken1] = useState<Token>();
   const [fee, setFee] = useState<number>(FEE_TIERS.MEDIUM);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
   const publicClient = usePublicClient();
@@ -40,31 +41,52 @@ export const CreatePoolPage: FC = () => {
   };
 
   const handleCreate = async () => {
-    if (!token0 || !token1) {
+    try {
+      if (!token0 || !token1) {
+        toast({
+          title: 'Error',
+          description: 'Please select both tokens',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        });
+        return;
+      }
+
+      setIsLoading(true);
+      const isDuplicate = await checkDuplicate();
+      if (isDuplicate) {
+        toast({
+          title: 'Error',
+          description: 'Pool already exists',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        });
+        return;
+      }
+
+      // TODO: Create pool using factory contract
+      toast({
+        title: 'Success',
+        description: 'Pool created successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true
+      });
+      navigate('/pool');
+    } catch (error) {
+      console.error('Error creating pool:', error);
       toast({
         title: 'Error',
-        description: 'Please select both tokens',
+        description: error instanceof Error ? error.message : 'Failed to create pool',
         status: 'error',
         duration: 3000,
         isClosable: true
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    const isDuplicate = await checkDuplicate();
-    if (isDuplicate) {
-      toast({
-        title: 'Error',
-        description: 'Pool already exists',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      });
-      return;
-    }
-
-    // TODO: Create pool using factory contract
-    navigate('/pool');
   };
 
   return (
@@ -98,9 +120,10 @@ export const CreatePoolPage: FC = () => {
           colorScheme="blue" 
           width="100%"
           onClick={handleCreate}
-          isDisabled={!token0 || !token1}
+          isDisabled={!token0 || !token1 || isLoading}
+          isLoading={isLoading}
         >
-          Create Pool
+          {isLoading ? 'Creating Pool...' : 'Create Pool'}
         </Button>
       </VStack>
     </Box>
