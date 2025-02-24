@@ -5,13 +5,12 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 export function WalletConnect() {
   const { address, isConnected } = useAccount()
   const config = useConfig()
-  const { connect, isLoading: isConnecting, error } = useConnect({
+  const { connect, isLoading: isConnecting } = useConnect({
     connector: new InjectedConnector({
       chains: config.chains,
       options: {
         name: 'Tura DEX',
         shimDisconnect: true,
-        UNSTABLE_shimOnConnectSelectAccount: true,
       },
     }),
   })
@@ -20,14 +19,6 @@ export function WalletConnect() {
   const { switchNetwork, isLoading: isSwitching } = useSwitchNetwork()
 
   if (isConnected && address) {
-    if (error) {
-      return (
-        <Alert status="error" borderRadius="md">
-          <AlertIcon />
-          {error.message}
-        </Alert>
-      )
-    }
 
     if (chain?.id !== 1337) {
       return (
