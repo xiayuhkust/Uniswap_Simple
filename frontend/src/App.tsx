@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { WagmiConfig, createConfig, configureChains, createStorage } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
-import { publicProvider } from 'wagmi/providers/public'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { SwapPage } from './pages/SwapPage'
 import { PoolPage } from './pages/PoolPage'
 import { CreatePoolPage } from './pages/CreatePoolPage'
@@ -26,7 +26,13 @@ const turaChain = {
 
 const { chains, publicClient } = configureChains(
   [turaChain],
-  [publicProvider()]
+  [
+    jsonRpcProvider({
+      rpc: () => ({
+        http: 'https://rpc-beta1.turablockchain.com',
+      }),
+    }),
+  ]
 )
 
 const storage = createStorage({ storage: window.localStorage })
