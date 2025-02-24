@@ -2,12 +2,11 @@ import { useState } from 'react'
 import { VStack, IconButton, Text, Button, useToast } from '@chakra-ui/react'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
-// NumberInput is handled by TokenSelect component
 import { useAccount, useConnect } from 'wagmi'
-import { InjectedConnector } from 'wagmi/connectors/injected'
+import { InjectedConnector } from '@wagmi/core'
 
 export function SwapInterface() {
-  const { address: account, isConnected: active } = useAccount()
+  const { isConnected: active } = useAccount()
   const { connect: connectWallet } = useConnect({
     connector: new InjectedConnector()
   })
@@ -62,7 +61,7 @@ export function SwapInterface() {
         onChange={(value: string) => setInputAmount(value)}
         label="You Pay"
         selectedToken={inputToken}
-        onTokenSelect={(token: Token) => setInputToken(token)}
+        onTokenSelect={setInputToken}
         isDisabled={!active}
       />
       
@@ -83,10 +82,10 @@ export function SwapInterface() {
       
       <TokenSelect
         value={outputAmount}
-        onChange={(value: string) => setOutputAmount(value)}
+        onChange={setOutputAmount}
         label="You Receive"
         selectedToken={outputToken}
-        onTokenSelect={(token: Token) => setOutputToken(token)}
+        onTokenSelect={setOutputToken}
         isDisabled={!active}
       />
 
