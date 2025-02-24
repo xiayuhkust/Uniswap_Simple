@@ -3,9 +3,8 @@ import { VStack, Box, Text, Spinner } from '@chakra-ui/react'
 import { useWeb3React } from '@web3-react/core'
 import { usePositions } from '../hooks/usePositions'
 import type { Position } from '../types/position'
-import { type PropsWithChildren } from 'react'
 
-export function PositionsList(_props: PropsWithChildren<unknown>) {
+export function PositionsList() {
   const { active } = useWeb3React()
   const { positions = [], isLoading = false } = usePositions() ?? {}
 
