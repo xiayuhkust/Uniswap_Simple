@@ -1,4 +1,5 @@
 import { Input, InputProps } from '@chakra-ui/react'
+import { ChangeEvent } from 'react'
 
 interface NumberInputProps extends Omit<InputProps, 'onChange'> {
   value: string
@@ -6,7 +7,7 @@ interface NumberInputProps extends Omit<InputProps, 'onChange'> {
 }
 
 export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     // Only allow positive numbers and decimals
     if (newValue === '' || /^\d*\.?\d*$/.test(newValue)) {
