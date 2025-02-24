@@ -91,13 +91,21 @@
 - All UI components match Uniswap V3 patterns
 - Updated factory contract address
 - Improved text visibility in dark theme
-- Verified pool querying functionality
+- Implemented pool querying with getPool for TT1/TT2, TT1/WTURA, and TT2/WTURA pairs
+- Added proper error handling for pool queries
 
 ## Next Steps
 1. Complete liquidity management interface
 2. Implement position analytics
 3. Add comprehensive error handling
 4. Complete integration tests
+
+## Future Tasks
+1. Backend Pool List Management
+   - Implement pool list storage and maintenance
+   - Track created pools with token pairs and fee tiers
+   - Provide API endpoint for frontend to fetch pool list
+   - Add pool creation event monitoring
 
 ## Reference Links
 - Tutorial Source: https://uniswapv3book.com/

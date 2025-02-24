@@ -1,40 +1,52 @@
 import { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { Contract } from '@ethersproject/contracts'
-import { FACTORY_ADDRESS, FACTORY_ABI, POOL_ABI } from '../constants/pools'
+import { FACTORY_ADDRESS, FACTORY_ABI, POOL_ABI, TOKEN_PAIRS, FEE_TIERS } from '../constants/pools'
 
 interface Pool {
   address: string
   token0: string
   token1: string
+  token0Symbol: string
+  token1Symbol: string
   fee: number
   volume7d: bigint
 }
 
 export function usePoolList() {
-  const { library } = useWeb3React()
+  const { library, account, chainId } = useWeb3React()
   const [pools, setPools] = useState<Pool[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPools = async () => {
-      if (!library) {
+      if (!library || !account) {
+        setIsLoading(false)
+        return
+      }
+
+      if (chainId !== 1337) {
+        setError('Please connect to Tura network')
         setIsLoading(false)
         return
       }
 
       try {
         const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, library)
-        const filter = factory.filters.PoolCreated()
-        const events = await factory.queryFilter(filter)
+        const poolPromises = TOKEN_PAIRS.map(async (pair) => {
+          const poolAddress = await factory.getPool(
+            pair.token0,
+            pair.token1,
+            FEE_TIERS.MEDIUM
+          )
 
-        const poolPromises = events.map(async (event) => {
-          if (!event.args?.pool) {
-            console.warn('Event args undefined for event:', event)
+          if (poolAddress === '0x0000000000000000000000000000000000000000') {
+            console.log(`No pool found for ${pair.token0Symbol}/${pair.token1Symbol}`)
             return null
           }
-          const pool = new Contract(event.args.pool, POOL_ABI, library)
+
+          const pool = new Contract(poolAddress, POOL_ABI, library)
           const [token0, token1, fee] = await Promise.all([
             pool.token0(),
             pool.token1(),
@@ -44,16 +56,21 @@ export function usePoolList() {
           // For demo purposes, using a random number for volume
           const volume7d = BigInt(Math.floor(Math.random() * 1000000))
 
-          return {
-            address: event.args.pool,
+          const poolData: Pool = {
+            address: poolAddress,
             token0,
             token1,
+            token0Symbol: pair.token0Symbol,
+            token1Symbol: pair.token1Symbol,
             fee,
             volume7d
           }
+          return poolData
         })
 
-        const poolList = (await Promise.all(poolPromises)).filter((pool): pool is Pool => pool !== null)
+        const results = await Promise.all(poolPromises)
+        const poolList = results.filter((pool): pool is Pool => pool !== null)
+
         setPools(poolList)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -69,3 +86,6 @@ export function usePoolList() {
 
   return { pools, isLoading, error } as const
 }
+
+// Export types for use in other components
+export type { Pool }
