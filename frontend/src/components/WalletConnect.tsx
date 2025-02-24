@@ -6,18 +6,8 @@ export function WalletConnect() {
   const { address, isConnected } = useAccount()
   const { connect, isLoading: isConnecting } = useConnect({
     connector: new InjectedConnector(),
-    onSuccess: () => {
-      // Force page reload on successful connection
-      window.location.reload()
-    }
   })
-  const { disconnect } = useDisconnect({
-    onSuccess: () => {
-      // Clear local storage and reload on disconnect
-      window.localStorage.clear()
-      window.location.reload()
-    }
-  })
+  const { disconnect } = useDisconnect()
   const { chain } = useNetwork()
   const { switchNetwork, isLoading: isSwitching } = useSwitchNetwork()
 
