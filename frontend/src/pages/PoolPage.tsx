@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import { type FC } from 'react';
 import { VStack } from '@chakra-ui/react';
-import { PoolList } from '../components/Pool/PoolList/index';
+import { PoolList } from '../components/Pool/PoolList';
 
 export const PoolPage: FC = () => {
   return (
