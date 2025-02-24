@@ -3,10 +3,14 @@ import { VStack, IconButton, Text, Button, useToast } from '@chakra-ui/react'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
 import { NumberInput } from '../NumberInput'
-import { useWeb3 } from '../../hooks/useWeb3'
+import { useAccount, useConnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 
 export function SwapInterface() {
-  const { active, connect } = useWeb3()
+  const { address: account, isConnected: active } = useAccount()
+  const { connect: connectWallet } = useConnect({
+    connector: new InjectedConnector()
+  })
   const [inputAmount, setInputAmount] = useState('')
   const [outputAmount, setOutputAmount] = useState('')
   const [inputToken, setInputToken] = useState<Token>()
@@ -88,7 +92,7 @@ export function SwapInterface() {
 
       {!active ? (
         <Button 
-          onClick={connect} 
+          onClick={() => connectWallet()} 
           width="100%" 
           colorScheme="blue"
         >
