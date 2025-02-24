@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { VStack, Button, Box, Text, Heading } from '@chakra-ui/react';
 
 export const PoolList: FC = () => {
