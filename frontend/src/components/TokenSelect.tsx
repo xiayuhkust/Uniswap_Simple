@@ -4,7 +4,7 @@ import type { Token } from '../types/token'
 import { TokenSelectModal } from './TokenSelectModal'
 import { WTURA_ADDRESS } from './Swap/TokenList'
 
-interface TokenSelectProps {
+export interface TokenSelectProps {
   value: string
   onChange: (value: string) => void
   label?: string
