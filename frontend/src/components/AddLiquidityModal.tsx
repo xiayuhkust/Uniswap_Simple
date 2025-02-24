@@ -54,14 +54,18 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
           <VStack spacing={4}>
             <Text color="gray.300">Select Token Pair</Text>
             <TokenSelect 
-              token={tokens[token0Index]} 
-              onSelect={handleToken0Select}
-              disabled={!tokens.length}
+              value=""
+              onChange={() => {}}
+              selectedToken={tokens[token0Index]} 
+              onTokenSelect={handleToken0Select}
+              isDisabled={!tokens.length}
             />
             <TokenSelect 
-              token={tokens[token1Index]} 
-              onSelect={handleToken1Select}
-              disabled={!tokens.length}
+              value=""
+              onChange={() => {}}
+              selectedToken={tokens[token1Index]} 
+              onTokenSelect={handleToken1Select}
+              isDisabled={!tokens.length}
             />
             <Button
               w="full"
