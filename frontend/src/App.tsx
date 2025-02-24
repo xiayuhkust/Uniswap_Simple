@@ -38,7 +38,6 @@ const config = createConfig({
         name: 'Tura DEX',
         shimDisconnect: true,
         UNSTABLE_shimOnConnectSelectAccount: true,
-        shimChainChanged: true,
       },
     }),
   ],
