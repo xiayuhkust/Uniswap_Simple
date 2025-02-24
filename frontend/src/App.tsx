@@ -6,6 +6,7 @@ import { SwapPage } from './pages/SwapPage'
 import { PoolPage } from './pages/PoolPage'
 import { CreatePoolPage } from './pages/CreatePoolPage'
 import { Layout } from './components/Layout/Layout'
+import { theme } from './theme'
 
 const { chains, publicClient } = configureChains(
   [
@@ -41,7 +42,7 @@ const config = createConfig({
 function App() {
   return (
     <WagmiConfig config={config}>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <BrowserRouter>
           <Layout>
             <Container maxW="container.xl" py={8}>
