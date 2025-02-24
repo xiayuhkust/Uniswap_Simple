@@ -41,11 +41,12 @@ export function TokenSelect({
             <Button
               onClick={onOpen}
               isDisabled={isDisabled}
-              variant="ghost"
+              variant="outline"
               _hover={{ bg: 'uniswap.gray.100' }}
               px={4}
               height="40px"
               color="black"
+              borderColor="uniswap.gray.200"
             >
               {selectedToken ? (
                 <HStack spacing={2}>

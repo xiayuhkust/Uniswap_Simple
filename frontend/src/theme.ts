@@ -60,7 +60,7 @@ export const theme = extendTheme({
             color: 'black',
             borderColor: 'uniswap.gray.200',
             _placeholder: {
-              color: 'uniswap.gray.500',
+              color: 'gray.600',
             },
             _hover: {
               borderColor: 'uniswap.gray.500',
