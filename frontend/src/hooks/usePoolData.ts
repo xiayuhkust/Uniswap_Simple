@@ -107,15 +107,30 @@ export function usePoolData(poolAddress?: Address) {
     }
   }
 
-  const parseSlot0Data = (data: any): Slot0Result => ({
-    sqrtPriceX96: BigInt(data.sqrtPriceX96 || 0),
-    tick: Number(data.tick),
-    observationIndex: Number(data.observationIndex),
-    observationCardinality: Number(data.observationCardinality),
-    observationCardinalityNext: Number(data.observationCardinalityNext),
-    feeProtocol: Number(data.feeProtocol),
-    unlocked: Boolean(data.unlocked)
-  })
+  const parseSlot0Data = (data: any): Slot0Result => {
+    try {
+      return {
+        sqrtPriceX96: BigInt(data?.sqrtPriceX96?.toString() || '0'),
+        tick: Number(data?.tick || 0),
+        observationIndex: Number(data?.observationIndex || 0),
+        observationCardinality: Number(data?.observationCardinality || 0),
+        observationCardinalityNext: Number(data?.observationCardinalityNext || 0),
+        feeProtocol: Number(data?.feeProtocol || 0),
+        unlocked: Boolean(data?.unlocked)
+      }
+    } catch (error) {
+      console.error('Error parsing slot0 data:', error)
+      return {
+        sqrtPriceX96: 0n,
+        tick: 0,
+        observationIndex: 0,
+        observationCardinality: 0,
+        observationCardinalityNext: 0,
+        feeProtocol: 0,
+        unlocked: false
+      }
+    }
+  }
 
   return {
     slot0: slot0Data ? parseSlot0Data(slot0Data) : null,
