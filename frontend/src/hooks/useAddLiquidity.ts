@@ -7,9 +7,9 @@ import { validateTicks } from '../constants/ticks'
 import { MANAGER_ADDRESS } from '../utils/contracts'
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { TOKEN_DECIMALS } from '../constants/tokens'
+import { INPUT_ERRORS } from '../constants/errors'
 
 const WTURA_ADDRESS = CONTRACT_ADDRESSES.WETH
-import { INPUT_ERRORS } from '../constants/errors'
 
 interface MintParams {
   tokenA: Address
