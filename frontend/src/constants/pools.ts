@@ -1,3 +1,7 @@
+import { type Abi } from 'viem';
+import IUniswapV3Pool from '../abi/IUniswapV3Pool.json';
+import IUniswapV3Factory from '../abi/IUniswapV3Factory.json';
+
 export const FACTORY_ADDRESS = '0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70'
 
 export const TOKENS = {
@@ -18,8 +22,5 @@ export const FEE_TIERS = {
   HIGH: 10000   // 1%
 } as const
 
-import IUniswapV3Pool from '../abi/IUniswapV3Pool.json';
-import IUniswapV3Factory from '../abi/IUniswapV3Factory.json';
-
-export const FACTORY_ABI = IUniswapV3Factory.abi;
-export const POOL_ABI = IUniswapV3Pool.abi;
+export const FACTORY_ABI = IUniswapV3Factory.abi as Abi;
+export const POOL_ABI = IUniswapV3Pool.abi as Abi;
