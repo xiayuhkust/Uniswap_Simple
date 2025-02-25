@@ -8,6 +8,7 @@ import { usePoolData } from '../hooks/usePoolData'
 import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
+import { type Pool } from '../hooks/usePoolList'
 
 
 export function AddLiquidityPage() {
@@ -121,6 +122,15 @@ export function AddLiquidityPage() {
             <Text color="gray.600">
               {`${pool.token0Symbol}/${pool.token1Symbol} Pool - ${(Number(pool.fee) / 10000).toFixed(2)}% Fee`}
             </Text>
+
+            {!pool.liquidity || pool.liquidity === 0n ? (
+              <Box p={4} bg="yellow.50" borderRadius="md">
+                <Text color="yellow.800">
+                  This pool has no liquidity. You will be the first liquidity provider.
+                  Initial prices will be set based on your token amounts.
+                </Text>
+              </Box>
+            ) : null}
 
             <Box>
               <Text mb={2} color="gray.600">Amount {pool.token0Symbol}</Text>

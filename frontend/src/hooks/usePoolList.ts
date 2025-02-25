@@ -16,6 +16,8 @@ export interface Pool {
   token1Symbol: string;
   fee: number;
   volume7d: bigint;
+  liquidity: bigint;
+  currentPrice: number | null;
 }
 
 interface TokenPair {
@@ -66,7 +68,9 @@ export const usePoolList = () => {
             token0Symbol: pair.symbols[0],
             token1Symbol: pair.symbols[1],
             fee: FEE_TIERS.MEDIUM,
-            volume7d: 0n // Note: We could integrate with usePoolVolume here if needed
+            volume7d: 0n,
+            liquidity: 0n,
+            currentPrice: null
           };
         });
 
