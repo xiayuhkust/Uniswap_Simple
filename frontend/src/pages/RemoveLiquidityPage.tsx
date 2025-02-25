@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { VStack, Box, Text, Button, useToast, Spinner } from '@chakra-ui/react'
 import { usePoolList } from '../hooks/usePoolList'
@@ -28,7 +28,7 @@ export function RemoveLiquidityPage() {
   const [isRemoving, setIsRemoving] = useState(false)
   
   // Find pool data from poolList
-  const pool = pools.find(p => p.address === validatedPoolAddress)
+  const pool = pools.find((p: { address: string }) => p.address === validatedPoolAddress)
 
   const { slot0, isLoading: poolDataLoading } = usePoolData(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
 
