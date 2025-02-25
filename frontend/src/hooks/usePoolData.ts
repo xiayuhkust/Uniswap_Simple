@@ -55,8 +55,9 @@ export function usePoolData(poolAddress?: Address) {
       const amount0BigInt = stringToBigInt(amount0)
       
       // Calculate result maintaining precision with BigInt operations
-      // For token0 to token1, multiply by sqrtPriceX96 and shift by Q96
-      const result = (amount0BigInt * sqrtPriceX96) >> Q96_SHIFT
+      // For token0 to token1, multiply by sqrtPriceX96 squared and shift by Q96
+      const squared = sqrtPriceX96 * sqrtPriceX96
+      const result = (amount0BigInt * squared) >> Q96_SHIFT
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)
@@ -83,9 +84,10 @@ export function usePoolData(poolAddress?: Address) {
       const amount1BigInt = stringToBigInt(amount1)
       
       // Calculate result maintaining precision with BigInt operations
-      // For token1 to token0, scale by Q96 and divide by sqrtPriceX96
+      // For token1 to token0, scale by Q96 and divide by sqrtPriceX96 squared
+      const squared = sqrtPriceX96 * sqrtPriceX96
       const scaledAmount = amount1BigInt << Q96_SHIFT
-      const result = scaledAmount / sqrtPriceX96
+      const result = scaledAmount / squared
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)
