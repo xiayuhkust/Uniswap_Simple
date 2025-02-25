@@ -57,6 +57,26 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "TokensMustBeDifferent",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ZeroAddressNotAllowed",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "UnsupportedFee",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "PoolAlreadyExists",
+      "type": "error"
     }
   ]
 }
