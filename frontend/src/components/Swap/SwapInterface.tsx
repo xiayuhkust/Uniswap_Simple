@@ -5,7 +5,6 @@ import { useAccount, useConnect } from 'wagmi'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
 import { INPUT_ERRORS } from '../../constants/errors'
-import { stringToBigInt } from '../../utils/bigint'
 import { isValidAmount } from '../../utils/validation'
 
 export function SwapInterface() {

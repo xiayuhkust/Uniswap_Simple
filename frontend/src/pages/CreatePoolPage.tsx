@@ -6,8 +6,8 @@ import { TickRangeInput } from '../components/TickRangeInput'
 import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
 import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
-import { stringToBigInt } from '../utils/bigint'
 import { isValidAmount } from '../utils/validation'
+import { INPUT_ERRORS } from '../constants/errors'
 
 
 export function CreatePoolPage() {
