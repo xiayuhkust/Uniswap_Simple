@@ -58,7 +58,7 @@ export function TokenSelect({
                     fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
                   />
                   <Text fontWeight="medium" color="gray.700">
-                    {selectedToken.address.toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : selectedToken.symbol}
+                    {selectedToken?.address?.toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : selectedToken?.symbol}
                   </Text>
                 </HStack>
               ) : (
