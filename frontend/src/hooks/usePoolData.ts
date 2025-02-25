@@ -1,6 +1,6 @@
 import { useContractRead } from 'wagmi'
-import { parseAbi, type Address } from 'viem'
-
+import { type Address } from 'viem'
+import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
 
 interface Slot0Result {
   sqrtPriceX96: bigint
@@ -12,23 +12,7 @@ interface Slot0Result {
   unlocked: boolean
 }
 
-interface Slot0Data extends Array<any> {
-  [0]: bigint  // sqrtPriceX96
-  [1]: number  // tick
-  [2]: number  // observationIndex
-  [3]: number  // observationCardinality
-  [4]: number  // observationCardinalityNext
-  [5]: number  // feeProtocol
-  [6]: boolean // unlocked
-}
-
-const POOL_INTERFACE = parseAbi([
-  'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
-  'function liquidity() external view returns (uint128)',
-  'function fee() external view returns (uint24)',
-  'function token0() external view returns (address)',
-  'function token1() external view returns (address)'
-])
+const POOL_INTERFACE = IUniswapV3Pool.abi
 
 export function usePoolData(poolAddress?: Address) {
   const { data: slot0Data, isLoading: slot0Loading } = useContractRead({
@@ -55,7 +39,7 @@ export function usePoolData(poolAddress?: Address) {
   const calculateAmount1ForAmount0 = (amount0: string): string => {
     if (!amount0 || isNaN(Number(amount0))) return ''
     
-    const slot0 = slot0Data ? parseSlot0Data(slot0Data as Slot0Data) : null
+    const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
     if (!slot0) return ''
     
     // For empty pools, use 1:1 ratio
@@ -73,7 +57,7 @@ export function usePoolData(poolAddress?: Address) {
   const calculateAmount0ForAmount1 = (amount1: string): string => {
     if (!amount1 || isNaN(Number(amount1))) return ''
     
-    const slot0 = slot0Data ? parseSlot0Data(slot0Data as Slot0Data) : null
+    const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
     if (!slot0) return ''
     
     // For empty pools, use 1:1 ratio
@@ -87,18 +71,18 @@ export function usePoolData(poolAddress?: Address) {
     return (Number(amount1) / price).toString()
   }
 
-  const parseSlot0Data = (data: Slot0Data): Slot0Result => ({
-    sqrtPriceX96: data[0],
-    tick: data[1],
-    observationIndex: data[2],
-    observationCardinality: data[3],
-    observationCardinalityNext: data[4],
-    feeProtocol: data[5],
-    unlocked: data[6]
+  const parseSlot0Data = (data: any): Slot0Result => ({
+    sqrtPriceX96: data.sqrtPriceX96,
+    tick: data.tick,
+    observationIndex: data.observationIndex,
+    observationCardinality: data.observationCardinality,
+    observationCardinalityNext: data.observationCardinalityNext,
+    feeProtocol: data.feeProtocol,
+    unlocked: data.unlocked
   })
 
   return {
-    slot0: slot0Data ? parseSlot0Data(slot0Data as Slot0Data) : null,
+    slot0: slot0Data ? parseSlot0Data(slot0Data) : null,
     liquidity,
     fee,
     isLoading: slot0Loading || liquidityLoading || feeLoading,
