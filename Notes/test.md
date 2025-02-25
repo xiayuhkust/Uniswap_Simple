@@ -78,6 +78,12 @@
   * Local development server (port 5173)
   * React 18 with TypeScript 5.3
   * wagmi v1.4.13 for contract interactions
+- BigInt Handling Improvements:
+  * Fixed type mixing in price calculations
+  * Standardized ZERO_BIGINT usage
+  * Proper Q96 precision handling
+  * Consistent bit shifting for calculations
+  * Price scaling before Q96 division
 - Input Validation Improvements:
   * Standardized error messages using INPUT_ERRORS
   * Fixed BigInt type mixing in calculations

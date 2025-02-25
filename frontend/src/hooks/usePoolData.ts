@@ -46,13 +46,13 @@ export function usePoolData(poolAddress?: Address) {
       if (!slot0) return ''
       
       // For empty pools, use 1:1 ratio
-      if (slot0.sqrtPriceX96 === 0n) {
+      if (slot0.sqrtPriceX96 === ZERO_BIGINT) {
         return amount0
       }
       
       // Calculate price using BigInt throughout
       const sqrtPriceX96 = slot0.sqrtPriceX96
-      if (sqrtPriceX96 === 0n) return amount0
+      if (sqrtPriceX96 === ZERO_BIGINT) return amount0
       
       // Convert amount0 to BigInt with proper decimal precision
       const amount0BigInt = stringToBigInt(amount0)
@@ -62,7 +62,9 @@ export function usePoolData(poolAddress?: Address) {
       if (price === ZERO_BIGINT) return amount0
       
       // Calculate result maintaining precision with BigInt operations
-      const result = (amount0BigInt * price) >> Q96_SHIFT
+      // Scale first to maintain precision during division
+      const scaledAmount = amount0BigInt << Q96_SHIFT
+      const result = scaledAmount / price
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)
@@ -80,13 +82,13 @@ export function usePoolData(poolAddress?: Address) {
       if (!slot0) return ''
       
       // For empty pools, use 1:1 ratio
-      if (slot0.sqrtPriceX96 === 0n) {
+      if (slot0.sqrtPriceX96 === ZERO_BIGINT) {
         return amount1
       }
       
       // Calculate price using BigInt throughout
       const sqrtPriceX96 = slot0.sqrtPriceX96
-      if (sqrtPriceX96 === 0n) return amount1
+      if (sqrtPriceX96 === ZERO_BIGINT) return amount1
       
       // Convert amount1 to BigInt with proper decimal precision
       const amount1BigInt = stringToBigInt(amount1)
@@ -96,8 +98,8 @@ export function usePoolData(poolAddress?: Address) {
       if (price === ZERO_BIGINT) return amount1
       
       // Calculate result maintaining precision with BigInt operations
-      // Shift left first to maintain precision before division
-      const result = (amount1BigInt << Q96_SHIFT) / price
+      // Scale first to maintain precision during multiplication
+      const result = (amount1BigInt * price) >> Q96_SHIFT
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)
