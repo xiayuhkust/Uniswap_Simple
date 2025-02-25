@@ -47,8 +47,8 @@ export const usePoolVolume = (poolAddress: Address) => {
         });
         
         const totalVolume = logs.reduce((acc, log) => {
-          const amount0 = BigInt(log.args?.amount0 ?? 0);
-          const amount1 = BigInt(log.args?.amount1 ?? 0);
+          const amount0 = stringToBigInt((log.args?.amount0 ?? 0).toString());
+          const amount1 = stringToBigInt((log.args?.amount1 ?? 0).toString());
           // Take absolute values since amounts can be negative for sells
           return acc + 
             (amount0 >= 0n ? amount0 : -amount0) +
@@ -70,8 +70,8 @@ export const usePoolVolume = (poolAddress: Address) => {
       event: SWAP_EVENT,
       onLogs: logs => {
         logs.forEach(log => {
-          const amount0 = BigInt(log.args?.amount0 ?? 0);
-          const amount1 = BigInt(log.args?.amount1 ?? 0);
+          const amount0 = stringToBigInt((log.args?.amount0 ?? 0).toString());
+          const amount1 = stringToBigInt((log.args?.amount1 ?? 0).toString());
           setVolume(prev => prev + 
             (amount0 >= 0n ? amount0 : -amount0) +
             (amount1 >= 0n ? amount1 : -amount1)

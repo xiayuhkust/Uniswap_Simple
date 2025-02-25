@@ -100,13 +100,13 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
 
       if (!token0Allowance || token0Allowance < amount0BigInt) {
         await approveToken0({
-          args: [MANAGER_ADDRESS, BigInt(2) ** BigInt(256) - BigInt(1)],
+          args: [MANAGER_ADDRESS, (2n ** 256n) - 1n],
         })
       }
 
       if (!token1Allowance || token1Allowance < amount1BigInt) {
         await approveToken1({
-          args: [MANAGER_ADDRESS, BigInt(2) ** BigInt(256) - BigInt(1)],
+          args: [MANAGER_ADDRESS, (2n ** 256n) - 1n],
         })
       }
 
