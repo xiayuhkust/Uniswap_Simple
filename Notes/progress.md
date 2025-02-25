@@ -82,6 +82,13 @@
   - [ ] Fee collection process
 
 ## Latest Updates (2025-02-25)
+- Improved contract data handling:
+  * Added proper error handling for BigInt conversions ✓
+  * Enhanced type safety for liquidity values ✓
+  * Added fallback values for parsing errors ✓
+  * Improved error messages and logging ✓
+
+## Previous Updates (2025-02-25)
 - Improved empty pool handling:
   * Removed 1:1 ratio assumption for empty pools ✓
   * Added proper zero input validation ✓

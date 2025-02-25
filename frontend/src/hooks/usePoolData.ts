@@ -43,7 +43,13 @@ export function usePoolData(poolAddress?: Address) {
       if (!amount0 || !isValidAmount(amount0)) return ''
       
       // For empty pools, don't calculate ratio
-      if (!liquidity || BigInt(liquidity.toString()) === ZERO_BIGINT) {
+      try {
+        const liquidityValue = liquidity?.toString() || '0'
+        if (!liquidity || BigInt(liquidityValue) === ZERO_BIGINT) {
+          return amount0
+        }
+      } catch (error) {
+        console.error('Error parsing liquidity:', error)
         return amount0
       }
       
@@ -77,7 +83,13 @@ export function usePoolData(poolAddress?: Address) {
       if (!amount1 || !isValidAmount(amount1)) return ''
       
       // For empty pools, don't calculate ratio
-      if (!liquidity || BigInt(liquidity.toString()) === ZERO_BIGINT) {
+      try {
+        const liquidityValue = liquidity?.toString() || '0'
+        if (!liquidity || BigInt(liquidityValue) === ZERO_BIGINT) {
+          return amount1
+        }
+      } catch (error) {
+        console.error('Error parsing liquidity:', error)
         return amount1
       }
       
@@ -134,8 +146,8 @@ export function usePoolData(poolAddress?: Address) {
 
   return {
     slot0: slot0Data ? parseSlot0Data(slot0Data) : null,
-    liquidity,
-    fee,
+    liquidity: liquidity ? BigInt(liquidity.toString()) : ZERO_BIGINT,
+    fee: fee ? Number(fee) : 0,
     isLoading: slot0Loading || liquidityLoading || feeLoading,
     calculateAmount1ForAmount0,
     calculateAmount0ForAmount1
