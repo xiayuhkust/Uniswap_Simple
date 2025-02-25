@@ -50,7 +50,7 @@ export function TokenSelectModal({
                 height="auto"
                 py={2}
                 justifyContent="flex-start"
-                bg={token.address === selectedToken?.address ? 'uniswap.gray.100' : 'transparent'}
+                bg={token.address.toLowerCase() === selectedToken?.address.toLowerCase() ? 'uniswap.gray.100' : 'transparent'}
                 _hover={{ bg: 'uniswap.gray.100' }}
                 color="black"
               >
@@ -63,7 +63,7 @@ export function TokenSelectModal({
                   />
                   <VStack spacing={0} align="flex-start">
                     <Text fontWeight="medium" color="gray.700">
-                      {(token.address as HexString).toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : token.symbol}
+                      {token.address.toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : token.symbol}
                     </Text>
                     <Text fontSize="sm" color="gray.700">
                       {token.name}
