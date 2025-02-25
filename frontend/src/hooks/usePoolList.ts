@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address } from 'viem';
+import { type Address } from 'viem';
 import { FEE_TIERS } from './usePoolVolume';
+import IUniswapV3Factory from '../abi/IUniswapV3Factory.json';
 
-const FACTORY_ABI = parseAbi([
-  "event PoolCreated(address token0, address token1, uint24 fee, int24 tickSpacing, address pool)",
-  "function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)"
-]);
+const FACTORY_ABI = IUniswapV3Factory.abi;
 
 type HexString = `0x${string}`;
 

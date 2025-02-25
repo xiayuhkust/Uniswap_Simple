@@ -24,8 +24,9 @@ export const FACTORY_ABI = [
   'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)'
 ]
 
-export const POOL_ABI = [
-  'function token0() external view returns (address)',
+import IUniswapV3Pool from '../abi/IUniswapV3Pool.json';
+
+export const POOL_ABI = IUniswapV3Pool.abi;
   'function token1() external view returns (address)',
   'function fee() external view returns (uint24)',
   'function liquidity() external view returns (uint128)',

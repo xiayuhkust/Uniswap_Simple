@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address } from 'viem';
+import { type Address } from 'viem';
+import IUniswapV3Pool from '../abi/IUniswapV3Pool.json';
 
-const PoolABI = parseAbi([
-  'event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)'
-]);
+const PoolABI = IUniswapV3Pool.abi;
 
 export const FEE_TIERS = {
   LOW: 500,    // 0.05%
