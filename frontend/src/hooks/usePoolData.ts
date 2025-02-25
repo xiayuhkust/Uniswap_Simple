@@ -57,7 +57,11 @@ export function usePoolData(poolAddress?: Address) {
       if (sqrtPriceX96 === 0n) return amount0
       
       // Convert amount0 to BigInt with proper decimal precision
-      const amount0BigInt = BigInt(Math.floor(Number(amount0) * (10 ** DECIMALS)))
+      // Convert to BigInt using string operations to avoid floating point precision issues
+      const amount0Scaled = amount0.includes('.') 
+        ? amount0.padEnd(amount0.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
+        : amount0 + '0'.repeat(DECIMALS)
+      const amount0BigInt = BigInt(amount0Scaled)
       
       // Calculate price maintaining precision using bit shifting
       const priceX192 = sqrtPriceX96 * sqrtPriceX96
@@ -92,7 +96,11 @@ export function usePoolData(poolAddress?: Address) {
       if (sqrtPriceX96 === 0n) return amount1
       
       // Convert amount1 to BigInt with proper decimal precision
-      const amount1BigInt = BigInt(Math.floor(Number(amount1) * (10 ** DECIMALS)))
+      // Convert to BigInt using string operations to avoid floating point precision issues
+      const amount1Scaled = amount1.includes('.') 
+        ? amount1.padEnd(amount1.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
+        : amount1 + '0'.repeat(DECIMALS)
+      const amount1BigInt = BigInt(amount1Scaled)
       
       // Calculate price maintaining precision using bit shifting
       const priceX192 = sqrtPriceX96 * sqrtPriceX96

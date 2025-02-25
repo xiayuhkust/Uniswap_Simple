@@ -282,7 +282,11 @@ export function AddLiquidityPage() {
                 Current Price: {slot0 
                   ? slot0.sqrtPriceX96 === ZERO_BIGINT 
                     ? '0.000000'
-                    : (Number((slot0.sqrtPriceX96 * slot0.sqrtPriceX96) >> Q96_SHIFT) / Number(Q96)).toFixed(6)
+                    : (() => {
+                        const priceX192 = slot0.sqrtPriceX96 * slot0.sqrtPriceX96
+                        const price = priceX192 >> Q96_SHIFT
+                        return (Number(price) / Number(Q96)).toFixed(6)
+                      })()
                   : '-'} {pool.token1Symbol} per {pool.token0Symbol}
               </Text>
             </Box>
