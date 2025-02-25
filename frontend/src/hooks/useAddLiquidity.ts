@@ -153,7 +153,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
 
       // Create MintParams according to IUniswapV3Manager interface
       // Add 20 minutes deadline
-      const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)
+      const deadline = BigInt(Math.trunc(Date.now() / 1000) + 1200)
 
       const mintParams: MintParams = {
         tokenA: token0 as Address,
