@@ -47,7 +47,7 @@ export function TokenSelectModal({
                 height="auto"
                 py={2}
                 justifyContent="flex-start"
-                bg={selectedToken?.address.toLowerCase() === token.address.toLowerCase() ? 'uniswap.gray.100' : 'transparent'}
+                bg={selectedToken ? token.address.toLowerCase() === selectedToken.address.toLowerCase() : false ? 'uniswap.gray.100' : 'transparent'}
                 _hover={{ bg: 'uniswap.gray.100' }}
                 color="black"
               >
