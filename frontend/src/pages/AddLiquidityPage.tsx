@@ -159,13 +159,10 @@ export function AddLiquidityPage() {
                   try {
                     let amount1
                     if (testPrice) {
-                      // Convert test price to Q96 format
-                      const sqrtPriceX96 = stringToBigInt(Math.sqrt(testPrice).toString())
-                      // Calculate price using utility function
-                      const price = calculatePrice(sqrtPriceX96)
-                      // Convert input value and calculate result
+                      // Use simple price calculation for test pool
                       const valueBigInt = stringToBigInt(value)
-                      const result = (valueBigInt * price) >> Q96_SHIFT
+                      const scaledPrice = BigInt(Math.floor(testPrice * 1e6))
+                      const result = (valueBigInt * scaledPrice) / BigInt(1e6)
                       amount1 = bigIntToString(result)
                     } else {
                       amount1 = calculateAmount1ForAmount0(value)
@@ -204,13 +201,10 @@ export function AddLiquidityPage() {
                   try {
                     let amount0
                     if (testPrice) {
-                      // Convert test price to Q96 format
-                      const sqrtPriceX96 = stringToBigInt(Math.sqrt(testPrice).toString())
-                      // Calculate price using utility function
-                      const price = calculatePrice(sqrtPriceX96)
-                      // Convert input value and calculate result
+                      // Use simple price calculation for test pool
                       const valueBigInt = stringToBigInt(value)
-                      const result = (valueBigInt << Q96_SHIFT) / price
+                      const scaledPrice = BigInt(Math.floor(testPrice * 1e6))
+                      const result = (valueBigInt * BigInt(1e6)) / scaledPrice
                       amount0 = bigIntToString(result)
                     } else {
                       amount0 = calculateAmount0ForAmount1(value)

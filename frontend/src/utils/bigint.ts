@@ -35,13 +35,15 @@ export function bigIntToString(amount: bigint): string {
  * Calculates price from sqrtPriceX96
  */
 export function calculatePrice(sqrtPriceX96: bigint): bigint {
-  const priceX192 = sqrtPriceX96 * sqrtPriceX96
-  return priceX192 >> Q96_SHIFT
+  return sqrtPriceX96 === 0n ? 0n : (sqrtPriceX96 * sqrtPriceX96) >> Q96_SHIFT;
 }
 
 /**
  * Formats a price for display
  */
 export function formatPrice(price: bigint, decimals: number = 6): string {
-  return (Number(price) / Number(Q96)).toFixed(decimals)
+  if (price === 0n) return '0.000000';
+  const priceNum = Number(price);
+  const q96Num = Number(Q96);
+  return (priceNum / q96Num).toFixed(decimals);
 }
