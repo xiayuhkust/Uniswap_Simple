@@ -5,8 +5,10 @@ import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
 import IUniswapV3Manager from '../abi/IUniswapV3Manager.json'
 import { validateTicks } from '../constants/ticks'
 import { MANAGER_ADDRESS } from '../utils/contracts'
-import { WTURA_ADDRESS } from '../constants/addresses'
+import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { TOKEN_DECIMALS } from '../constants/tokens'
+
+const WTURA_ADDRESS = CONTRACT_ADDRESSES.WETH
 import { INPUT_ERRORS } from '../constants/errors'
 
 interface MintParams {
