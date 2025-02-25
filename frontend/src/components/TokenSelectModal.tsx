@@ -14,9 +14,6 @@ import {
 import type { Token } from '../types/token'
 import { TEST_TOKENS } from './Swap/TokenList'
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
-import { Address } from 'wagmi'
-
-type HexString = `0x${string}`
 
 interface TokenSelectModalProps {
   isOpen: boolean
@@ -50,7 +47,7 @@ export function TokenSelectModal({
                 height="auto"
                 py={2}
                 justifyContent="flex-start"
-                bg={token.address.toLowerCase() === selectedToken?.address.toLowerCase() ? 'uniswap.gray.100' : 'transparent'}
+                bg={token.address.toLowerCase() === selectedToken?.address?.toLowerCase() ? 'uniswap.gray.100' : 'transparent'}
                 _hover={{ bg: 'uniswap.gray.100' }}
                 color="black"
               >
