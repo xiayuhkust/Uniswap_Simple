@@ -3,6 +3,15 @@ import { usePublicClient } from 'wagmi';
 import { parseAbi, type Address } from 'viem';
 import { FEE_TIERS } from './usePoolVolume';
 
+const POOL_INTERFACE = parseAbi([
+  'function slot0() external view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)',
+  'function liquidity() external view returns (uint128)'
+]);
+
+function formatPrice(sqrtPriceX96: bigint): number {
+  return Number((sqrtPriceX96 * sqrtPriceX96) >> 192n) / 1e18
+}
+
 const FACTORY_ABI = parseAbi([
   "event PoolCreated(address token0, address token1, uint24 fee, int24 tickSpacing, address pool)",
   "function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)"
@@ -16,6 +25,8 @@ export interface Pool {
   token1Symbol: string;
   fee: number;
   volume7d: bigint;
+  liquidity: bigint;
+  currentPrice: number;
 }
 
 interface TokenPair {
@@ -61,18 +72,38 @@ export const usePoolList = () => {
             return null;
           }
 
-          return {
+          // Get pool data using contract reads
+          const poolContract = {
+            address: poolAddress as Address,
+            abi: POOL_INTERFACE
+          };
+
+          const [slot0Data, liquidityData] = await Promise.all([
+            publicClient.readContract({
+              ...poolContract,
+              functionName: 'slot0'
+            }).catch(() => null),
+            publicClient.readContract({
+              ...poolContract,
+              functionName: 'liquidity'
+            }).catch(() => 0n)
+          ]);
+
+          const pool: Pool = {
             address: poolAddress as Address,
             token0Symbol: pair.symbols[0],
             token1Symbol: pair.symbols[1],
             fee: FEE_TIERS.MEDIUM,
-            volume7d: 0n // Note: We could integrate with usePoolVolume here if needed
+            volume7d: 0n,
+            liquidity: liquidityData || 0n,
+            currentPrice: slot0Data ? formatPrice((slot0Data as any).sqrtPriceX96) : 0
           };
+          return pool;
         });
 
         const poolResults = await Promise.all(poolPromises);
-        const validPools = poolResults.filter((pool): pool is NonNullable<typeof pool> => pool !== null);
-        setPools(validPools);
+        const validPools = poolResults.filter((pool): pool is Pool => pool !== null);
+        setPools(validPools as Pool[]);
       } catch (error) {
         console.error('Error fetching pools:', error);
       } finally {
