@@ -18,7 +18,7 @@ export function CreatePoolPage() {
   const toast = useToast()
   const { isConnected } = useAccount()
 
-  const feeValue = fee ? parseInt(fee.replace('%', '')) * 10000 : 0
+  const feeValue = fee === '0.05%' ? FEES.LOWEST : fee === '0.3%' ? FEES.MEDIUM : 0
   const { data: existingPool } = useGetPool(
     token0?.address as Address,
     token1?.address as Address,
@@ -178,7 +178,7 @@ export function CreatePoolPage() {
           <Box width="100%">
             <Text mb={2} color="black">Fee Tier</Text>
             <VStack spacing={2}>
-              {['0.05%', '0.3%', '1%'].map((feeOption) => (
+              {['0.05%', '0.3%'].map((feeOption) => (
                 <Button
                   key={feeOption}
                   width="100%"
