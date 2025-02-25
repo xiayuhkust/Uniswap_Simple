@@ -7,6 +7,9 @@ import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
 import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
 
+const DECIMALS = 18
+
+
 export function CreatePoolPage() {
   const [token0, setToken0] = useState<Token>()
   const [token1, setToken1] = useState<Token>()
@@ -18,7 +21,7 @@ export function CreatePoolPage() {
   const toast = useToast()
   const { isConnected } = useAccount()
 
-  const feeValue = fee === '0.05%' ? FEES.LOWEST : fee === '0.3%' ? FEES.MEDIUM : undefined
+  const feeValue = fee === '0.05%' ? FEES.LOWEST : fee === '0.3%' ? FEES.MEDIUM : FEES.MEDIUM
   const { data: existingPool } = useGetPool(
     token0?.address as Address,
     token1?.address as Address,
@@ -65,8 +68,8 @@ export function CreatePoolPage() {
         throw new Error('Invalid token addresses')
       }
 
-      if (!Object.values(FEES).includes(feeValue)) {
-        throw new Error('Invalid fee value')
+      if (!fee) {
+        throw new Error('Fee must be selected')
       }
 
       if (existingPool && existingPool !== '0x0000000000000000000000000000000000000000') {
@@ -152,6 +155,15 @@ export function CreatePoolPage() {
     if (lowerTick >= upperTick) {
       return "Invalid price range"
     }
+    try {
+      const amount0BigInt = BigInt(Math.floor(Number(token0Amount) * (10 ** DECIMALS)))
+      const amount1BigInt = BigInt(Math.floor(Number(token1Amount) * (10 ** DECIMALS)))
+      if (amount0BigInt <= 0n || amount1BigInt <= 0n) {
+        return "Amount must be greater than 0"
+      }
+    } catch {
+      return "Invalid amount format"
+    }
     return null
   }
 
@@ -195,7 +207,17 @@ export function CreatePoolPage() {
           <Button
             width="100%"
             variant="uniswap"
-            isDisabled={!token0 || !token1 || !fee || !token0Amount || !token1Amount || parseFloat(token0Amount) <= 0 || parseFloat(token1Amount) <= 0 || lowerTick >= upperTick}
+            isDisabled={!token0 || !token1 || !fee || !token0Amount || !token1Amount || 
+              (() => {
+                try {
+                  const amount0BigInt = BigInt(Math.floor(Number(token0Amount) * (10 ** DECIMALS)))
+                  const amount1BigInt = BigInt(Math.floor(Number(token1Amount) * (10 ** DECIMALS)))
+                  return amount0BigInt <= 0n || amount1BigInt <= 0n
+                } catch {
+                  return true
+                }
+              })() || 
+              lowerTick >= upperTick}
             onClick={() => {
               const error = validatePool()
               if (error) {

@@ -1,5 +1,3 @@
-import { type Address } from 'viem'
-
 export interface LiquidityAmount {
   amount0: bigint
   amount1: bigint

@@ -10,6 +10,11 @@ import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
 import { validateTicks, MIN_TICK, MAX_TICK } from '../constants/ticks'
 
+const ZERO_BIGINT = 0n
+const DECIMALS = 18
+const Q96_SHIFT = 96n
+const Q96 = 2n ** Q96_SHIFT
+
 
 export function AddLiquidityPage() {
   const { poolAddress } = useParams()
@@ -44,8 +49,14 @@ export function AddLiquidityPage() {
   const validateAmounts = (amount0: string, amount1: string): string | null => {
     if (!amount0 || !amount1) return "Please enter amounts for both tokens"
     if (isNaN(Number(amount0)) || isNaN(Number(amount1))) return "Invalid amount"
-    if (Number(amount0) <= 0 || Number(amount1) <= 0) return "Amount must be greater than 0"
-    return null
+    try {
+      const amount0BigInt = BigInt(Math.floor(Number(amount0) * (10 ** DECIMALS)))
+      const amount1BigInt = BigInt(Math.floor(Number(amount1) * (10 ** DECIMALS)))
+      if (amount0BigInt <= 0n || amount1BigInt <= 0n) return "Amount must be greater than 0"
+      return null
+    } catch (error) {
+      return "Invalid amount format"
+    }
   }
 
   const handleTickRangeChange = async (lower: number, upper: number) => {
@@ -135,10 +146,10 @@ export function AddLiquidityPage() {
               Add Liquidity
             </Text>
             <Text color="gray.600">
-              {`${pool.token0Symbol}/${pool.token1Symbol} Pool - ${(Number(pool.fee) / 10000).toFixed(2)}% Fee`}
+              {`${pool.token0Symbol}/${pool.token1Symbol} Pool - ${(Number(BigInt(pool.fee || 0)) / 10000).toFixed(2)}% Fee`}
             </Text>
 
-            {!pool.liquidity || BigInt(pool.liquidity) === BigInt(0) ? (
+            {!pool.liquidity || BigInt(pool.liquidity || 0) === ZERO_BIGINT ? (
               <Box p={4} bg="yellow.50" borderRadius="md">
                 <Text color="yellow.800">
                   This pool has no liquidity. You will be the first liquidity provider.
@@ -157,7 +168,16 @@ export function AddLiquidityPage() {
                   try {
                     let amount1
                     if (testPrice) {
-                      amount1 = (Number(value) * testPrice).toString()
+                      // Convert test price to Q96 format
+                      const sqrtPriceX96 = BigInt(Math.floor(Math.sqrt(testPrice) * (2 ** 96)))
+                      // Calculate price using same logic as pool
+                      const priceX192 = sqrtPriceX96 * sqrtPriceX96
+                      const price = priceX192 >> 96n
+                      // Convert input value to BigInt with precision
+                      const valueBigInt = BigInt(Math.floor(Number(value) * (10 ** DECIMALS)))
+                      // Calculate result maintaining precision
+                      const result = (valueBigInt * price) >> 96n
+                      amount1 = (Number(result) / (10 ** DECIMALS)).toString()
                     } else {
                       amount1 = calculateAmount1ForAmount0(value)
                     }
@@ -195,7 +215,16 @@ export function AddLiquidityPage() {
                   try {
                     let amount0
                     if (testPrice) {
-                      amount0 = (Number(value) / testPrice).toString()
+                      // Convert test price to Q96 format
+                      const sqrtPriceX96 = BigInt(Math.floor(Math.sqrt(testPrice) * (2 ** 96)))
+                      // Calculate price using same logic as pool
+                      const priceX192 = sqrtPriceX96 * sqrtPriceX96
+                      const price = priceX192 >> 96n
+                      // Convert input value to BigInt with precision
+                      const valueBigInt = BigInt(Math.floor(Number(value) * (10 ** DECIMALS)))
+                      // Calculate result maintaining precision
+                      const result = (valueBigInt << 96n) / price
+                      amount0 = (Number(result) / (10 ** DECIMALS)).toString()
                     } else {
                       amount0 = calculateAmount0ForAmount1(value)
                     }
@@ -250,7 +279,11 @@ export function AddLiquidityPage() {
               <Text mb={2} color="gray.600">Price Range</Text>
               <TickRangeInput onRangeChange={handleTickRangeChange} />
               <Text mt={2} fontSize="sm" color="gray.500">
-                Current Price: {slot0 ? Number((slot0.sqrtPriceX96 * slot0.sqrtPriceX96) >> 192n).toFixed(6) : '-'} {pool.token1Symbol} per {pool.token0Symbol}
+                Current Price: {slot0 
+                  ? slot0.sqrtPriceX96 === ZERO_BIGINT 
+                    ? '0.000000'
+                    : (Number((slot0.sqrtPriceX96 * slot0.sqrtPriceX96) >> Q96_SHIFT) / Number(Q96)).toFixed(6)
+                  : '-'} {pool.token1Symbol} per {pool.token0Symbol}
               </Text>
             </Box>
 
