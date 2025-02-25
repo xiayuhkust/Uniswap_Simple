@@ -20,7 +20,6 @@ interface MintParams {
   amount1Desired: bigint
   amount0Min: bigint
   amount1Min: bigint
-  deadline: bigint
 }
 
 interface AddLiquidityHookReturn {
@@ -163,9 +162,6 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       const amount1BigInt = parseUnits(amount1Desired, 18)
 
       // Create MintParams according to IUniswapV3Manager interface
-      // Add 20 minutes deadline
-      const deadline = BigInt(Math.trunc(Date.now() / 1000) + 1200)
-
       if (!token0 || !token1) throw new Error('Tokens not loaded')
       
       const mintParams: MintParams = {
@@ -177,8 +173,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         amount0Desired: amount0BigInt,
         amount1Desired: amount1BigInt,
         amount0Min: 0n,
-        amount1Min: 0n,
-        deadline
+        amount1Min: 0n
       }
 
       const tx = await addLiquidity({
@@ -190,17 +185,18 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       const err = error as AddLiquidityError
       console.error('Error adding liquidity:', error)
       
-      if (err.code === 'INSUFFICIENT_FUNDS') {
+      if (err.code === '0x10074548') {
+        throw new Error('Invalid tick range: Must be between MIN_TICK (-887220) and MAX_TICK (887220)')
+      } else if (err.code === 'INSUFFICIENT_FUNDS') {
         throw new Error('Insufficient funds to add liquidity')
       } else if (err.reason?.includes('amount exceeds balance')) {
         throw new Error('Token amount exceeds balance')
-      } else if (err.reason?.includes('Invalid tick range')) {
-        throw new Error('Invalid tick range provided')
       } else if (err.reason?.includes('Price slippage check')) {
         throw new Error('Price slippage too high')
       } else if (err.reason?.includes('L')) {
         throw new Error('Liquidity amount must be greater than 0')
       } else {
+        console.error('Error details:', err)
         throw new Error('Failed to add liquidity: ' + (err.reason || err.message))
       }
     }

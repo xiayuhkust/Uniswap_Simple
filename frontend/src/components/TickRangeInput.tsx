@@ -1,5 +1,6 @@
 import { Box, VStack, Text, RangeSlider, RangeSliderTrack, RangeSliderFilledTrack, RangeSliderThumb, HStack, Button } from '@chakra-ui/react'
 import { useState } from 'react'
+import { MIN_TICK, MAX_TICK } from '../constants/ticks'
 
 interface TickRangeInputProps {
   onRangeChange: (lowerTick: number, upperTick: number) => void
@@ -10,9 +11,10 @@ export function TickRangeInput({ onRangeChange }: TickRangeInputProps) {
 
   const handleRangeChange = (newRange: number[]) => {
     setRange(newRange)
-    // Convert percentage to tick values (-887220 to 887220)
-    const lowerTick = Math.floor(-887220 + (newRange[0] / 100) * 1774440)
-    const upperTick = Math.floor(-887220 + (newRange[1] / 100) * 1774440)
+    // Convert percentage to tick values using MIN_TICK and MAX_TICK
+    const tickRange = MAX_TICK - MIN_TICK
+    const lowerTick = Math.floor(MIN_TICK + (newRange[0] / 100) * tickRange)
+    const upperTick = Math.floor(MIN_TICK + (newRange[1] / 100) * tickRange)
     onRangeChange(lowerTick, upperTick)
   }
 
@@ -59,10 +61,10 @@ export function TickRangeInput({ onRangeChange }: TickRangeInputProps) {
         <VStack width="100%" spacing={1} align="flex-start">
           <Text fontSize="sm" fontWeight="bold" color="black">Selected Range:</Text>
           <Text fontSize="sm" color="gray.600">
-            Min Tick: {Math.floor(-887220 + (range[0] / 100) * 1774440)}
+            Min Tick: {Math.floor(MIN_TICK + (range[0] / 100) * (MAX_TICK - MIN_TICK))}
           </Text>
           <Text fontSize="sm" color="gray.600">
-            Max Tick: {Math.floor(-887220 + (range[1] / 100) * 1774440)}
+            Max Tick: {Math.floor(MIN_TICK + (range[1] / 100) * (MAX_TICK - MIN_TICK))}
           </Text>
         </VStack>
       </VStack>

@@ -4,6 +4,7 @@ import { TokenSelect } from '../components/TokenSelect'
 import { useState, useEffect } from 'react'
 import { type Token } from '../types/token'
 import { TickRangeInput } from '../components/TickRangeInput'
+import { MIN_TICK, MAX_TICK, validateTicks } from '../constants/ticks'
 import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
 import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
@@ -17,8 +18,8 @@ export function CreatePoolPage() {
   const [token0Amount, setToken0Amount] = useState('')
   const [token1Amount, setToken1Amount] = useState('')
   const [fee, setFee] = useState<string>('')
-  const [lowerTick, setLowerTick] = useState(-887220)
-  const [upperTick, setUpperTick] = useState(887220)
+  const [lowerTick, setLowerTick] = useState(MIN_TICK)
+  const [upperTick, setUpperTick] = useState(MAX_TICK)
   const toast = useToast()
   const { isConnected } = useAccount()
 

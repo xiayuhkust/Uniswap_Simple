@@ -1,6 +1,6 @@
 // Constants from TickMath.sol
-export const MIN_TICK = -887272
-export const MAX_TICK = 887272
+export const MIN_TICK = -887220
+export const MAX_TICK = 887220
 
 /**
  * Validates that the given tick range is valid according to TickMath constraints
