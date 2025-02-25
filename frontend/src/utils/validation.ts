@@ -32,8 +32,7 @@ export function isValidAmount(value: string): boolean {
   if (value === '.') return false
   if (isNaN(Number(value))) return false
   if (Number(value) < 0) return false
-  // Allow zero values
-  return true
+  return true // Allow any non-negative number including zero
 }
 
 /**
