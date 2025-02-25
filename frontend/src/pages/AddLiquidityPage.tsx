@@ -33,15 +33,39 @@ export function AddLiquidityPage() {
   // Find pool data from poolList
   const pool = pools.find(p => p.address === validatedPoolAddress)
 
-  const handleTickRangeChange = (lower: number, upper: number) => {
+  const [isCalculating, setIsCalculating] = useState(false)
+  const [calculationError, setCalculationError] = useState<string | null>(null)
+
+  const handleTickRangeChange = async (lower: number, upper: number) => {
     setLowerTick(lower)
     setUpperTick(upper)
     
-    // Recalculate amounts based on new tick range
-    if (isAmount0Active && amount0) {
-      setAmount1(calculateAmount1ForAmount0(amount0))
-    } else if (!isAmount0Active && amount1) {
-      setAmount0(calculateAmount0ForAmount1(amount1))
+    setIsCalculating(true)
+    setCalculationError(null)
+    
+    try {
+      // Recalculate amounts based on new tick range
+      if (isAmount0Active && amount0) {
+        const amount1 = calculateAmount1ForAmount0(amount0)
+        if (!amount1) throw new Error("Failed to calculate amount1")
+        setAmount1(amount1)
+      } else if (!isAmount0Active && amount1) {
+        const amount0 = calculateAmount0ForAmount1(amount1)
+        if (!amount0) throw new Error("Failed to calculate amount0")
+        setAmount0(amount0)
+      }
+    } catch (error) {
+      const err = error as Error
+      setCalculationError(err.message || "Failed to calculate amounts")
+      toast({
+        title: "Calculation Error",
+        description: err.message || "Failed to calculate amounts",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+    } finally {
+      setIsCalculating(false)
     }
   }
 
@@ -96,12 +120,29 @@ export function AddLiquidityPage() {
                 value={amount0}
                 onChange={(value) => {
                   setAmount0(value)
-                  setAmount1(calculateAmount1ForAmount0(value))
+                  setIsCalculating(true)
+                  try {
+                    const amount1 = calculateAmount1ForAmount0(value)
+                    setAmount1(amount1)
+                    setCalculationError(null)
+                  } catch (error) {
+                    const err = error as Error
+                    setCalculationError(err.message || "Failed to calculate amount1")
+                  } finally {
+                    setIsCalculating(false)
+                  }
                   setIsAmount0Active(true)
                 }}
                 placeholder="0.0"
                 size="lg"
+                isDisabled={isCalculating}
+                isInvalid={!!calculationError}
               />
+              {calculationError && (
+                <Text fontSize="sm" color="red.500" mt={1}>
+                  {calculationError}
+                </Text>
+              )}
             </Box>
 
             <Box>
@@ -110,12 +151,29 @@ export function AddLiquidityPage() {
                 value={amount1}
                 onChange={(value) => {
                   setAmount1(value)
-                  setAmount0(calculateAmount0ForAmount1(value))
+                  setIsCalculating(true)
+                  try {
+                    const amount0 = calculateAmount0ForAmount1(value)
+                    setAmount0(amount0)
+                    setCalculationError(null)
+                  } catch (error) {
+                    const err = error as Error
+                    setCalculationError(err.message || "Failed to calculate amount0")
+                  } finally {
+                    setIsCalculating(false)
+                  }
                   setIsAmount0Active(false)
                 }}
                 placeholder="0.0"
                 size="lg"
+                isDisabled={isCalculating}
+                isInvalid={!!calculationError}
               />
+              {calculationError && (
+                <Text fontSize="sm" color="red.500" mt={1}>
+                  {calculationError}
+                </Text>
+              )}
             </Box>
 
             <HStack spacing={4} width="100%">
