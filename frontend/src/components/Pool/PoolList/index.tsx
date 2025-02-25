@@ -11,13 +11,13 @@ import {
   Td,
   Spinner,
   HStack,
-  Button
+  Button,
+  useToast
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { usePoolList } from '../../../hooks/usePoolList'
 import { formatUnits } from 'viem'
 import { useMemo } from 'react'
-import { TEST_TOKENS } from '../../Swap/TokenList'
 
 function formatFeeAmount(fee: number): string {
   return `${(fee / 10000).toFixed(2)}%`
@@ -30,14 +30,23 @@ function formatTokenAmount(amount: bigint): string {
   })
 }
 
-function getTokenSymbol(address: string): string {
-  const token = TEST_TOKENS.find(t => t.address.toLowerCase() === address.toLowerCase())
-  return token?.symbol || `${address.slice(0, 6)}...${address.slice(-4)}`
-}
-
 export function PoolList() {
   const navigate = useNavigate()
-  const { pools, isLoading } = usePoolList()
+  const { pools, isLoading, error, refetch } = usePoolList()
+  const toast = useToast()
+
+  // Show error toast if there's an error
+  useMemo(() => {
+    if (error) {
+      toast({
+        title: 'Error loading pools',
+        description: error.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [error, toast]);
 
   const sortedPools = useMemo(() => 
     [...(pools || [])].sort((a, b) => Number(b.volume7d - a.volume7d))
@@ -68,14 +77,33 @@ export function PoolList() {
   return (
     <Box p={6} borderRadius="xl" borderWidth="1px" width="100%">
       <VStack spacing={4} align="start" width="100%">
-        <Heading size="md">All Pools</Heading>
+        <HStack justifyContent="space-between" width="100%">
+          <Heading size="md">All Pools</Heading>
+          <HStack>
+            <Button
+              size="sm"
+              onClick={() => refetch()}
+              isLoading={isLoading}
+            >
+              Refresh
+            </Button>
+            <Button
+              colorScheme="blue"
+              size="sm"
+              onClick={() => navigate('/pool/create')}
+            >
+              Create Pool
+            </Button>
+          </HStack>
+        </HStack>
         <Box overflowX="auto" width="100%">
           <Table variant="simple">
             <Thead>
               <Tr>
                 <Th>Pool</Th>
                 <Th>Fee</Th>
-                <Th isNumeric>7d Volume</Th>
+                <Th>Liquidity</Th>
+                <Th>Volume (24h)</Th>
                 <Th></Th>
               </Tr>
             </Thead>
@@ -84,16 +112,19 @@ export function PoolList() {
                 <Tr key={pool.address}>
                   <Td>
                     <HStack spacing={1}>
-                      <Text>{getTokenSymbol(pool.token0)}</Text>
+                      <Text>{pool.token0Symbol}</Text>
                       <Text color="gray.500">/</Text>
-                      <Text>{getTokenSymbol(pool.token1)}</Text>
+                      <Text>{pool.token1Symbol}</Text>
                     </HStack>
                   </Td>
                   <Td>{formatFeeAmount(pool.fee)}</Td>
-                  <Td isNumeric>{formatTokenAmount(pool.volume7d)} TURA</Td>
+                  <Td>{formatTokenAmount(pool.liquidity)}</Td>
+                  <Td>{formatTokenAmount(pool.volume7d)} TURA</Td>
                   <Td>
                     <Button
                       size="sm"
+                      colorScheme="blue"
+                      variant="outline"
                       onClick={() => navigate(`/pool/${pool.address}/add`)}
                     >
                       Add Liquidity

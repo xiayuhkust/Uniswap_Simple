@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { usePublicClient } from 'wagmi';
 import { type Address } from 'viem';
-import { FEE_TIERS } from './usePoolVolume';
-import { FACTORY_ABI } from '../utils/contracts';
-import { CONTRACT_ADDRESSES } from '../constants/addresses';
-import { stringToBigInt, ZERO_BIGINT } from '../utils/bigint';
+import { useWebSocket } from './useWebSocket';
+import { Pool as BackendPool } from '../types/pool';
+import { formatUnits } from 'viem';
 
-type HexString = `0x${string}`;
+// Define API URL from environment variables
+const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
+// Define the Pool interface for frontend use
 export interface Pool {
   address: Address;
   token0Symbol: string;
@@ -18,70 +18,93 @@ export interface Pool {
   currentPrice: number | null;
 }
 
-interface TokenPair {
-  tokens: [HexString, HexString];
-  symbols: [string, string];
-}
+// Convert backend pool to frontend pool format
+const convertBackendPool = (backendPool: BackendPool): Pool => {
+  return {
+    address: backendPool.address as Address,
+    token0Symbol: backendPool.token0Symbol,
+    token1Symbol: backendPool.token1Symbol,
+    fee: backendPool.fee,
+    volume7d: backendPool.volume24h ? BigInt(backendPool.volume24h) : BigInt(0),
+    liquidity: backendPool.liquidity ? BigInt(backendPool.liquidity) : BigInt(0),
+    currentPrice: backendPool.sqrtPriceX96 ? parseFloat(formatUnits(BigInt(backendPool.sqrtPriceX96), 18)) : null
+  };
+};
 
 export const usePoolList = () => {
   const [pools, setPools] = useState<Pool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const publicClient = usePublicClient();
+  const [error, setError] = useState<Error | null>(null);
+  const { isConnected, subscribe } = useWebSocket();
 
-  useEffect(() => {
-    const fetchPools = async () => {
-      if (!publicClient) return;
+  // Fetch pools from API
+  const fetchPools = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${API_URL}/api/pools`);
       
-      try {
-        setIsLoading(true);
-        const pairs: TokenPair[] = [
-          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString, CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString], symbols: ['TT1', 'TT2'] },
-          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString, CONTRACT_ADDRESSES.WETH as HexString], symbols: ['TT1', 'WTURA'] },
-          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString, CONTRACT_ADDRESSES.WETH as HexString], symbols: ['TT2', 'WTURA'] }
-        ];
-
-        const poolPromises = pairs.map(async (pair) => {
-          const factory = {
-            address: CONTRACT_ADDRESSES.FACTORY as HexString,
-            abi: FACTORY_ABI,
-          };
-
-          const poolAddress = await publicClient.readContract({
-            ...factory,
-            functionName: 'getPool',
-            args: [pair.tokens[0], pair.tokens[1], FEE_TIERS.MEDIUM]
-          });
-
-          if (poolAddress === CONTRACT_ADDRESSES.ZERO) {
-            return null;
-          }
-
-          // Return test data for the first pool
-          return {
-            address: poolAddress as Address,
-            token0Symbol: pair.symbols[0],
-            token1Symbol: pair.symbols[1],
-            fee: FEE_TIERS.MEDIUM,
-            volume7d: stringToBigInt('1'),
-            liquidity: pair.symbols[0] === 'TT1' && pair.symbols[1] === 'TT2' 
-              ? stringToBigInt('1')  // Test pool with liquidity
-              : ZERO_BIGINT,
-            currentPrice: null  // Let usePoolData handle price calculation
-          };
-        });
-
-        const poolResults = await Promise.all(poolPromises);
-        const validPools = poolResults.filter((pool): pool is NonNullable<typeof pool> => pool !== null);
-        setPools(validPools);
-      } catch (error) {
-        console.error('Error fetching pools:', error);
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to fetch pools');
       }
-    };
+      
+      const data: BackendPool[] = await response.json();
+      const convertedPools = data.map(convertBackendPool);
+      setPools(convertedPools);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching pools:', err);
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Initial fetch
+  useEffect(() => {
     fetchPools();
-  }, [publicClient]);
+  }, []);
 
-  return { pools, isLoading };
+  // Subscribe to WebSocket events
+  useEffect(() => {
+    if (!isConnected) return;
+
+    // Subscribe to pool updates
+    const unsubscribeUpdated = subscribe<BackendPool>('pool:updated', (data: BackendPool) => {
+      setPools((prevPools) => {
+        const index = prevPools.findIndex((p) => p.address === data.address as Address);
+        if (index === -1) return prevPools;
+        
+        const newPools = [...prevPools];
+        newPools[index] = convertBackendPool(data);
+        return newPools;
+      });
+    });
+
+    // Subscribe to new pools
+    const unsubscribeCreated = subscribe<BackendPool>('pool:created', (data: BackendPool) => {
+      setPools((prevPools) => {
+        if (prevPools.some((p) => p.address === data.address as Address)) return prevPools;
+        return [...prevPools, convertBackendPool(data)];
+      });
+    });
+
+    // Get initial cache data
+    const unsubscribeCache = subscribe<BackendPool[]>('cache:pools', (data: BackendPool[]) => {
+      const convertedPools = data.map(convertBackendPool);
+      setPools(convertedPools);
+    });
+
+    return () => {
+      unsubscribeUpdated();
+      unsubscribeCreated();
+      unsubscribeCache();
+    };
+  }, [isConnected, subscribe]);
+
+  // Expose refetch function for manual refresh
+  const refetch = () => {
+    fetchPools();
+  };
+
+  return { pools, isLoading, error, refetch };
 };
