@@ -14,6 +14,9 @@ import {
 import type { Token } from '../types/token'
 import { TEST_TOKENS } from './Swap/TokenList'
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
+import { Address } from 'wagmi'
+
+type HexString = `0x${string}`
 
 interface TokenSelectModalProps {
   isOpen: boolean
@@ -60,7 +63,7 @@ export function TokenSelectModal({
                   />
                   <VStack spacing={0} align="flex-start">
                     <Text fontWeight="medium" color="gray.700">
-                      {token.address === CONTRACT_ADDRESSES.WETH ? 'TURA' : token.symbol}
+                      {(token.address as HexString).toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : token.symbol}
                     </Text>
                     <Text fontSize="sm" color="gray.700">
                       {token.name}
