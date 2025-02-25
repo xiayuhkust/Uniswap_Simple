@@ -6,6 +6,7 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { SwapPage } from './pages/SwapPage'
 import { PoolPage } from './pages/PoolPage'
 import { CreatePoolPage } from './pages/CreatePoolPage'
+import { AddLiquidityPage } from './pages/AddLiquidityPage'
 import { Layout } from './components/Layout/Layout'
 import { theme } from './theme'
 
@@ -62,6 +63,7 @@ function App() {
               <Route path="/" element={<SwapPage />} />
               <Route path="/pool" element={<PoolPage />} />
               <Route path="/pool/create" element={<CreatePoolPage />} />
+              <Route path="/pool/:poolAddress/add" element={<AddLiquidityPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>
