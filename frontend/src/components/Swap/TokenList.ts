@@ -1,6 +1,5 @@
 import { Token } from '../../types/token'
-
-export const WTURA_ADDRESS = '0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be'
+import { WTURA_ADDRESS, TT1_ADDRESS, TT2_ADDRESS } from '../../utils/contracts'
 
 export const TEST_TOKENS: Token[] = [
   {
@@ -11,14 +10,14 @@ export const TEST_TOKENS: Token[] = [
     logoURI: ''
   },
   {
-    address: '0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9',
+    address: TT1_ADDRESS,
     symbol: 'TT1',
     name: 'Test Token 1',
     decimals: 18,
     logoURI: ''
   },
   {
-    address: '0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122',
+    address: TT2_ADDRESS,
     symbol: 'TT2',
     name: 'Test Token 2',
     decimals: 18,
