@@ -43,7 +43,12 @@ export function usePoolData(poolAddress?: Address) {
   })
 
   const calculateAmount1ForAmount0 = (amount0: string): string => {
-    if (!slot0Data || !amount0 || isNaN(Number(amount0))) return ''
+    if (!amount0 || isNaN(Number(amount0))) return ''
+    
+    // For empty pools, return the same amount (1:1 ratio)
+    if (!slot0Data || slot0Data.sqrtPriceX96 === 0n) {
+      return amount0
+    }
     
     const slot0 = slot0Data as unknown as Slot0
     
@@ -60,7 +65,12 @@ export function usePoolData(poolAddress?: Address) {
   }
 
   const calculateAmount0ForAmount1 = (amount1: string): string => {
-    if (!slot0Data || !amount1 || isNaN(Number(amount1))) return ''
+    if (!amount1 || isNaN(Number(amount1))) return ''
+    
+    // For empty pools, return the same amount (1:1 ratio)
+    if (!slot0Data || slot0Data.sqrtPriceX96 === 0n) {
+      return amount1
+    }
     
     const slot0 = slot0Data as unknown as Slot0
     
