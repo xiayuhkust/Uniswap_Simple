@@ -4,6 +4,7 @@ import { ArrowDownIcon } from '@chakra-ui/icons'
 import { useAccount, useConnect } from 'wagmi'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
+import { INPUT_ERRORS } from '../../constants/errors'
 import { stringToBigInt } from '../../utils/bigint'
 import { isValidAmount } from '../../utils/validation'
 
@@ -17,18 +18,9 @@ export function SwapInterface() {
   const toast = useToast()
 
   const validateAmounts = (input: string, output: string): string | null => {
-    if (!input || !output) return "Please enter amounts"
-    if (!isValidAmount(input) || !isValidAmount(output)) return "Invalid amount format"
-    try {
-      const inputBigInt = stringToBigInt(input)
-      const outputBigInt = stringToBigInt(output)
-      if (inputBigInt <= 0n || outputBigInt <= 0n) {
-        return "Amount must be greater than 0"
-      }
-      return null
-    } catch {
-      return "Invalid amount format"
-    }
+    if (!input || !output) return INPUT_ERRORS.EMPTY_AMOUNT
+    if (!isValidAmount(input) || !isValidAmount(output)) return INPUT_ERRORS.INVALID_FORMAT
+    return null
   }
 
   const handleSwap = async () => {

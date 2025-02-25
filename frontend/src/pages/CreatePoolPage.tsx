@@ -144,31 +144,22 @@ export function CreatePoolPage() {
 
   const validatePool = () => {
     if (!token0 || !token1) {
-      return "Please select both tokens"
+      return INPUT_ERRORS.NO_TOKENS
     }
     if (token0.address === token1.address) {
-      return "Cannot create pool with same token"
+      return INPUT_ERRORS.SAME_TOKEN
     }
     if (!fee) {
-      return "Please select a fee tier"
+      return INPUT_ERRORS.NO_FEE
     }
     if (lowerTick >= upperTick) {
-      return "Invalid price range"
+      return INPUT_ERRORS.INVALID_RANGE
     }
-    try {
-      if (!token0Amount || !token1Amount) {
-        return "Please enter amounts for both tokens"
-      }
-      if (!isValidAmount(token0Amount) || !isValidAmount(token1Amount)) {
-        return "Invalid amount format"
-      }
-      const amount0BigInt = stringToBigInt(token0Amount)
-      const amount1BigInt = stringToBigInt(token1Amount)
-      if (amount0BigInt <= 0n || amount1BigInt <= 0n) {
-        return "Amount must be greater than 0"
-      }
-    } catch {
-      return "Invalid amount format"
+    if (!token0Amount || !token1Amount) {
+      return INPUT_ERRORS.EMPTY_AMOUNT
+    }
+    if (!isValidAmount(token0Amount) || !isValidAmount(token1Amount)) {
+      return INPUT_ERRORS.INVALID_FORMAT
     }
     return null
   }
@@ -214,17 +205,7 @@ export function CreatePoolPage() {
             width="100%"
             variant="uniswap"
             isDisabled={!token0 || !token1 || !fee || !token0Amount || !token1Amount || 
-              (() => {
-                try {
-                  if (!token0Amount || !token1Amount) return true
-                  if (!isValidAmount(token0Amount) || !isValidAmount(token1Amount)) return true
-                  const amount0BigInt = stringToBigInt(token0Amount)
-                  const amount1BigInt = stringToBigInt(token1Amount)
-                  return amount0BigInt <= 0n || amount1BigInt <= 0n
-                } catch {
-                  return true
-                }
-              })() || 
+              !isValidAmount(token0Amount) || !isValidAmount(token1Amount) || 
               lowerTick >= upperTick}
             onClick={() => {
               const error = validatePool()

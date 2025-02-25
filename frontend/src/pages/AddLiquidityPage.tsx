@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { INPUT_ERRORS } from '../constants/errors'
 import { VStack, Box, Text, Button, useToast, HStack, Spinner } from '@chakra-ui/react'
 import { NumberInput } from '../components/NumberInput'
 import { TickRangeInput } from '../components/TickRangeInput'
@@ -44,16 +45,9 @@ export function AddLiquidityPage() {
   const [validationError, setValidationError] = useState<string | null>(null)
 
   const validateAmounts = (amount0: string, amount1: string): string | null => {
-    if (!amount0 || !amount1) return "Please enter amounts for both tokens"
-    if (!isValidAmount(amount0) || !isValidAmount(amount1)) return "Invalid amount"
-    try {
-      const amount0BigInt = stringToBigInt(amount0)
-      const amount1BigInt = stringToBigInt(amount1)
-      if (amount0BigInt <= 0n || amount1BigInt <= 0n) return "Amount must be greater than 0"
-      return null
-    } catch (error) {
-      return "Invalid amount format"
-    }
+    if (!amount0 || !amount1) return INPUT_ERRORS.EMPTY_AMOUNT
+    if (!isValidAmount(amount0) || !isValidAmount(amount1)) return INPUT_ERRORS.INVALID_FORMAT
+    return null
   }
 
   const handleTickRangeChange = async (lower: number, upper: number) => {
