@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
 import { type Address } from 'viem';
 import { FEE_TIERS } from './usePoolVolume';
-import { FACTORY_ADDRESS, TT1_ADDRESS, TT2_ADDRESS, WTURA_ADDRESS, FACTORY_ABI } from '../utils/contracts';
+import { FACTORY_ABI } from '../utils/contracts';
+import { CONTRACT_ADDRESSES } from '../constants/addresses';
 import { stringToBigInt, ZERO_BIGINT } from '../utils/bigint';
 
 type HexString = `0x${string}`;
@@ -28,10 +29,10 @@ export const usePoolList = () => {
   const publicClient = usePublicClient();
 
   useEffect(() => {
-    const factoryAddress = FACTORY_ADDRESS as HexString;
-    const TT1 = TT1_ADDRESS as HexString;
-    const TT2 = TT2_ADDRESS as HexString;
-    const WTURA = WTURA_ADDRESS as HexString;
+    const factoryAddress = CONTRACT_ADDRESSES.FACTORY as HexString;
+    const TT1 = CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString;
+    const TT2 = CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString;
+    const WTURA = CONTRACT_ADDRESSES.WETH as HexString;
 
     const fetchPools = async () => {
       if (!publicClient) return;
