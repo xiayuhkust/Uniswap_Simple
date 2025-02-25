@@ -12,7 +12,8 @@ import {
   Button
 } from '@chakra-ui/react'
 import type { Token } from '../types/token'
-import { WTURA_ADDRESS, TEST_TOKENS } from './Swap/TokenList'
+import { TEST_TOKENS } from './Swap/TokenList'
+import { CONTRACT_ADDRESSES } from '../constants/addresses'
 
 interface TokenSelectModalProps {
   isOpen: boolean
@@ -59,7 +60,7 @@ export function TokenSelectModal({
                   />
                   <VStack spacing={0} align="flex-start">
                     <Text fontWeight="medium" color="gray.700">
-                      {token.address === WTURA_ADDRESS ? 'TURA' : token.symbol}
+                      {token.address === CONTRACT_ADDRESSES.WETH ? 'TURA' : token.symbol}
                     </Text>
                     <Text fontSize="sm" color="gray.700">
                       {token.name}
