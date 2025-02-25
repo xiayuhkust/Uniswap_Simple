@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { type Address } from 'viem';
+import { type Address, type Abi, type ExtractAbiEvent } from 'viem';
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json';
 
-const PoolABI = IUniswapV3Pool.abi;
+const POOL_ABI = IUniswapV3Pool.abi as Abi;
+const SWAP_EVENT = POOL_ABI.find(
+  (x): x is ExtractAbiEvent<typeof POOL_ABI> => x.type === 'event' && x.name === 'Swap'
+);
 
 export const FEE_TIERS = {
   LOW: 500,    // 0.05%
@@ -30,14 +33,14 @@ export const usePoolVolume = (poolAddress: Address) => {
         setIsLoading(true);
         const logs = await publicClient.getLogs({
           address: poolAddress as `0x${string}`,
-          event: PoolABI[0],
+          event: SWAP_EVENT,
           fromBlock: startTime,
           toBlock: 'latest'
         });
         
         const totalVolume = logs.reduce((acc, log) => {
-          const amount0 = BigInt(log.args.amount0 || 0);
-          const amount1 = BigInt(log.args.amount1 || 0);
+          const amount0 = BigInt(log.args?.amount0 ?? 0);
+          const amount1 = BigInt(log.args?.amount1 ?? 0);
           // Take absolute values since amounts can be negative for sells
           return acc + 
             (amount0 >= 0n ? amount0 : -amount0) +
@@ -56,11 +59,11 @@ export const usePoolVolume = (poolAddress: Address) => {
     // Watch for new swap events
     const unwatch = publicClient.watchEvent({
       address: poolAddress as `0x${string}`,
-      event: PoolABI[0],
+      event: SWAP_EVENT,
       onLogs: logs => {
         logs.forEach(log => {
-          const amount0 = BigInt(log.args.amount0 || 0);
-          const amount1 = BigInt(log.args.amount1 || 0);
+          const amount0 = BigInt(log.args?.amount0 ?? 0);
+          const amount1 = BigInt(log.args?.amount1 ?? 0);
           setVolume(prev => prev + 
             (amount0 >= 0n ? amount0 : -amount0) +
             (amount1 >= 0n ? amount1 : -amount1)
