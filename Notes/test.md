@@ -87,24 +87,38 @@
   * Token amount inputs:
     - Two input boxes for token1 and token2
     - Automatic amount calculation based on pool price
-    - Input validation
+    - Input validation:
+      * Both amounts required
+      * Valid numbers only
+      * Greater than 0
+    - Error messages for invalid inputs
   * Price range selection:
     - Full Range (-887220 to 887220)
     - Concentrated (-443610 to 443610)
     - Tick validation
-  * UI elements:
-    - Add liquidity button
-    - Withdraw liquidity button (disabled)
-    - Loading states
-    - Error messages
+    - Price range validation
+  * Loading states:
+    - Pool data loading
+    - Amount calculation loading
+    - Contract interaction loading
   * Error handling:
+    - Invalid pool address format
+    - Pool not found
     - Invalid amounts
     - Invalid price range
     - Contract errors
+    - Calculation errors
+  * UI elements:
+    - Add liquidity button
+    - Withdraw liquidity button (disabled)
+    - Loading spinners
+    - Error messages
+    - Current price display
 - Results:
   * All UI elements render correctly
   * Amount calculations work as expected
   * Error handling works properly
+  * Loading states display correctly
   * TypeScript compilation passes
   * Note: Wallet-related functionality to be tested by user
 
