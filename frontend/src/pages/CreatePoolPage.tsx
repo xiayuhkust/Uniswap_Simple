@@ -6,8 +6,8 @@ import { TickRangeInput } from '../components/TickRangeInput'
 import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
 import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
-
-const DECIMALS = 18
+import { stringToBigInt } from '../utils/bigint'
+import { isValidAmount } from '../utils/validation'
 
 
 export function CreatePoolPage() {
@@ -159,17 +159,11 @@ export function CreatePoolPage() {
       if (!token0Amount || !token1Amount) {
         return "Please enter amounts for both tokens"
       }
-      // Convert to BigInt using string operations to avoid floating point precision issues
-      const amount0Scaled = token0Amount.includes('.') 
-        ? token0Amount.padEnd(token0Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
-        : token0Amount + '0'.repeat(DECIMALS)
-      const amount1Scaled = token1Amount.includes('.')
-        ? token1Amount.padEnd(token1Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
-        : token1Amount + '0'.repeat(DECIMALS)
-      
-      const amount0BigInt = BigInt(amount0Scaled)
-      const amount1BigInt = BigInt(amount1Scaled)
-      
+      if (!isValidAmount(token0Amount) || !isValidAmount(token1Amount)) {
+        return "Invalid amount format"
+      }
+      const amount0BigInt = stringToBigInt(token0Amount)
+      const amount1BigInt = stringToBigInt(token1Amount)
       if (amount0BigInt <= 0n || amount1BigInt <= 0n) {
         return "Amount must be greater than 0"
       }
@@ -223,15 +217,9 @@ export function CreatePoolPage() {
               (() => {
                 try {
                   if (!token0Amount || !token1Amount) return true
-                  const amount0Scaled = token0Amount.includes('.') 
-                    ? token0Amount.padEnd(token0Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
-                    : token0Amount + '0'.repeat(DECIMALS)
-                  const amount1Scaled = token1Amount.includes('.')
-                    ? token1Amount.padEnd(token1Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
-                    : token1Amount + '0'.repeat(DECIMALS)
-                  
-                  const amount0BigInt = BigInt(amount0Scaled)
-                  const amount1BigInt = BigInt(amount1Scaled)
+                  if (!isValidAmount(token0Amount) || !isValidAmount(token1Amount)) return true
+                  const amount0BigInt = stringToBigInt(token0Amount)
+                  const amount1BigInt = stringToBigInt(token1Amount)
                   return amount0BigInt <= 0n || amount1BigInt <= 0n
                 } catch {
                   return true
