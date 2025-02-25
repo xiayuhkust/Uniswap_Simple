@@ -14,7 +14,6 @@ export function SwapInterface() {
   const [outputAmount, setOutputAmount] = useState('')
   const [inputToken, setInputToken] = useState<Token>()
   const [outputToken, setOutputToken] = useState<Token>()
-  const [validationError, setValidationError] = useState<string | null>(null)
   const toast = useToast()
 
   const validateAmounts = (input: string, output: string): string | null => {
@@ -43,7 +42,6 @@ export function SwapInterface() {
       }
 
       const error = validateAmounts(inputAmount, outputAmount)
-      setValidationError(error)
       if (error) {
         throw new Error(error)
       }

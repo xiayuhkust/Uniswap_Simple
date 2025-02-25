@@ -1,7 +1,7 @@
 import { useContractRead } from 'wagmi'
 import { type Address } from 'viem'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
-import { DECIMALS, Q96_SHIFT, ZERO_BIGINT, stringToBigInt, calculatePrice, formatPrice } from '../utils/bigint'
+import { Q96_SHIFT, ZERO_BIGINT, stringToBigInt, calculatePrice, formatPrice } from '../utils/bigint'
 import { isValidAmount } from '../utils/validation'
 
 interface Slot0Result {
