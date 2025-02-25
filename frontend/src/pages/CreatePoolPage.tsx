@@ -18,7 +18,7 @@ export function CreatePoolPage() {
   const toast = useToast()
   const { isConnected } = useAccount()
 
-  const feeValue = fee === '0.05%' ? FEES.LOWEST : fee === '0.3%' ? FEES.MEDIUM : 0
+  const feeValue = fee === '0.05%' ? FEES.LOWEST : fee === '0.3%' ? FEES.MEDIUM : undefined
   const { data: existingPool } = useGetPool(
     token0?.address as Address,
     token1?.address as Address,
