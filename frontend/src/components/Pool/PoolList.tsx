@@ -48,7 +48,7 @@ export const PoolList: FC = () => {
                     </Td>
                     <Td color="black">
                       {pool.currentPrice !== null && pool.liquidity > 0n
-                        ? `${pool.currentPrice.toFixed(6)} ${pool.token1Symbol}/${pool.token0Symbol}`
+                        ? `${(pool.currentPrice || 0).toFixed(6)} ${pool.token1Symbol}/${pool.token0Symbol}`
                         : '-'}
                     </Td>
                     <Td color="black">

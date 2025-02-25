@@ -3,12 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { VStack, Box, Text, Button, useToast, HStack, Spinner } from '@chakra-ui/react'
 import { NumberInput } from '../components/NumberInput'
 import { TickRangeInput } from '../components/TickRangeInput'
-import { usePoolList } from '../hooks/usePoolList'
+import { usePoolList, type Pool } from '../hooks/usePoolList'
 import { usePoolData } from '../hooks/usePoolData'
 import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
-// Pool type is inferred from usePoolList hook
 
 
 export function AddLiquidityPage() {

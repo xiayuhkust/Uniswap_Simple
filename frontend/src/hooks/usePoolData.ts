@@ -65,6 +65,7 @@ export function usePoolData(poolAddress?: Address) {
     
     // Calculate price from sqrtPriceX96 using Q64.96 format
     const sqrtPriceX96 = slot0.sqrtPriceX96
+    if (sqrtPriceX96 === 0n) return amount0
     const price = Number(sqrtPriceX96 * sqrtPriceX96) / (2 ** 192)
     return (Number(amount0) * price).toString()
   }

@@ -18,7 +18,6 @@ export interface Pool {
   volume7d: bigint;
   liquidity: bigint;
   currentPrice: number | null;
-  sqrtPriceX96?: bigint;
 }
 
 interface TokenPair {
