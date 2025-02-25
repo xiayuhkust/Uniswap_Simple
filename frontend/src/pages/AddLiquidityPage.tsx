@@ -239,8 +239,8 @@ export function AddLiquidityPage() {
               <Text mb={2} color="gray.600">Price Range</Text>
               <TickRangeInput onRangeChange={handleTickRangeChange} />
               <Text mt={2} fontSize="sm" color="gray.500">
-                Current Price: {slot0 && slot0.sqrtPriceX96 !== ZERO_BIGINT
-                  ? formatPrice(calculatePrice(slot0.sqrtPriceX96))
+                Current Price: {slot0 && slot0.sqrtPriceX96 && slot0.sqrtPriceX96 !== ZERO_BIGINT
+                  ? formatPrice(calculatePrice(BigInt(slot0.sqrtPriceX96)))
                   : '0.000000'} {pool.token1Symbol} per {pool.token0Symbol}
               </Text>
             </Box>
