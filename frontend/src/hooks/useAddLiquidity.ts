@@ -1,11 +1,11 @@
 import { useContractWrite, useContractRead, Address, erc20ABI } from 'wagmi'
-import { POOL_ABI } from '../constants/abis'
 import { useState, useCallback } from 'react'
 import { parseUnits } from 'viem'
+import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
+import IUniswapV3Manager from '../abi/IUniswapV3Manager.json'
 
-const MANAGER_ABI = [
-  'function mint(address pool, int24 tickLower, int24 tickUpper, uint128 amount0Desired, uint128 amount1Desired, uint256 deadline) external returns (uint256 amount0, uint256 amount1, uint256 liquidity)',
-]
+const POOL_ABI = IUniswapV3Pool.abi
+const MANAGER_ABI = IUniswapV3Manager.abi
 
 interface AddLiquidityError extends Error {
   code?: string;
