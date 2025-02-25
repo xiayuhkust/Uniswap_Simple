@@ -10,7 +10,7 @@ import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
 import { validateTicks, MIN_TICK, MAX_TICK } from '../constants/ticks'
-import { ZERO_BIGINT, stringToBigInt, bigIntToString, calculatePrice, formatPrice } from '../utils/bigint'
+import { ZERO_BIGINT, stringToBigInt, calculatePrice, formatPrice } from '../utils/bigint'
 import { isValidAmount } from '../utils/validation'
 
 
@@ -34,9 +34,6 @@ export function AddLiquidityPage() {
   
   // Find pool data from poolList
   const pool = pools.find(p => p.address === validatedPoolAddress)
-
-  // Use test price for TT1/TT2 pool
-  const testPrice = pool?.token0Symbol === 'TT1' && pool?.token1Symbol === 'TT2' ? 1.5 : null
 
   const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
 
@@ -157,16 +154,7 @@ export function AddLiquidityPage() {
                   setAmount0(value)
                   setIsCalculating(true)
                   try {
-                    let amount1
-                    if (testPrice) {
-                      // Use simple price calculation for test pool
-                      const valueBigInt = stringToBigInt(value)
-                      const scaledPrice = BigInt(Math.floor(testPrice * 1e6))
-                      const result = (valueBigInt * scaledPrice) / BigInt(1e6)
-                      amount1 = bigIntToString(result)
-                    } else {
-                      amount1 = calculateAmount1ForAmount0(value)
-                    }
+                    const amount1 = calculateAmount1ForAmount0(value)
                     setAmount1(amount1)
                     setCalculationError(null)
                     const error = validateAmounts(value, amount1)
@@ -199,16 +187,7 @@ export function AddLiquidityPage() {
                   setAmount1(value)
                   setIsCalculating(true)
                   try {
-                    let amount0
-                    if (testPrice) {
-                      // Use simple price calculation for test pool
-                      const valueBigInt = stringToBigInt(value)
-                      const scaledPrice = BigInt(Math.floor(testPrice * 1e6))
-                      const result = (valueBigInt * BigInt(1e6)) / scaledPrice
-                      amount0 = bigIntToString(result)
-                    } else {
-                      amount0 = calculateAmount0ForAmount1(value)
-                    }
+                    const amount0 = calculateAmount0ForAmount1(value)
                     setAmount0(amount0)
                     setCalculationError(null)
                     const error = validateAmounts(amount0, value)
