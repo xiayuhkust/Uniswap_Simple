@@ -43,7 +43,10 @@ export function usePoolData(poolAddress?: Address) {
       if (!amount0 || !isValidAmount(amount0)) return ''
       
       const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
-      if (!slot0) return ''
+      if (!slot0 || slot0.sqrtPriceX96 === undefined) {
+        console.error('Invalid slot0 data:', slot0Data)
+        return ''
+      }
       
       // For empty pools, use 1:1 ratio
       if (slot0.sqrtPriceX96 === ZERO_BIGINT) {
@@ -79,7 +82,10 @@ export function usePoolData(poolAddress?: Address) {
       if (!amount1 || !isValidAmount(amount1)) return ''
       
       const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
-      if (!slot0) return ''
+      if (!slot0 || slot0.sqrtPriceX96 === undefined) {
+        console.error('Invalid slot0 data:', slot0Data)
+        return ''
+      }
       
       // For empty pools, use 1:1 ratio
       if (slot0.sqrtPriceX96 === ZERO_BIGINT) {
@@ -110,13 +116,13 @@ export function usePoolData(poolAddress?: Address) {
   }
 
   const parseSlot0Data = (data: any): Slot0Result => ({
-    sqrtPriceX96: data.sqrtPriceX96,
-    tick: data.tick,
-    observationIndex: data.observationIndex,
-    observationCardinality: data.observationCardinality,
-    observationCardinalityNext: data.observationCardinalityNext,
-    feeProtocol: data.feeProtocol,
-    unlocked: data.unlocked
+    sqrtPriceX96: BigInt(data.sqrtPriceX96 || 0),
+    tick: Number(data.tick),
+    observationIndex: Number(data.observationIndex),
+    observationCardinality: Number(data.observationCardinality),
+    observationCardinalityNext: Number(data.observationCardinalityNext),
+    feeProtocol: Number(data.feeProtocol),
+    unlocked: Boolean(data.unlocked)
   })
 
   return {
