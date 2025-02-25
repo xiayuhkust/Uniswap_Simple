@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { VStack, Button, Box, Text, useToast } from '@chakra-ui/react'
 import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
+
 import { TokenSelect } from '../components/TokenSelect'
 import { TickRangeInput } from '../components/TickRangeInput'
+
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { MIN_TICK, MAX_TICK } from '../constants/ticks'
 import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
 import { isValidAmount } from '../utils/validation'
 import { INPUT_ERRORS } from '../constants/errors'
-import { type Token } from '../types/token'
+
+import type { Token } from '../types/token'
 
 
 export function CreatePoolPage() {
