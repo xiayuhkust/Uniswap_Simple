@@ -25,7 +25,7 @@ export function useGetPool(tokenA: Address, tokenB: Address, fee: number) {
     functionName: 'getPool',
     args: [tokenA, tokenB, fee],
     enabled: !!tokenA && !!tokenB && fee > 0,
-  })
+  } as const)
 }
 
 export function useCreatePool() {

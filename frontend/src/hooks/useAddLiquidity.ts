@@ -46,7 +46,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     abi: POOL_ABI,
     functionName: 'token0',
     enabled: !!poolAddress,
-  })
+  } as const)
   const token0 = token0Data ? (typeof token0Data === 'string' ? token0Data.toLowerCase() as Address : undefined) : undefined
 
   const { data: token1Data } = useContractRead({
@@ -54,7 +54,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     abi: POOL_ABI,
     functionName: 'token1',
     enabled: !!poolAddress,
-  })
+  } as const)
   const token1 = token1Data ? (typeof token1Data === 'string' ? token1Data.toLowerCase() as Address : undefined) : undefined
 
   const { address: userAddress } = useAccount()
@@ -65,7 +65,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     functionName: 'allowance',
     args: userAddress && token0 ? [userAddress, CONTRACT_ADDRESSES.MANAGER] : undefined,
     enabled: !!token0 && !!userAddress,
-  })
+  } as const)
   const token0Allowance = token0AllowanceData ? BigInt(token0AllowanceData.toString()) : undefined
 
   const { data: token1AllowanceData } = useContractRead({
@@ -74,7 +74,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     functionName: 'allowance',
     args: userAddress && token1 ? [userAddress, CONTRACT_ADDRESSES.MANAGER] : undefined,
     enabled: !!token1 && !!userAddress,
-  })
+  } as const)
   const token1Allowance = token1AllowanceData ? BigInt(token1AllowanceData.toString()) : undefined
 
   const { writeAsync: approveToken0 } = useContractWrite({
@@ -143,7 +143,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     abi: POOL_ABI,
     functionName: 'fee',
     enabled: !!poolAddress
-  })
+  } as const)
   const poolFee = poolFeeData ? Number(poolFeeData) : undefined
 
   const addLiquidityPosition = useCallback(async (

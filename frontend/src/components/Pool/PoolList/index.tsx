@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { usePoolList } from '../../../hooks/usePoolList'
 import { formatUnits } from 'viem'
 import { useMemo } from 'react'
-import { TEST_TOKENS } from '../../Swap/TokenList'
+// No longer using TEST_TOKENS
 
 function formatFeeAmount(fee: number): string {
   return `${(fee / 10000).toFixed(2)}%`
@@ -28,11 +28,6 @@ function formatTokenAmount(amount: bigint): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2
   })
-}
-
-function getTokenSymbol(address: string): string {
-  const token = TEST_TOKENS.find(t => t.address.toLowerCase() === address.toLowerCase())
-  return token?.symbol || `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
 export function PoolList() {
@@ -84,9 +79,9 @@ export function PoolList() {
                 <Tr key={pool.address}>
                   <Td>
                     <HStack spacing={1}>
-                      <Text>{getTokenSymbol(pool.token0)}</Text>
+                      <Text>{pool.token0Symbol}</Text>
                       <Text color="gray.500">/</Text>
-                      <Text>{getTokenSymbol(pool.token1)}</Text>
+                      <Text>{pool.token1Symbol}</Text>
                     </HStack>
                   </Td>
                   <Td>{formatFeeAmount(pool.fee)}</Td>

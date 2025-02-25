@@ -40,7 +40,7 @@ export const useWebSocket = () => {
       console.log('WebSocket disconnected');
     });
 
-    socketInstance.on('connect_error', (error) => {
+    socketInstance.on('connect_error', (error: Error) => {
       console.error('WebSocket connection error:', error);
       toast({
         title: 'Connection Error',

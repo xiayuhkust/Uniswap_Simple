@@ -22,21 +22,21 @@ export function usePoolData(poolAddress?: Address) {
     abi: POOL_INTERFACE,
     functionName: 'slot0',
     enabled: !!poolAddress
-  })
+  } as const)
 
   const { data: liquidity, isLoading: liquidityLoading } = useContractRead({
     address: poolAddress,
     abi: POOL_INTERFACE,
     functionName: 'liquidity',
     enabled: !!poolAddress
-  })
+  } as const)
 
   const { data: fee, isLoading: feeLoading } = useContractRead({
     address: poolAddress,
     abi: POOL_INTERFACE,
     functionName: 'fee',
     enabled: !!poolAddress
-  })
+  } as const)
 
   const calculateAmount1ForAmount0 = (amount0: string): string => {
     try {
