@@ -14,7 +14,6 @@ import {
 import type { Token } from '../types/token'
 import { TEST_TOKENS } from './Swap/TokenList'
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
-import { Address } from 'viem'
 
 interface TokenSelectModalProps {
   isOpen: boolean
