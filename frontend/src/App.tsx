@@ -7,6 +7,7 @@ import { SwapPage } from './pages/SwapPage'
 import { PoolPage } from './pages/PoolPage'
 import { CreatePoolPage } from './pages/CreatePoolPage'
 import { AddLiquidityPage } from './pages/AddLiquidityPage'
+import { RemoveLiquidityPage } from './pages/RemoveLiquidityPage'
 import { Layout } from './components/Layout/Layout'
 import { theme } from './theme'
 
@@ -64,6 +65,7 @@ function App() {
               <Route path="/pool" element={<PoolPage />} />
               <Route path="/pool/create" element={<CreatePoolPage />} />
               <Route path="/pool/:poolAddress/add" element={<AddLiquidityPage />} />
+              <Route path="/pool/:poolAddress/remove" element={<RemoveLiquidityPage />} />
             </Routes>
           </Layout>
         </BrowserRouter>

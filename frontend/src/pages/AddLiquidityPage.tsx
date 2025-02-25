@@ -240,7 +240,7 @@ export function AddLiquidityPage() {
               <TickRangeInput onRangeChange={handleTickRangeChange} />
               <Text mt={2} fontSize="sm" color="gray.500">
                 Current Price: {slot0 && slot0.sqrtPriceX96 !== ZERO_BIGINT
-                  ? formatPrice(calculatePrice(slot0.sqrtPriceX96))
+                  ? formatPrice(calculatePrice(BigInt(slot0.sqrtPriceX96)))
                   : '0.000000'} {pool.token1Symbol} per {pool.token0Symbol}
               </Text>
             </Box>
@@ -357,10 +357,11 @@ export function AddLiquidityPage() {
             <Button
               size="lg"
               variant="outline"
-              isDisabled={true}
+              isDisabled={!isConnected || poolDataLoading}
               _hover={{ bg: 'gray.100' }}
+              onClick={() => navigate(`/pool/${poolAddress}/remove`)}
             >
-              Withdraw Liquidity (Coming Soon)
+              Withdraw Liquidity
             </Button>
           </VStack>
         </Box>

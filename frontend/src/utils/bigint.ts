@@ -34,9 +34,16 @@ export function bigIntToString(amount: bigint): string {
 /**
  * Calculates price from sqrtPriceX96
  */
-export function calculatePrice(sqrtPriceX96: bigint): bigint {
-  if (sqrtPriceX96 === ZERO_BIGINT) return ZERO_BIGINT;
-  const squared = sqrtPriceX96 * sqrtPriceX96;
+export function calculatePrice(sqrtPriceX96: bigint | number | string): bigint {
+  // Ensure sqrtPriceX96 is a BigInt
+  const sqrtPriceBigInt = typeof sqrtPriceX96 === 'bigint' 
+    ? sqrtPriceX96 
+    : typeof sqrtPriceX96 === 'string' 
+      ? BigInt(sqrtPriceX96) 
+      : BigInt(Math.floor(sqrtPriceX96));
+  
+  if (sqrtPriceBigInt === ZERO_BIGINT) return ZERO_BIGINT;
+  const squared = sqrtPriceBigInt * sqrtPriceBigInt;
   return squared >> Q96_SHIFT;
 }
 
