@@ -47,21 +47,25 @@ export function AddLiquidityModal({ isOpen, onClose }: AddLiquidityModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
-      <ModalContent bg="gray.900" color="white">
+      <ModalContent bg="gray.900" color="gray.100">
         <ModalHeader>Add Liquidity</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
           <VStack spacing={4}>
-            <Text color="whiteAlpha.700">Select Token Pair</Text>
+            <Text color="gray.300">Select Token Pair</Text>
             <TokenSelect 
-              token={tokens[token0Index]} 
-              onSelect={handleToken0Select}
-              disabled={!tokens.length}
+              value=""
+              onChange={() => {}}
+              selectedToken={tokens[token0Index]} 
+              onTokenSelect={handleToken0Select}
+              isDisabled={!tokens.length}
             />
             <TokenSelect 
-              token={tokens[token1Index]} 
-              onSelect={handleToken1Select}
-              disabled={!tokens.length}
+              value=""
+              onChange={() => {}}
+              selectedToken={tokens[token1Index]} 
+              onTokenSelect={handleToken1Select}
+              isDisabled={!tokens.length}
             />
             <Button
               w="full"

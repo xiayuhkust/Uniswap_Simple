@@ -9,40 +9,55 @@ export const PoolList: FC = () => {
   const { pools, isLoading } = usePoolList();
 
   return (
-    <VStack spacing={4} width="100%">
+    <VStack spacing={6} width="100%">
       <Button 
-        colorScheme="blue" 
+        variant="uniswap"
         width="100%" 
         onClick={() => navigate('/pool/create')}
       >
         Create New Pool
       </Button>
-      <Box p={6} borderRadius="xl" borderWidth="1px" width="100%">
+      <Box p={6} borderRadius="16px" borderWidth="1px" borderColor="uniswap.gray.200" width="100%">
         <VStack spacing={4} align="start" width="100%">
-          <Heading size="md">All Pools</Heading>
+          <Heading size="md" color="black">All Pools</Heading>
           {isLoading ? (
-            <Spinner />
+            <Spinner color="uniswap.pink" />
           ) : pools.length === 0 ? (
-            <Text color="gray.500">No pools found</Text>
+            <Text color="uniswap.gray.500">No pools found</Text>
           ) : (
             <Table variant="simple">
-              <Thead>
+              <Thead bg="uniswap.gray.100">
                 <Tr>
-                  <Th>Pool</Th>
-                  <Th>Fee</Th>
-                  <Th>7d Volume</Th>
-                  <Th>Action</Th>
+                  <Th color="uniswap.gray.500">Pool</Th>
+                  <Th color="uniswap.gray.500">Fee</Th>
+                  <Th color="uniswap.gray.500">Total Liquidity</Th>
+                  <Th color="uniswap.gray.500">Current Price</Th>
+                  <Th color="uniswap.gray.500">7d Volume</Th>
+                  <Th color="uniswap.gray.500">Action</Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {pools.map((pool) => (
-                  <Tr key={pool.address}>
-                    <Td>{`${pool.token0.slice(0, 6)}...${pool.token0.slice(-4)} / ${pool.token1.slice(0, 6)}...${pool.token1.slice(-4)}`}</Td>
-                    <Td>{(Number(pool.fee) / 10000).toFixed(2)}%</Td>
-                    <Td>{formatUnits(pool.volume7d, 18)}</Td>
+                  <Tr key={pool.address} _hover={{ bg: 'uniswap.gray.100' }}>
+                    <Td color="black">{`${pool.token0Symbol} / ${pool.token1Symbol}`}</Td>
+                    <Td color="black">{(Number(pool.fee) / 10000).toFixed(2)}%</Td>
+                    <Td color="black">
+                      {pool.liquidity !== undefined && pool.liquidity > 0n 
+                        ? formatUnits(pool.liquidity, 18)
+                        : 'No liquidity'}
+                    </Td>
+                    <Td color="black">
+                      {pool.currentPrice !== null && pool.liquidity > 0n
+                        ? `${(pool.currentPrice || 0).toFixed(6)} ${pool.token1Symbol}/${pool.token0Symbol}`
+                        : '-'}
+                    </Td>
+                    <Td color="black">
+                      {pool.volume7d ? formatUnits(pool.volume7d, 18) : '0'}
+                    </Td>
                     <Td>
                       <Button
                         size="sm"
+                        variant="uniswap"
                         onClick={() => navigate(`/pool/${pool.address}/add`)}
                       >
                         Add Liquidity

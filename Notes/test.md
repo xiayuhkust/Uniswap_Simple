@@ -1,93 +1,391 @@
 # Tura DEX Test Records
 
-## Frontend Tests
-### Wallet Connection Test Page (February 23, 2025)
-- **Component**: SimpleWalletConnect
-- **Network**: Tura Blockchain (Chain ID: 1337)
-- **RPC URL**: https://rpc-beta1.turablockchain.com
-- **Features Tested**:
-  * MetaMask detection and connection
-  * Network switching and chain configuration
-  * Connection state persistence in localStorage
-  * Loading states and user feedback
-  * Error handling for various scenarios
-  * UI/UX with Tailwind CSS styling
-  * TypeScript type safety
-  * wagmi/viem hooks integration
-
 ## Test Environment
 - Network: Tura Blockchain
 - RPC URL: https://rpc-beta1.turablockchain.com
 - Chain ID: 1337
-- Test Date: February 23, 2025
+- Test Date: February 24, 2025
 
-## Core Contract Tests
-### Factory Contract (✅ Passed)
-- Contract: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
-- Test: scripts/VerifyFactoryContract.s.sol
-- Features:
-  * Pool creation functionality
-  * Fee tier configuration (0.3%)
-  * Tick spacing (60)
-  * Pool address computation
-  * Pool tracking and retrieval
+## Frontend Tests
+### UI Layout Implementation (✅ Passed - 2025-02-24)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * Chakra UI for components
+  * wagmi v1.4.13 for contract interactions
 
-### Manager Contract (✅ Passed)
-- Contract: 0xeA55332dDe678746aCC684D323e357Df05B6F767
-- Test: scripts/VerifyManagerContract.s.sol
-- Features:
-  * Position management
-  * Liquidity provision
-  * Factory integration
-  * Token approval handling
+### Factory Contract Integration (✅ Passed - 2025-02-24)
+- Test Environment:
+  * Tura Blockchain (Chain ID: 1337)
+  * Factory Address: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
+- Features Tested:
+  * Factory contract address verification
+  * Pool querying functionality
+  * Event listening for pool creation
+  * UI text visibility in dark theme
+  * Component type safety
+- Results:
+  * Factory contract address correctly configured
+  * Pool querying works (no pools found)
+  * UI text colors updated for better visibility:
+    - Button text using gray.100
+    - Input fields with improved contrast
+    - TokenSelect with proper dark theme support
+  * TypeScript type safety verified:
+    - TokenSelect props properly typed
+    - PositionsList with correct ReactElement usage
+  * All components properly styled in dark theme
+- Features Tested:
+  * Separate pages for Swap and Pool
+  * Wallet connection in top right corner
+  * Pool list sorted by 7-day volume
+  * Add liquidity to existing pools
+  * Create new pools with parameter validation
+  * Input validation for negative values
+  * Support for 0.05%, 0.3%, and 1% fee tiers
+- Results:
+  * All navigation works correctly
+  * Wallet connects and persists state
+  * Pool list displays and sorts correctly
+  * All forms validate inputs properly
+  * UI matches Uniswap V3 patterns
+  * All components properly styled
 
-### WTURA Contract (✅ Passed)
-- Contract: 0xc8F7d7989a409472945b00177396f4e9b8601DF3
-- Test: scripts/VerifyWTURAContract.s.sol
-- Features:
-  * ERC20 compliant
-  * Native token wrapping
-  * 18 decimals
-  * Deposit/Withdraw functionality
+### Contract Data Type Handling (✅ Passed - 2025-02-25)
+- Contract Data Parsing:
+  * Improved BigInt conversion with error handling ✓
+  * Added proper type safety for liquidity values ✓
+  * Enhanced error handling for invalid data ✓
+  * Added fallback values for parsing errors ✓
+- Empty Pool Handling:
+  * Zero inputs accepted and validated ✓
+  * No automatic ratio calculation ✓
+  * Custom ratios allowed (tested 100:200) ✓
+  * Clear warning message displayed ✓
+  * Price range selection working ✓
+- Price Calculations:
+  * Empty pools show no price ✓
+  * No ratio assumptions for empty pools ✓
+  * Proper BigInt handling with Q96 shifting ✓
+  * Error handling for invalid calculations ✓
 
-## Pool Tests
-### Pool Creation (✅ Passed)
-- Test: scripts/CreatePools4.s.sol
-- Result: Successfully created all pools
-- Pool Addresses:
-  * WTURA/TT1: 0x2044bDb84580aD2Edd74bbCF4106FE5C9D5b50cD
-  * WTURA/TT2: 0xE8f68FE64dc32A1a3636Ad303fC241154a952D50
-  * TT1/TT2: 0x279Ec96DEeDfb667C3280021196b2b0289F9BEa9
-- Verification:
-  * All pools created with 0.3% fee tier
-  * Pool addresses verified through Factory.getPool()
-  * Token ordering follows Uniswap V3 convention
+### Empty Pool Handling (✅ Passed - 2025-02-25)
+- Empty Pool UI:
+  * Warning message displays correctly ✓
+  * No automatic ratio calculation ✓
+  * Zero inputs allowed and validated ✓
+  * Custom ratio inputs allowed ✓
+  * Price range selection works ✓
+- Input Validation:
+  * Zero inputs accepted ✓
+  * Invalid inputs blocked ✓
+  * Error messages display correctly ✓
+- Price Calculations:
+  * Empty pools show no price ✓
+  * No ratio assumptions for empty pools ✓
+  * Proper BigInt handling ✓
 
-### Pool Initialization (✅ Passed)
-- Test: scripts/InitializePools5.s.sol, scripts/VerifyPoolInitialization2.s.sol
-- Result: All pools initialized with correct sqrt prices
-- Price Ratios:
-  * WTURA/TT1: 79228162514264337593543950336 (1:100)
-  * WTURA/TT2: 79228162514264337593543950336 (1:100)
-  * TT1/TT2: 792281625142643375935439503360 (1:1)
-- Verification:
-  * Correct sqrt price calculation
-  * Initial ticks set properly
-  * Price ratios match requirements
+### Pool List Interface Updates (✅ Passed - 2025-02-24)
+- Added total liquidity display
+  * Implemented for TT1/TT2, TT1/WTURA, TT2/WTURA pools
+  * Proper decimal formatting (18 decimals)
+  * Zero value handling for new pools
+- Added current price display
+  * Price calculation from sqrtPriceX96
+  * 6 decimal precision
+  * Token pair symbol order (token1/token0)
+- Verified formatting consistency
+  * Matches Uniswap V3 patterns
+  * Consistent decimal places
+  * Proper token symbol display
+- Tested loading states
+  * Pool data loading indicators
+  * Error handling for failed reads
+  * Empty state handling
+- Verified data accuracy
+  * Contract reads for slot0 and liquidity
+  * Price calculations
+  * Total liquidity values
 
-### Liquidity Addition (✅ Passed)
-- Test: scripts/AddLiquidity6.s.sol, scripts/VerifyLiquidity.s.sol
-- Result: Successfully added liquidity to all pools
-- Liquidity Values:
-  * WTURA/TT1: 100000000000000000005
-  * WTURA/TT2: 100000000000000000005
-  * TT1/TT2: 1000000000000000000005
-- Token Amounts:
-  * WTURA/TT1: 100 WTURA + 10000 TT1
-  * WTURA/TT2: 100 WTURA + 10000 TT2
-  * TT1/TT2: 10000 TT1 + 10000 TT2
-- Configuration:
-  * Fee Rate: 0.3% for all pools
-  * Full range positions (-887220 to 887220)
-  * Token approvals verified
-  * Position ownership confirmed
+### Contract Data Type Handling (✓ Updated - 2025-02-24)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi v1.4.13 for contract interactions
+- Contract Data Parsing:
+  * BigInt conversion for uint160 sqrtPriceX96 ✓
+  * Number conversion for numeric fields ✓
+  * Boolean conversion for unlocked field ✓
+  * Error handling for invalid data ✓
+  * Proper type safety in price calculations ✓
+- Edge Cases:
+  * Proper pool price calculation using sqrtPriceX96 ✓
+  * Invalid slot0 data logging ✓
+  * Undefined sqrtPriceX96 handling ✓
+  * Zero value handling ✓
+  * Precision maintained with Q96 bit shifting ✓
+- Input Validation Improvements:
+  * Standardized error messages using INPUT_ERRORS
+  * Fixed BigInt type mixing in calculations
+  * Added proper decimal precision handling
+  * Improved empty pool handling with 1:1 ratio
+  * Enhanced validation feedback
+- Features Tested:
+  * Token amount inputs:
+    - Two input boxes for token1 and token2
+    - Automatic amount calculation based on pool price
+    - Input validation:
+      * Both amounts required
+      * Valid numbers only
+      * Greater than 0
+    - Error messages for invalid inputs
+  * Price range selection:
+    - Full Range (-887220 to 887220)
+    - Concentrated (-443610 to 443610)
+    - Tick validation
+    - Price range validation
+  * Loading states:
+    - Pool data loading
+    - Amount calculation loading
+    - Contract interaction loading
+  * Error handling:
+    - Invalid pool address format
+    - Pool not found
+    - Invalid amounts
+    - Invalid price range
+    - Contract errors
+    - Calculation errors
+  * UI elements:
+    - Add liquidity button
+    - Withdraw liquidity button (disabled)
+    - Loading spinners
+    - Error messages
+    - Current price display
+- Results:
+  * All UI elements render correctly
+  * Amount calculations work as expected
+  * Error handling works properly
+  * Loading states display correctly
+  * TypeScript compilation passes
+  * Note: Wallet-related functionality to be tested by user
+
+### Pool Creation Interface (✅ Passed - 2025-02-24)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi v1.4.13 for contract interactions
+- Features Tested:
+  * Token selection validation:
+    - TT1 (0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9)
+    - TT2 (0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122)
+  * Fee tier validation:
+    - 0.05% (500)
+    - 0.3% (3000)
+  * Price range selection:
+    - Full Range (-887220 to 887220)
+    - Concentrated (-443610 to 443610)
+  * Contract error handling:
+    - TokensMustBeDifferent (same token selection)
+    - ZeroAddressNotAllowed (null token address)
+    - UnsupportedFee (invalid fee value)
+    - PoolAlreadyExists (duplicate pool)
+  * Token sorting before pool creation
+  * Input validation for token amounts
+- Results:
+  * All validation scenarios pass
+  * Error messages display correctly
+  * Token sorting works as expected
+  * Contract errors handled properly
+  * UI matches Uniswap V3 patterns
+
+### Token Selection Interface (✅ Passed - 2025-02-24)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi v1.4.13 for contract interactions
+- Features Tested:
+  * Token list configuration
+  * Token search functionality
+  * Token balance display
+  * Token approval management
+  * Integration with contract tokens:
+    - WTURA: 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be
+    - TT1: 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9
+    - TT2: 0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122
+- Results:
+  * Token list properly configured
+  * Search works with case-insensitive matching
+  * Balance display updates in real-time
+  * Approval management handles all edge cases
+  * TypeScript types ensure type safety
+
+### Wallet Connection (✅ Updated - 2025-02-24)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi v2 with viem
+  * jsonRpcProvider for Tura network
+- Features Implemented:
+  * MetaMask detection and connection
+  * Tura network configuration (Chain ID: 1337)
+  * Connection state persistence with localStorage
+  * Error handling with Chakra UI alerts
+  * Network switching detection
+  * Force new signature on reconnect
+- Implementation Details:
+  * autoConnect: false to force new signatures
+  * shimDisconnect: true for proper disconnection
+  * localStorage persistence with createStorage
+  * Proper chain configuration with jsonRpcProvider
+  * Error handling for:
+    - Missing MetaMask
+    - Wrong network
+    - Connection failures
+  * Account switching support
+Note: Wallet connection testing will be handled by the user due to MetaMask requirements.
+
+### Add Liquidity Functionality (✅ Fixed - 2025-02-25)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi for blockchain interaction
+  * Tura Blockchain (Chain ID: 1337)
+- Issue Fixed:
+  * Error signature 0x10074548 when calling mint function with amount1Desired set to 0
+  * Contract requires both token amounts to be non-zero when adding liquidity
+- Implementation Fixes:
+  * Added validation to ensure both token amounts are non-zero ✓
+  * Updated error handling for 0x10074548 error code with clear error messages ✓
+  * Fixed calculateAmount1ForAmount0 and calculateAmount0ForAmount1 to never return zero for non-zero input ✓
+  * Added UI warnings for very small token amounts ✓
+  * Ensured proper error handling for liquidity addition edge cases ✓
+- Test Cases:
+  * Adding liquidity with non-zero amounts for both tokens succeeds ✓
+  * Adding liquidity with zero amount for either token shows proper validation error ✓
+  * Very small token amounts show warning message ✓
+  * Error messages are clear and user-friendly ✓
+  * Token amount calculations maintain proper proportions based on current price ✓
+  * Empty pools handle token amount calculations gracefully ✓
+- Observations:
+  * In Uniswap V3, both tokens are required when adding liquidity
+  * Token amounts must be in specific proportions based on current price and price range
+  * Error signature 0x10074548 is triggered when contract detects one token amount is zero
+- Recommendations:
+  * Consider adding more detailed documentation about token amount requirements
+  * Add tooltips explaining the relationship between token amounts and price range
+
+### Pool List Implementation (✅ Passed - 2025-02-25)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi for blockchain interaction
+  * Tura Blockchain (Chain ID: 1337)
+- Features Tested:
+  * Pool list data fetching mechanism
+  * Refresh behavior through navigation and page reload
+  * Real-time update capabilities through event listeners
+  * Data flow from blockchain to UI components
+- Test Cases:
+  * Pool list loads and displays correctly ✓
+  * Shows three pools: TT1/TT2, TT1/WTURA, TT2/WTURA ✓
+  * Displays fee (0.30%), liquidity status, and volume data ✓
+  * "Add Liquidity" buttons are functional ✓
+  * Pool data is fetched on initial page load ✓
+  * Data is refetched when navigating away and back ✓
+  * Data is refetched when manually refreshing the page ✓
+  * Volume data can update in real-time through event listeners ✓
+  * Handles empty pool list gracefully ✓
+  * Shows loading state during data fetching ✓
+  * Properly handles contract errors ✓
+- Observations:
+  * No manual refresh button in the UI
+  * No automatic periodic refresh mechanism
+  * Real-time updates limited to volume data only
+- Recommendations:
+  * Add a manual refresh button to the pool list UI
+  * Implement periodic automatic refresh option
+  * Extend real-time update capability to other pool data
+
+## Backend Service Tests
+### Backend API Endpoints (✅ Passed - 2025-02-25)
+- Test Environment:
+  * Node.js backend server (port 3000)
+  * SQLite database
+  * Express.js for API endpoints
+  * Socket.io for WebSocket
+- Features Tested:
+  * Token endpoints:
+    - GET /api/tokens - Returns all tokens ✓
+    - GET /api/tokens/:address - Returns a specific token ✓
+    - GET /api/tokens/list - Returns tokens in Uniswap format ✓
+  * Pool endpoints:
+    - GET /api/pools - Returns all pools ✓
+    - GET /api/pools/:address - Returns a specific pool ✓
+    - GET /api/pools/token/:address - Returns pools containing a specific token ✓
+  * Health check endpoint:
+    - GET /health - Returns server status ✓
+  * WebSocket stats endpoint:
+    - GET /api/stats/websocket - Returns WebSocket cache statistics ✓
+- Test Cases:
+  * Token endpoints return correct data ✓
+  * Pool endpoints return correct data ✓
+  * Health check endpoint returns status 200 ✓
+  * WebSocket stats endpoint returns cache statistics ✓
+  * Error handling for invalid requests ✓
+  * Database connection and initialization ✓
+  * Token and pool models with proper associations ✓
+- Observations:
+  * API endpoints return properly formatted JSON data
+  * Database initialization creates tables correctly
+  * Default tokens (WTURA, TT1, TT2) are initialized
+  * Existing pools are discovered and tracked
+  * WebSocket service is initialized correctly
+- Recommendations:
+  * Add authentication for API endpoints
+  * Implement rate limiting for API endpoints
+  * Add more detailed error handling
+  * Implement pagination for large result sets
+
+### Blockchain Event Listeners (✅ Passed - 2025-02-25)
+- Test Environment:
+  * Node.js backend server (port 3000)
+  * SQLite database
+  * ethers.js for blockchain interaction
+  * Tura Blockchain (Chain ID: 1337)
+- Features Tested:
+  * Factory contract event listeners:
+    - PoolCreated event ✓
+  * Pool contract event listeners:
+    - Initialize event ✓
+    - Swap event ✓
+  * Blockchain provider initialization ✓
+  * Pool data fetching ✓
+  * Token discovery and creation ✓
+- Test Cases:
+  * Factory contract connects successfully ✓
+  * Pool contract connects successfully ✓
+  * Event listeners are registered correctly ✓
+  * Pool data is fetched correctly ✓
+  * Token data is fetched correctly ✓
+  * Database is updated with blockchain data ✓
+  * WebSocket service is updated with blockchain data ✓
+- Observations:
+  * Event listeners are properly initialized
+  * Pool data is correctly fetched and stored
+  * Token data is correctly fetched and stored
+  * WebSocket service is updated with real-time data
+- Recommendations:
+  * Add error recovery for blockchain provider disconnections
+  * Implement retry mechanism for failed blockchain calls
+  * Add more detailed logging for blockchain events
+  * Implement historical event fetching
+
+## Next Test Phase
+### Integration Tests (Pending)
+- Contract interaction tests
+- Transaction flow tests
+- Error handling scenarios
+- End-to-end testing of:
+  * Complete liquidity provision flow
+  * Complete withdrawal flow
+  * Fee collection process

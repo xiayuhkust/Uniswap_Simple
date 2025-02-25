@@ -1,25 +1,38 @@
-import { type FC, type ChangeEvent } from 'react';
-import { Input, type InputProps } from '@chakra-ui/react';
+import { Input, InputProps } from '@chakra-ui/react'
+import { ChangeEvent } from 'react'
+import { validateAndFormatAmount, formatDisplayAmount } from '../utils/validation'
 
-interface NumberInputProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value: string;
-  onChange: (value: string) => void;
+interface NumberInputProps extends Omit<InputProps, 'onChange'> {
+  value: string
+  onChange: (value: string) => void
 }
 
-export const NumberInput: FC<NumberInputProps> = ({ value, onChange, ...props }) => {
+export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (val === '' || (/^\d*\.?\d*$/.test(val) && Number(val) >= 0)) {
-      onChange(val);
+    let newValue = validateAndFormatAmount(e.target.value)
+    // Special handling for zero values
+    if (newValue === '0' || newValue === '0.0' || newValue === '0.00') {
+      newValue = '0'
     }
-  };
+    onChange(newValue)
+  }
 
   return (
     <Input
       type="text"
-      value={value}
+      value={formatDisplayAmount(value)}
       onChange={handleChange}
+      variant="unstyled"
+      fontSize="2xl"
+      fontWeight="medium"
+      color="black"
+      placeholder="0.0"
+      _placeholder={{ color: 'gray.700' }}
+      pattern="^[0-9]*[.]?[0-9]*$"
+      inputMode="decimal"
+      autoComplete="off"
+      autoCorrect="off"
       {...props}
     />
-  );
-};
+  )
+}

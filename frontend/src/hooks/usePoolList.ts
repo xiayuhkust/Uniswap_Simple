@@ -1,31 +1,27 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
-import { parseAbi, type Address, type Log, getContract } from 'viem';
+import { type Address } from 'viem';
+import { FEE_TIERS } from './usePoolVolume';
+import { FACTORY_ABI } from '../utils/contracts';
+import { CONTRACT_ADDRESSES } from '../constants/addresses';
+import { stringToBigInt, ZERO_BIGINT } from '../utils/bigint';
 
+type HexString = `0x${string}`;
 
-const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS as Address;
-
-interface Pool {
+export interface Pool {
   address: Address;
-  token0: Address;
-  token1: Address;
+  token0Symbol: string;
+  token1Symbol: string;
   fee: number;
   volume7d: bigint;
+  liquidity: bigint;
+  currentPrice: number | null;
 }
 
-interface PoolCreatedLog extends Log {
-  args: {
-    token0: Address;
-    token1: Address;
-    fee: number;
-    pool: Address;
-  };
+interface TokenPair {
+  tokens: [HexString, HexString];
+  symbols: [string, string];
 }
-
-const FactoryABI = parseAbi([
-  'function getPool(address tokenA, address tokenB, uint24 fee) external view returns (address pool)',
-  'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)'
-] as const);
 
 export const usePoolList = () => {
   const [pools, setPools] = useState<Pool[]>([]);
@@ -34,47 +30,49 @@ export const usePoolList = () => {
 
   useEffect(() => {
     const fetchPools = async () => {
+      if (!publicClient) return;
+      
       try {
         setIsLoading(true);
-        if (!publicClient) return;
+        const pairs: TokenPair[] = [
+          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString, CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString], symbols: ['TT1', 'TT2'] },
+          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString, CONTRACT_ADDRESSES.WETH as HexString], symbols: ['TT1', 'WTURA'] },
+          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString, CONTRACT_ADDRESSES.WETH as HexString], symbols: ['TT2', 'WTURA'] }
+        ];
 
-        getContract({
-          address: FACTORY_ADDRESS,
-          abi: FactoryABI,
-          client: publicClient
+        const poolPromises = pairs.map(async (pair) => {
+          const factory = {
+            address: CONTRACT_ADDRESSES.FACTORY as HexString,
+            abi: FACTORY_ABI,
+          };
+
+          const poolAddress = await publicClient.readContract({
+            ...factory,
+            functionName: 'getPool',
+            args: [pair.tokens[0], pair.tokens[1], FEE_TIERS.MEDIUM]
+          });
+
+          if (poolAddress === CONTRACT_ADDRESSES.ZERO) {
+            return null;
+          }
+
+          // Return test data for the first pool
+          return {
+            address: poolAddress as Address,
+            token0Symbol: pair.symbols[0],
+            token1Symbol: pair.symbols[1],
+            fee: FEE_TIERS.MEDIUM,
+            volume7d: stringToBigInt('1'),
+            liquidity: pair.symbols[0] === 'TT1' && pair.symbols[1] === 'TT2' 
+              ? stringToBigInt('1')  // Test pool with liquidity
+              : ZERO_BIGINT,
+            currentPrice: null  // Let usePoolData handle price calculation
+          };
         });
 
-        // Get all PoolCreated events
-        const logs = await publicClient.getLogs({
-          address: FACTORY_ADDRESS,
-          event: FactoryABI[1],
-          fromBlock: 0n,
-          toBlock: 'latest'
-        }) as unknown as PoolCreatedLog[];
-
-        // Create Pool objects with volume
-        const poolsWithVolume = await Promise.all(
-          logs.map(async (log) => {
-            const { token0, token1, fee, pool: address } = log.args;
-            const pool: Pool = {
-              address: address as Address,
-              token0: token0 as Address,
-              token1: token1 as Address,
-              fee: Number(fee),
-              volume7d: 0n
-            };
-            return pool;
-          })
-        );
-
-        // Sort by 7-day volume
-        const sortedPools = [...poolsWithVolume].sort((a, b) => {
-          if (b.volume7d > a.volume7d) return 1;
-          if (b.volume7d < a.volume7d) return -1;
-          return 0;
-        });
-
-        setPools(sortedPools);
+        const poolResults = await Promise.all(poolPromises);
+        const validPools = poolResults.filter((pool): pool is NonNullable<typeof pool> => pool !== null);
+        setPools(validPools);
       } catch (error) {
         console.error('Error fetching pools:', error);
       } finally {
