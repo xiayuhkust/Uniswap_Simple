@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { VStack, Button, Box, Text, Heading, Table, Thead, Tbody, Tr, Th, Td, Spinner } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { usePoolList, type Pool } from '../../hooks/usePoolList';
+import { usePoolList } from '../../hooks/usePoolList';
 import { formatUnits } from 'viem';
 
 export const PoolList: FC = () => {
@@ -42,12 +42,12 @@ export const PoolList: FC = () => {
                     <Td color="black">{`${pool.token0Symbol} / ${pool.token1Symbol}`}</Td>
                     <Td color="black">{(Number(pool.fee) / 10000).toFixed(2)}%</Td>
                     <Td color="black">
-                      {pool.liquidity && pool.liquidity > 0n 
+                      {pool.liquidity !== undefined && pool.liquidity > 0n 
                         ? formatUnits(pool.liquidity, 18)
                         : 'No liquidity'}
                     </Td>
                     <Td color="black">
-                      {pool.currentPrice && pool.liquidity && pool.liquidity > 0n
+                      {pool.currentPrice !== null && pool.liquidity > 0n
                         ? `${pool.currentPrice.toFixed(6)} ${pool.token1Symbol}/${pool.token0Symbol}`
                         : '-'}
                     </Td>

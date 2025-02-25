@@ -2,7 +2,7 @@ import { useContractRead } from 'wagmi'
 import { parseAbi, type Address } from 'viem'
 
 
-interface Slot0 {
+interface Slot0Result {
   sqrtPriceX96: bigint
   tick: number
   observationIndex: number
@@ -10,6 +10,16 @@ interface Slot0 {
   observationCardinalityNext: number
   feeProtocol: number
   unlocked: boolean
+}
+
+interface Slot0Data extends Array<any> {
+  [0]: bigint  // sqrtPriceX96
+  [1]: number  // tick
+  [2]: number  // observationIndex
+  [3]: number  // observationCardinality
+  [4]: number  // observationCardinalityNext
+  [5]: number  // feeProtocol
+  [6]: boolean // unlocked
 }
 
 const POOL_INTERFACE = parseAbi([
@@ -45,49 +55,49 @@ export function usePoolData(poolAddress?: Address) {
   const calculateAmount1ForAmount0 = (amount0: string): string => {
     if (!amount0 || isNaN(Number(amount0))) return ''
     
-    // For empty pools, return the same amount (1:1 ratio)
-    if (!slot0Data || slot0Data.sqrtPriceX96 === 0n) {
+    const slot0 = slot0Data ? parseSlot0Data(slot0Data as Slot0Data) : null
+    if (!slot0) return ''
+    
+    // For empty pools, use 1:1 ratio
+    if (slot0.sqrtPriceX96 === 0n) {
       return amount0
     }
     
-    const slot0 = slot0Data as unknown as Slot0
-    
-    // Convert amount0 to BigInt with 18 decimals
-    const amount0BigInt = BigInt(Math.floor(Number(amount0) * 1e18))
-    
-    // Calculate amount1 using the square root price
-    // amount1 = amount0 * sqrtPrice^2 / 2^192
-    const sqrtPriceSquared = slot0.sqrtPriceX96 * slot0.sqrtPriceX96
-    const amount1BigInt = (amount0BigInt * BigInt(sqrtPriceSquared)) >> 192n
-    
-    // Convert back to decimal string
-    return (Number(amount1BigInt) / 1e18).toString()
+    // Calculate price from sqrtPriceX96 using Q64.96 format
+    const sqrtPriceX96 = slot0.sqrtPriceX96
+    const price = Number(sqrtPriceX96 * sqrtPriceX96) / (2 ** 192)
+    return (Number(amount0) * price).toString()
   }
 
   const calculateAmount0ForAmount1 = (amount1: string): string => {
     if (!amount1 || isNaN(Number(amount1))) return ''
     
-    // For empty pools, return the same amount (1:1 ratio)
-    if (!slot0Data || slot0Data.sqrtPriceX96 === 0n) {
+    const slot0 = slot0Data ? parseSlot0Data(slot0Data as Slot0Data) : null
+    if (!slot0) return ''
+    
+    // For empty pools, use 1:1 ratio
+    if (slot0.sqrtPriceX96 === 0n) {
       return amount1
     }
     
-    const slot0 = slot0Data as unknown as Slot0
-    
-    // Convert amount1 to BigInt with 18 decimals
-    const amount1BigInt = BigInt(Math.floor(Number(amount1) * 1e18))
-    
-    // Calculate amount0 using the square root price
-    // amount0 = amount1 * 2^192 / sqrtPrice^2
-    const sqrtPriceSquared = slot0.sqrtPriceX96 * slot0.sqrtPriceX96
-    const amount0BigInt = (amount1BigInt << 192n) / BigInt(sqrtPriceSquared)
-    
-    // Convert back to decimal string
-    return (Number(amount0BigInt) / 1e18).toString()
+    // Calculate price from sqrtPriceX96 using Q64.96 format
+    const sqrtPriceX96 = slot0.sqrtPriceX96
+    const price = Number(sqrtPriceX96 * sqrtPriceX96) / (2 ** 192)
+    return (Number(amount1) / price).toString()
   }
 
+  const parseSlot0Data = (data: Slot0Data): Slot0Result => ({
+    sqrtPriceX96: data[0],
+    tick: data[1],
+    observationIndex: data[2],
+    observationCardinality: data[3],
+    observationCardinalityNext: data[4],
+    feeProtocol: data[5],
+    unlocked: data[6]
+  })
+
   return {
-    slot0: slot0Data as unknown as Slot0,
+    slot0: slot0Data ? parseSlot0Data(slot0Data as Slot0Data) : null,
     liquidity,
     fee,
     isLoading: slot0Loading || liquidityLoading || feeLoading,

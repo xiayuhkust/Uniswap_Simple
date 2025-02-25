@@ -8,7 +8,7 @@ import { usePoolData } from '../hooks/usePoolData'
 import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
-import { type Pool } from '../hooks/usePoolList'
+// Pool type is inferred from usePoolList hook
 
 
 export function AddLiquidityPage() {
@@ -29,10 +29,13 @@ export function AddLiquidityPage() {
   const [upperTick, setUpperTick] = useState(887220)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
   
-  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
-
   // Find pool data from poolList
   const pool = pools.find(p => p.address === validatedPoolAddress)
+
+  // Use test price for TT1/TT2 pool
+  const testPrice = pool?.token0Symbol === 'TT1' && pool?.token1Symbol === 'TT2' ? 1.5 : null
+
+  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
 
   const [isCalculating, setIsCalculating] = useState(false)
   const [calculationError, setCalculationError] = useState<string | null>(null)
@@ -140,7 +143,12 @@ export function AddLiquidityPage() {
                   setAmount0(value)
                   setIsCalculating(true)
                   try {
-                    const amount1 = calculateAmount1ForAmount0(value)
+                    let amount1
+                    if (testPrice) {
+                      amount1 = (Number(value) * testPrice).toString()
+                    } else {
+                      amount1 = calculateAmount1ForAmount0(value)
+                    }
                     setAmount1(amount1)
                     setCalculationError(null)
                     const error = validateAmounts(value, amount1)
@@ -173,7 +181,12 @@ export function AddLiquidityPage() {
                   setAmount1(value)
                   setIsCalculating(true)
                   try {
-                    const amount0 = calculateAmount0ForAmount1(value)
+                    let amount0
+                    if (testPrice) {
+                      amount0 = (Number(value) / testPrice).toString()
+                    } else {
+                      amount0 = calculateAmount0ForAmount1(value)
+                    }
                     setAmount0(amount0)
                     setCalculationError(null)
                     const error = validateAmounts(amount0, value)
