@@ -55,3 +55,68 @@
 
 ## Frontend Deployment
 - GitHub Pages: https://xiayuhkust.github.io/Uniswap_Simple
+
+## Backend Service (2025-02-25)
+### Core Features
+- Token and pool list management
+- Real-time updates via WebSocket
+- Blockchain event listeners
+- API endpoints for frontend integration
+- SQLite database for lightweight storage
+
+### Technical Stack
+- Node.js with Express.js
+- SQLite database with Sequelize ORM
+- Socket.io for WebSocket communication
+- ethers.js for blockchain interaction
+- node-cron for scheduled tasks
+
+### API Endpoints
+- Token Endpoints:
+  * GET /api/tokens - Returns all tokens
+  * GET /api/tokens/:address - Returns a specific token
+  * GET /api/tokens/list - Returns tokens in Uniswap format
+- Pool Endpoints:
+  * GET /api/pools - Returns all pools
+  * GET /api/pools/:address - Returns a specific pool
+  * GET /api/pools/token/:address - Returns pools containing a specific token
+- Utility Endpoints:
+  * GET /health - Returns server status
+  * GET /api/stats/websocket - Returns WebSocket cache statistics
+
+### WebSocket Events
+- Connection Events:
+  * 'connection' - Client connected
+  * 'disconnect' - Client disconnected
+- Subscription Events:
+  * 'subscribe:pool' - Subscribe to specific pool updates
+  * 'unsubscribe:pool' - Unsubscribe from specific pool updates
+- Data Events:
+  * 'pool:updated' - Pool data updated
+  * 'pool:created' - New pool created
+  * 'pool:detail:updated' - Detailed pool data updated
+  * 'token:updated' - Token data updated
+  * 'token:created' - New token created
+  * 'tokenList:updated' - Token list updated
+  * 'cache:pools' - Initial pool cache data
+  * 'cache:tokens' - Initial token cache data
+
+### Database Configuration
+- SQLite database file: database/uniswap-simple.sqlite
+- Models:
+  * Token: Stores token information (address, name, symbol, decimals, chainId)
+  * Pool: Stores pool information (address, token0, token1, fee, tickSpacing, etc.)
+- Associations:
+  * Pool belongs to Token (token0, token1)
+  * Token has many Pools (as token0, token1)
+
+### Blockchain Integration
+- Factory Contract: 0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70
+- Event Listeners:
+  * PoolCreated - Triggered when a new pool is created
+  * Initialize - Triggered when a pool is initialized
+  * Swap - Triggered when a swap occurs in a pool
+- Default Tokens:
+  * WTURA: 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be
+  * TT1: 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9
+  * TT2: 0xC8F7D7989A409472945b00177396f4E9b8601df3

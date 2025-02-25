@@ -306,6 +306,80 @@ Note: Wallet connection testing will be handled by the user due to MetaMask requ
   * Implement periodic automatic refresh option
   * Extend real-time update capability to other pool data
 
+## Backend Service Tests
+### Backend API Endpoints (✅ Passed - 2025-02-25)
+- Test Environment:
+  * Node.js backend server (port 3000)
+  * SQLite database
+  * Express.js for API endpoints
+  * Socket.io for WebSocket
+- Features Tested:
+  * Token endpoints:
+    - GET /api/tokens - Returns all tokens ✓
+    - GET /api/tokens/:address - Returns a specific token ✓
+    - GET /api/tokens/list - Returns tokens in Uniswap format ✓
+  * Pool endpoints:
+    - GET /api/pools - Returns all pools ✓
+    - GET /api/pools/:address - Returns a specific pool ✓
+    - GET /api/pools/token/:address - Returns pools containing a specific token ✓
+  * Health check endpoint:
+    - GET /health - Returns server status ✓
+  * WebSocket stats endpoint:
+    - GET /api/stats/websocket - Returns WebSocket cache statistics ✓
+- Test Cases:
+  * Token endpoints return correct data ✓
+  * Pool endpoints return correct data ✓
+  * Health check endpoint returns status 200 ✓
+  * WebSocket stats endpoint returns cache statistics ✓
+  * Error handling for invalid requests ✓
+  * Database connection and initialization ✓
+  * Token and pool models with proper associations ✓
+- Observations:
+  * API endpoints return properly formatted JSON data
+  * Database initialization creates tables correctly
+  * Default tokens (WTURA, TT1, TT2) are initialized
+  * Existing pools are discovered and tracked
+  * WebSocket service is initialized correctly
+- Recommendations:
+  * Add authentication for API endpoints
+  * Implement rate limiting for API endpoints
+  * Add more detailed error handling
+  * Implement pagination for large result sets
+
+### Blockchain Event Listeners (✅ Passed - 2025-02-25)
+- Test Environment:
+  * Node.js backend server (port 3000)
+  * SQLite database
+  * ethers.js for blockchain interaction
+  * Tura Blockchain (Chain ID: 1337)
+- Features Tested:
+  * Factory contract event listeners:
+    - PoolCreated event ✓
+  * Pool contract event listeners:
+    - Initialize event ✓
+    - Swap event ✓
+  * Blockchain provider initialization ✓
+  * Pool data fetching ✓
+  * Token discovery and creation ✓
+- Test Cases:
+  * Factory contract connects successfully ✓
+  * Pool contract connects successfully ✓
+  * Event listeners are registered correctly ✓
+  * Pool data is fetched correctly ✓
+  * Token data is fetched correctly ✓
+  * Database is updated with blockchain data ✓
+  * WebSocket service is updated with blockchain data ✓
+- Observations:
+  * Event listeners are properly initialized
+  * Pool data is correctly fetched and stored
+  * Token data is correctly fetched and stored
+  * WebSocket service is updated with real-time data
+- Recommendations:
+  * Add error recovery for blockchain provider disconnections
+  * Implement retry mechanism for failed blockchain calls
+  * Add more detailed logging for blockchain events
+  * Implement historical event fetching
+
 ## Next Test Phase
 ### Integration Tests (Pending)
 - Contract interaction tests

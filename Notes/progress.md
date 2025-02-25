@@ -216,11 +216,14 @@
 6. Complete integration tests
 
 ## Future Tasks
-1. Backend Pool List Management
-   - Implement pool list storage and maintenance
-   - Track created pools with token pairs and fee tiers
-   - Provide API endpoint for frontend to fetch pool list
-   - Add pool creation event monitoring
+1. Backend Pool List Management ✅
+   - [x] Implement pool list storage and maintenance
+   - [x] Track created pools with token pairs and fee tiers
+   - [x] Provide API endpoint for frontend to fetch pool list
+   - [x] Add pool creation event monitoring
+   - [x] Implement WebSocket for real-time updates
+   - [x] Create database schema for tokens and pools
+   - [x] Add blockchain event listeners for pool creation and updates
 
 ## Reference Links
 - Tutorial Source: https://uniswapv3book.com/
