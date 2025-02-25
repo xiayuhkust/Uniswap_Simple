@@ -73,11 +73,17 @@
   * Price calculations
   * Total liquidity values
 
-### Add Liquidity Interface (✅ Passed - 2025-02-24)
+### Add Liquidity Interface (✅ Updated - 2025-02-24)
 - Test Environment:
   * Local development server (port 5173)
   * React 18 with TypeScript 5.3
   * wagmi v1.4.13 for contract interactions
+- Input Validation Improvements:
+  * Standardized error messages using INPUT_ERRORS
+  * Fixed BigInt type mixing in calculations
+  * Added proper decimal precision handling
+  * Improved empty pool handling with 1:1 ratio
+  * Enhanced validation feedback
 - Features Tested:
   * Token amount inputs:
     - Two input boxes for token1 and token2

@@ -31,7 +31,9 @@
 - Wallet connection with proper persistence and signature handling
 - Pool list with 7-day volume sorting
 - Token selection with search and balance display
-- Support for 0.05%, 0.3%, and 1% fee tiers
+- Support for 0.05% and 0.3% fee tiers
+- Standardized number input validation with centralized error handling
+- Robust BigInt handling for price calculations and token amounts
 - UI optimizations:
   * Uniswap color scheme with vibrant pink buttons
   * Enhanced text visibility with black text colors

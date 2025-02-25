@@ -82,6 +82,13 @@
   - [ ] Fee collection process
 
 ## Latest Updates (2025-02-24)
+- Improved number input validation and BigInt handling:
+  * Standardized error messages with INPUT_ERRORS ✓
+  * Fixed BigInt type mixing in price calculations ✓
+  * Simplified test pool price calculations ✓
+  * Added proper decimal precision handling ✓
+  * Improved empty pool handling with 1:1 ratio ✓
+  * Enhanced validation feedback ✓
 - Added comprehensive pool creation validation:
   * Token selection validation with proper error handling ✓
   * Fee tier validation (0.05%, 0.3%) ✓
