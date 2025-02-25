@@ -95,6 +95,6 @@ export function useAddLiquidity(poolAddress: Address) {
 
   return {
     checkAndApproveTokens,
-    isApproving,
+    isApproving
   }
 }

@@ -1,6 +1,6 @@
 import { useContractRead } from 'wagmi'
 import { parseAbi, type Address } from 'viem'
-import { POOL_ABI } from '../constants/abis'
+
 
 interface Slot0 {
   sqrtPriceX96: bigint

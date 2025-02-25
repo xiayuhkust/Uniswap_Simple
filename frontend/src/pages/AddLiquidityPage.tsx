@@ -8,7 +8,7 @@ import { usePoolData } from '../hooks/usePoolData'
 import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
-import { LiquidityMath } from '../utils/liquidityMath'
+
 
 export function AddLiquidityPage() {
   const { poolAddress } = useParams()
@@ -23,7 +23,7 @@ export function AddLiquidityPage() {
   const [upperTick, setUpperTick] = useState(887220)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
   
-  const { slot0, liquidity, fee, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(poolAddress as Address)
+  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(poolAddress as Address)
 
   // Find pool data from poolList
   const pool = pools.find(p => p.address === (poolAddress as Address))
@@ -124,7 +124,7 @@ export function AddLiquidityPage() {
               <Text mb={2} color="gray.600">Price Range</Text>
               <TickRangeInput onRangeChange={handleTickRangeChange} />
               <Text mt={2} fontSize="sm" color="gray.500">
-                Current Price: {slot0 ? (Number(slot0.sqrtPriceX96 * slot0.sqrtPriceX96) / 2n**192n).toFixed(6) : '-'} {pool.token1Symbol} per {pool.token0Symbol}
+                Current Price: {slot0 ? Number((slot0.sqrtPriceX96 * slot0.sqrtPriceX96) >> 192n).toFixed(6) : '-'} {pool.token1Symbol} per {pool.token0Symbol}
               </Text>
             </Box>
 
@@ -132,7 +132,7 @@ export function AddLiquidityPage() {
               size="lg"
               variant="uniswap"
               isDisabled={!isConnected || !amount0 || !amount1 || lowerTick >= upperTick || poolDataLoading || isApproving}
-              onClick={() => {
+              onClick={async () => {
                 if (!isConnected) {
                   toast({
                     title: "Connection Required",

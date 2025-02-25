@@ -30,6 +30,8 @@ export const PoolList: FC = () => {
                 <Tr>
                   <Th color="uniswap.gray.500">Pool</Th>
                   <Th color="uniswap.gray.500">Fee</Th>
+                  <Th color="uniswap.gray.500">Total Liquidity</Th>
+                  <Th color="uniswap.gray.500">Current Price</Th>
                   <Th color="uniswap.gray.500">7d Volume</Th>
                   <Th color="uniswap.gray.500">Action</Th>
                 </Tr>
@@ -39,6 +41,8 @@ export const PoolList: FC = () => {
                   <Tr key={pool.address} _hover={{ bg: 'uniswap.gray.100' }}>
                     <Td color="black">{`${pool.token0Symbol} / ${pool.token1Symbol}`}</Td>
                     <Td color="black">{(Number(pool.fee) / 10000).toFixed(2)}%</Td>
+                    <Td color="black">{formatUnits(pool.liquidity, 18)}</Td>
+                    <Td color="black">{pool.currentPrice.toFixed(6)} {pool.token1Symbol}/{pool.token0Symbol}</Td>
                     <Td color="black">{formatUnits(pool.volume7d, 18)}</Td>
                     <Td>
                       <Button
