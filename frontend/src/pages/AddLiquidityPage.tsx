@@ -10,7 +10,7 @@ import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
 import { validateTicks, MIN_TICK, MAX_TICK } from '../constants/ticks'
-import { ZERO_BIGINT, stringToBigInt, bigIntToString, calculatePrice, formatPrice } from '../utils/bigint'
+import { ZERO_BIGINT, stringToBigInt, calculatePrice, formatPrice } from '../utils/bigint'
 import { isValidAmount } from '../utils/validation'
 
 
@@ -134,7 +134,7 @@ export function AddLiquidityPage() {
               Add Liquidity
             </Text>
             <Text color="gray.600">
-              {`${pool.token0Symbol}/${pool.token1Symbol} Pool - ${(Number(stringToBigInt(pool.fee?.toString() || '0')) / 10000).toFixed(2)}% Fee`}
+              {`${pool.token0Symbol}/${pool.token1Symbol} Pool - ${(Number(pool.fee || 0) / 10000).toFixed(2)}% Fee`}
             </Text>
 
             {!pool.liquidity || stringToBigInt(pool.liquidity?.toString() || '0') === ZERO_BIGINT ? (
