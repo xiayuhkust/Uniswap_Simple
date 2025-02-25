@@ -9,11 +9,8 @@ import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
 import { validateTicks, MIN_TICK, MAX_TICK } from '../constants/ticks'
-
-const ZERO_BIGINT = 0n
-const DECIMALS = 18
-const Q96_SHIFT = 96n
-const Q96 = 2n ** Q96_SHIFT
+import { ZERO_BIGINT, Q96_SHIFT, stringToBigInt, bigIntToString, calculatePrice, formatPrice } from '../utils/bigint'
+import { isValidAmount } from '../utils/validation'
 
 
 export function AddLiquidityPage() {
@@ -48,10 +45,10 @@ export function AddLiquidityPage() {
 
   const validateAmounts = (amount0: string, amount1: string): string | null => {
     if (!amount0 || !amount1) return "Please enter amounts for both tokens"
-    if (isNaN(Number(amount0)) || isNaN(Number(amount1))) return "Invalid amount"
+    if (!isValidAmount(amount0) || !isValidAmount(amount1)) return "Invalid amount"
     try {
-      const amount0BigInt = BigInt(Math.floor(Number(amount0) * (10 ** DECIMALS)))
-      const amount1BigInt = BigInt(Math.floor(Number(amount1) * (10 ** DECIMALS)))
+      const amount0BigInt = stringToBigInt(amount0)
+      const amount1BigInt = stringToBigInt(amount1)
       if (amount0BigInt <= 0n || amount1BigInt <= 0n) return "Amount must be greater than 0"
       return null
     } catch (error) {
@@ -169,15 +166,13 @@ export function AddLiquidityPage() {
                     let amount1
                     if (testPrice) {
                       // Convert test price to Q96 format
-                      const sqrtPriceX96 = BigInt(Math.floor(Math.sqrt(testPrice) * (2 ** 96)))
-                      // Calculate price using same logic as pool
-                      const priceX192 = sqrtPriceX96 * sqrtPriceX96
-                      const price = priceX192 >> 96n
-                      // Convert input value to BigInt with precision
-                      const valueBigInt = BigInt(Math.floor(Number(value) * (10 ** DECIMALS)))
-                      // Calculate result maintaining precision
-                      const result = (valueBigInt * price) >> 96n
-                      amount1 = (Number(result) / (10 ** DECIMALS)).toString()
+                      const sqrtPriceX96 = stringToBigInt(Math.sqrt(testPrice).toString())
+                      // Calculate price using utility function
+                      const price = calculatePrice(sqrtPriceX96)
+                      // Convert input value and calculate result
+                      const valueBigInt = stringToBigInt(value)
+                      const result = (valueBigInt * price) >> Q96_SHIFT
+                      amount1 = bigIntToString(result)
                     } else {
                       amount1 = calculateAmount1ForAmount0(value)
                     }
@@ -216,15 +211,13 @@ export function AddLiquidityPage() {
                     let amount0
                     if (testPrice) {
                       // Convert test price to Q96 format
-                      const sqrtPriceX96 = BigInt(Math.floor(Math.sqrt(testPrice) * (2 ** 96)))
-                      // Calculate price using same logic as pool
-                      const priceX192 = sqrtPriceX96 * sqrtPriceX96
-                      const price = priceX192 >> 96n
-                      // Convert input value to BigInt with precision
-                      const valueBigInt = BigInt(Math.floor(Number(value) * (10 ** DECIMALS)))
-                      // Calculate result maintaining precision
-                      const result = (valueBigInt << 96n) / price
-                      amount0 = (Number(result) / (10 ** DECIMALS)).toString()
+                      const sqrtPriceX96 = stringToBigInt(Math.sqrt(testPrice).toString())
+                      // Calculate price using utility function
+                      const price = calculatePrice(sqrtPriceX96)
+                      // Convert input value and calculate result
+                      const valueBigInt = stringToBigInt(value)
+                      const result = (valueBigInt << Q96_SHIFT) / price
+                      amount0 = bigIntToString(result)
                     } else {
                       amount0 = calculateAmount0ForAmount1(value)
                     }
@@ -282,11 +275,7 @@ export function AddLiquidityPage() {
                 Current Price: {slot0 
                   ? slot0.sqrtPriceX96 === ZERO_BIGINT 
                     ? '0.000000'
-                    : (() => {
-                        const priceX192 = slot0.sqrtPriceX96 * slot0.sqrtPriceX96
-                        const price = priceX192 >> Q96_SHIFT
-                        return (Number(price) / Number(Q96)).toFixed(6)
-                      })()
+                    : formatPrice(calculatePrice(slot0.sqrtPriceX96))
                   : '-'} {pool.token1Symbol} per {pool.token0Symbol}
               </Text>
             </Box>
