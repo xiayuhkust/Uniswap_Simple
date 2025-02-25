@@ -41,9 +41,9 @@ export function SwapInterface() {
         throw new Error('Please select tokens')
       }
 
-      const error = validateAmounts(inputAmount, outputAmount)
-      if (error) {
-        throw new Error(error)
+      const validationError = validateAmounts(inputAmount, outputAmount)
+      if (validationError) {
+        throw new Error(validationError)
       }
 
       // TODO: Implement swap logic
