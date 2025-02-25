@@ -81,7 +81,15 @@
   - [ ] Complete withdrawal flow
   - [ ] Fee collection process
 
-## Latest Updates (2025-02-24)
+## Latest Updates (2025-02-25)
+- Improved empty pool handling:
+  * Removed 1:1 ratio assumption for empty pools ✓
+  * Added proper zero input validation ✓
+  * Updated empty pool warning message ✓
+  * Fixed price calculation for empty pools ✓
+  * Added support for custom ratios ✓
+
+## Previous Updates (2025-02-24)
 - Fixed price calculation and input validation:
   * Updated price calculation to use actual sqrtPriceX96 values ✓
   * Removed incorrect 1:1 ratio handling ✓
