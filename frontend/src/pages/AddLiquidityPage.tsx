@@ -35,6 +35,14 @@ export function AddLiquidityPage() {
 
   const [isCalculating, setIsCalculating] = useState(false)
   const [calculationError, setCalculationError] = useState<string | null>(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
+
+  const validateAmounts = (amount0: string, amount1: string): string | null => {
+    if (!amount0 || !amount1) return "Please enter amounts for both tokens"
+    if (isNaN(Number(amount0)) || isNaN(Number(amount1))) return "Invalid amount"
+    if (Number(amount0) <= 0 || Number(amount1) <= 0) return "Amount must be greater than 0"
+    return null
+  }
 
   const handleTickRangeChange = async (lower: number, upper: number) => {
     setLowerTick(lower)
@@ -125,6 +133,8 @@ export function AddLiquidityPage() {
                     const amount1 = calculateAmount1ForAmount0(value)
                     setAmount1(amount1)
                     setCalculationError(null)
+                    const error = validateAmounts(value, amount1)
+                    setValidationError(error)
                   } catch (error) {
                     const err = error as Error
                     setCalculationError(err.message || "Failed to calculate amount1")
@@ -156,6 +166,8 @@ export function AddLiquidityPage() {
                     const amount0 = calculateAmount0ForAmount1(value)
                     setAmount0(amount0)
                     setCalculationError(null)
+                    const error = validateAmounts(amount0, value)
+                    setValidationError(error)
                   } catch (error) {
                     const err = error as Error
                     setCalculationError(err.message || "Failed to calculate amount0")
@@ -207,11 +219,24 @@ export function AddLiquidityPage() {
               </Text>
             </Box>
 
-            <Button
+            {validationError && (
+                <Text fontSize="sm" color="red.500" mt={2} mb={2}>
+                  {validationError}
+                </Text>
+              )}
+
+              <Button
               size="lg"
               variant="uniswap"
-              isDisabled={!isConnected || !amount0 || !amount1 || lowerTick >= upperTick || poolDataLoading || isApproving}
+              isDisabled={!isConnected || !amount0 || !amount1 || lowerTick >= upperTick || poolDataLoading || isApproving || !!validationError}
               onClick={async () => {
+                const error = validateAmounts(amount0, amount1)
+                if (error) {
+                  setValidationError(error)
+                  return
+                }
+                setValidationError(null)
+
                 if (!isConnected) {
                   toast({
                     title: "Connection Required",
