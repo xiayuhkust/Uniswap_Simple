@@ -188,7 +188,8 @@ export function AddLiquidityPage() {
                 }
 
                 try {
-                  const tx = await addLiquidityPosition(
+                  setIsApproving(true)
+                  await addLiquidityPosition(
                     lowerTick,
                     upperTick,
                     amount0,
@@ -201,6 +202,8 @@ export function AddLiquidityPage() {
                     duration: 3000,
                     isClosable: true,
                   })
+                  // Navigate back to pool list after success
+                  navigate('/pool')
                 } catch (error) {
                   const err = error as Error
                   toast({
@@ -214,7 +217,7 @@ export function AddLiquidityPage() {
               }}
             >
               {!isConnected ? 'Connect Wallet' : 
-               isApproving ? 'Approving...' : 
+               isApproving ? 'Processing...' : 
                'Add Liquidity'}
             </Button>
 
