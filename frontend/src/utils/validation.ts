@@ -16,7 +16,8 @@ export function validateAndFormatAmount(value: string): string {
   
   // Handle zero values and leading zeros
   if (!value.includes('.')) {
-    value = value.replace(/^0+/, '') || '0'
+    // Keep single zero, remove leading zeros otherwise
+    value = value === '0' ? '0' : value.replace(/^0+/, '') || '0'
   } else if (value.startsWith('0') && value.charAt(1) !== '.') {
     value = '0' + value.slice(value.indexOf('.'))
   }

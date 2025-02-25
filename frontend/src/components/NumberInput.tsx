@@ -9,7 +9,11 @@ interface NumberInputProps extends Omit<InputProps, 'onChange'> {
 
 export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = validateAndFormatAmount(e.target.value)
+    let newValue = validateAndFormatAmount(e.target.value)
+    // Special handling for zero values
+    if (newValue === '0' || newValue === '0.0' || newValue === '0.00') {
+      newValue = '0'
+    }
     onChange(newValue)
   }
 
