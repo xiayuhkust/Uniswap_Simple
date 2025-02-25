@@ -87,6 +87,14 @@
   - [ ] Fee collection process
 
 ## Latest Updates (2025-02-25)
+- Fixed Add Liquidity Functionality:
+  * Implemented validation to ensure both token amounts are non-zero ✓
+  * Added error handling for 0x10074548 error code with clear error messages ✓
+  * Fixed calculateAmount1ForAmount0 and calculateAmount0ForAmount1 to never return zero for non-zero input ✓
+  * Added UI warnings for very small token amounts ✓
+  * Ensured proper error handling for liquidity addition edge cases ✓
+  * Improved user feedback with detailed error messages ✓
+
 - Analyzed Pool List Implementation:
   * Examined pool data fetching mechanism in usePoolList hook ✓
   * Verified refresh behavior through navigation and page reload testing ✓

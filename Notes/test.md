@@ -244,6 +244,36 @@
   * Account switching support
 Note: Wallet connection testing will be handled by the user due to MetaMask requirements.
 
+### Add Liquidity Functionality (✅ Fixed - 2025-02-25)
+- Test Environment:
+  * Local development server (port 5173)
+  * React 18 with TypeScript 5.3
+  * wagmi for blockchain interaction
+  * Tura Blockchain (Chain ID: 1337)
+- Issue Fixed:
+  * Error signature 0x10074548 when calling mint function with amount1Desired set to 0
+  * Contract requires both token amounts to be non-zero when adding liquidity
+- Implementation Fixes:
+  * Added validation to ensure both token amounts are non-zero ✓
+  * Updated error handling for 0x10074548 error code with clear error messages ✓
+  * Fixed calculateAmount1ForAmount0 and calculateAmount0ForAmount1 to never return zero for non-zero input ✓
+  * Added UI warnings for very small token amounts ✓
+  * Ensured proper error handling for liquidity addition edge cases ✓
+- Test Cases:
+  * Adding liquidity with non-zero amounts for both tokens succeeds ✓
+  * Adding liquidity with zero amount for either token shows proper validation error ✓
+  * Very small token amounts show warning message ✓
+  * Error messages are clear and user-friendly ✓
+  * Token amount calculations maintain proper proportions based on current price ✓
+  * Empty pools handle token amount calculations gracefully ✓
+- Observations:
+  * In Uniswap V3, both tokens are required when adding liquidity
+  * Token amounts must be in specific proportions based on current price and price range
+  * Error signature 0x10074548 is triggered when contract detects one token amount is zero
+- Recommendations:
+  * Consider adding more detailed documentation about token amount requirements
+  * Add tooltips explaining the relationship between token amounts and price range
+
 ### Pool List Implementation (✅ Passed - 2025-02-25)
 - Test Environment:
   * Local development server (port 5173)
