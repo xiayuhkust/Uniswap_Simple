@@ -1,7 +1,7 @@
 import { useContractRead } from 'wagmi'
 import { type Address } from 'viem'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
-import { Q96_SHIFT, ZERO_BIGINT, stringToBigInt, calculatePrice, formatPrice } from '../utils/bigint'
+import { Q96_SHIFT, stringToBigInt, formatPrice } from '../utils/bigint'
 import { isValidAmount } from '../utils/validation'
 
 interface Slot0Result {
@@ -54,14 +54,9 @@ export function usePoolData(poolAddress?: Address) {
       // Convert amount0 to BigInt with proper decimal precision
       const amount0BigInt = stringToBigInt(amount0)
       
-      // Calculate price maintaining precision using bit shifting
-      const price = calculatePrice(sqrtPriceX96)
-      if (price === ZERO_BIGINT) return amount0
-      
       // Calculate result maintaining precision with BigInt operations
-      // Scale first to maintain precision during division
-      const scaledAmount = amount0BigInt << Q96_SHIFT
-      const result = scaledAmount / price
+      // For token0 to token1, multiply by sqrtPriceX96 and shift by Q96
+      const result = (amount0BigInt * sqrtPriceX96) >> Q96_SHIFT
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)
@@ -87,13 +82,10 @@ export function usePoolData(poolAddress?: Address) {
       // Convert amount1 to BigInt with proper decimal precision
       const amount1BigInt = stringToBigInt(amount1)
       
-      // Calculate price maintaining precision using bit shifting
-      const price = calculatePrice(sqrtPriceX96)
-      if (price === ZERO_BIGINT) return amount1
-      
       // Calculate result maintaining precision with BigInt operations
-      // Scale first to maintain precision during multiplication
-      const result = (amount1BigInt * price) >> Q96_SHIFT
+      // For token1 to token0, scale by Q96 and divide by sqrtPriceX96
+      const scaledAmount = amount1BigInt << Q96_SHIFT
+      const result = scaledAmount / sqrtPriceX96
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)

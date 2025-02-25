@@ -72,9 +72,7 @@ export const usePoolList = () => {
             liquidity: pair.symbols[0] === 'TT1' && pair.symbols[1] === 'TT2' 
               ? stringToBigInt('1')  // Test pool with liquidity
               : ZERO_BIGINT,
-            currentPrice: pair.symbols[0] === 'TT1' && pair.symbols[1] === 'TT2'
-              ? 1.5  // Test price for non-empty pool
-              : null
+            currentPrice: null  // Let usePoolData handle price calculation
           };
         });
 

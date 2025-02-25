@@ -82,6 +82,12 @@
   - [ ] Fee collection process
 
 ## Latest Updates (2025-02-24)
+- Fixed price calculation and input validation:
+  * Updated price calculation to use actual sqrtPriceX96 values ✓
+  * Removed incorrect 1:1 ratio handling ✓
+  * Improved precision with proper Q96 bit shifting ✓
+  * Fixed zero input validation ✓
+  * Added proper error handling for edge cases ✓
 - Fixed BigInt handling in contract data:
   * Added proper type conversion in parseSlot0Data ✓
   * Added explicit BigInt conversion for uint160 values ✓

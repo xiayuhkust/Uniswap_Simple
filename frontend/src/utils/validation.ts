@@ -14,7 +14,7 @@ export function validateAndFormatAmount(value: string): string {
     value = parts[0] + '.' + parts.slice(1).join('')
   }
   
-  // Remove leading zeros unless it's "0."
+  // Handle zero values and leading zeros
   if (!value.includes('.')) {
     value = value.replace(/^0+/, '') || '0'
   } else if (value.startsWith('0') && value.charAt(1) !== '.') {
@@ -32,6 +32,7 @@ export function isValidAmount(value: string): boolean {
   if (value === '.') return false
   if (isNaN(Number(value))) return false
   if (Number(value) < 0) return false
+  // Allow zero values
   return true
 }
 

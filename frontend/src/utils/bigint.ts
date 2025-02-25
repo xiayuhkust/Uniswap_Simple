@@ -36,6 +36,7 @@ export function bigIntToString(amount: bigint): string {
  */
 export function calculatePrice(sqrtPriceX96: bigint): bigint {
   if (sqrtPriceX96 === ZERO_BIGINT) return ZERO_BIGINT;
+  
   // Calculate price maintaining precision using bit shifting
   const squared = sqrtPriceX96 * sqrtPriceX96;
   const price = squared >> Q96_SHIFT;
