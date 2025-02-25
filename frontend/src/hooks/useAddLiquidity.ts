@@ -186,7 +186,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       console.error('Error adding liquidity:', error)
       
       if (err.code === '0x10074548') {
-        throw new Error('Invalid tick range: Must be between MIN_TICK (-887220) and MAX_TICK (887220)')
+        throw new Error('Failed to add liquidity: Both token amounts must be greater than zero')
       } else if (err.code === 'INSUFFICIENT_FUNDS') {
         throw new Error('Insufficient funds to add liquidity')
       } else if (err.reason?.includes('amount exceeds balance')) {

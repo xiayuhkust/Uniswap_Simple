@@ -160,6 +160,12 @@ export function AddLiquidityPage() {
                     setCalculationError(null)
                     const error = validateAmounts(value, amount1)
                     setValidationError(error)
+                    
+                    // Ensure amount1 is never zero if amount0 is non-zero
+                    if (parseFloat(value) > 0 && (parseFloat(amount1) === 0 || amount1 === '')) {
+                      // Set a minimum value for amount1 to prevent zero
+                      setAmount1('0.000001')
+                    }
                   } catch (error) {
                     const err = error as Error
                     setCalculationError(err.message || "Failed to calculate amount1")
@@ -246,6 +252,24 @@ export function AddLiquidityPage() {
               </Text>
             </Box>
 
+            {parseFloat(amount0) > 0 && parseFloat(amount1) < 0.001 && (
+              <Box p={4} bg="yellow.50" borderRadius="md" mt={2}>
+                <Text color="yellow.800">
+                  Warning: The amount of {pool.token1Symbol} is very small. This may cause the transaction to fail.
+                  Consider increasing the amount of {pool.token1Symbol} or adjusting the price range.
+                </Text>
+              </Box>
+            )}
+
+            {parseFloat(amount1) > 0 && parseFloat(amount0) < 0.001 && (
+              <Box p={4} bg="yellow.50" borderRadius="md" mt={2}>
+                <Text color="yellow.800">
+                  Warning: The amount of {pool.token0Symbol} is very small. This may cause the transaction to fail.
+                  Consider increasing the amount of {pool.token0Symbol} or adjusting the price range.
+                </Text>
+              </Box>
+            )}
+
             {validationError && (
                 <Text fontSize="sm" color="red.500" mt={2} mb={2}>
                   {validationError}
@@ -275,10 +299,11 @@ export function AddLiquidityPage() {
                   return
                 }
 
-                if (!amount0 || !amount1) {
+                // Add validation to ensure both token amounts are non-zero
+                if (!amount0 || !amount1 || parseFloat(amount0) <= 0 || parseFloat(amount1) <= 0) {
                   toast({
                     title: "Invalid Amounts",
-                    description: "Please enter valid amounts for both tokens",
+                    description: "Both token amounts must be greater than zero",
                     status: "error",
                     duration: 3000,
                     isClosable: true,

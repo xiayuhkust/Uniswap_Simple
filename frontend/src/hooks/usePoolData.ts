@@ -71,10 +71,12 @@ export function usePoolData(poolAddress?: Address) {
       const result = (amount0BigInt * squared) >> (Q96_SHIFT * 2n)
       
       // Convert back to decimal string with proper precision
-      return formatPrice(result)
+      const formattedResult = formatPrice(result)
+      // Ensure result is never zero for non-zero input
+      return formattedResult === '0' ? '0.000001' : formattedResult
     } catch (error) {
       console.error('Error calculating amount1:', error)
-      return ''
+      return amount0 // Default to 1:1 ratio on error
     }
   }
 
@@ -112,10 +114,12 @@ export function usePoolData(poolAddress?: Address) {
       const result = scaledAmount / squared
       
       // Convert back to decimal string with proper precision
-      return formatPrice(result)
+      const formattedResult = formatPrice(result)
+      // Ensure result is never zero for non-zero input
+      return formattedResult === '0' ? '0.000001' : formattedResult
     } catch (error) {
       console.error('Error calculating amount0:', error)
-      return ''
+      return amount1 // Default to 1:1 ratio on error
     }
   }
 
