@@ -141,7 +141,7 @@ export function AddLiquidityPage() {
               <Box p={4} bg="yellow.50" borderRadius="md">
                 <Text color="yellow.800">
                   This pool has no liquidity. You will be the first liquidity provider.
-                  Initial prices will be set based on your token amounts.
+                  The initial token ratio will be set based on your deposit amounts.
                 </Text>
               </Box>
             ) : null}

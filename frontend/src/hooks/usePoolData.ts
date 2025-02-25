@@ -1,7 +1,7 @@
 import { useContractRead } from 'wagmi'
 import { type Address } from 'viem'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
-import { Q96_SHIFT, stringToBigInt, formatPrice } from '../utils/bigint'
+import { Q96_SHIFT, stringToBigInt, formatPrice, ZERO_BIGINT } from '../utils/bigint'
 import { isValidAmount } from '../utils/validation'
 
 interface Slot0Result {
@@ -42,6 +42,11 @@ export function usePoolData(poolAddress?: Address) {
     try {
       if (!amount0 || !isValidAmount(amount0)) return ''
       
+      // For empty pools, don't calculate ratio
+      if (!liquidity || BigInt(liquidity.toString()) === ZERO_BIGINT) {
+        return amount0
+      }
+      
       const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
       if (!slot0 || slot0.sqrtPriceX96 === undefined) {
         console.error('Invalid slot0 data:', slot0Data)
@@ -55,9 +60,9 @@ export function usePoolData(poolAddress?: Address) {
       const amount0BigInt = stringToBigInt(amount0)
       
       // Calculate result maintaining precision with BigInt operations
-      // For token0 to token1, multiply by sqrtPriceX96 squared and shift by Q96
+      // For token0 to token1, multiply by sqrtPriceX96 squared and shift by Q96*2
       const squared = sqrtPriceX96 * sqrtPriceX96
-      const result = (amount0BigInt * squared) >> Q96_SHIFT
+      const result = (amount0BigInt * squared) >> (Q96_SHIFT * 2n)
       
       // Convert back to decimal string with proper precision
       return formatPrice(result)
@@ -70,6 +75,11 @@ export function usePoolData(poolAddress?: Address) {
   const calculateAmount0ForAmount1 = (amount1: string): string => {
     try {
       if (!amount1 || !isValidAmount(amount1)) return ''
+      
+      // For empty pools, don't calculate ratio
+      if (!liquidity || BigInt(liquidity.toString()) === ZERO_BIGINT) {
+        return amount1
+      }
       
       const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
       if (!slot0 || slot0.sqrtPriceX96 === undefined) {
@@ -84,9 +94,9 @@ export function usePoolData(poolAddress?: Address) {
       const amount1BigInt = stringToBigInt(amount1)
       
       // Calculate result maintaining precision with BigInt operations
-      // For token1 to token0, scale by Q96 and divide by sqrtPriceX96 squared
+      // For token1 to token0, scale by Q96*2 and divide by sqrtPriceX96 squared
       const squared = sqrtPriceX96 * sqrtPriceX96
-      const scaledAmount = amount1BigInt << Q96_SHIFT
+      const scaledAmount = amount1BigInt << (Q96_SHIFT * 2n)
       const result = scaledAmount / squared
       
       // Convert back to decimal string with proper precision
