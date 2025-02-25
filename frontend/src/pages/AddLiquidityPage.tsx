@@ -15,18 +15,23 @@ export function AddLiquidityPage() {
   const navigate = useNavigate()
   const toast = useToast()
   const { isConnected } = useAccount()
-  const { pools, isLoading } = usePoolList()
+  const { pools, isLoading: poolsLoading } = usePoolList()
   const [amount0, setAmount0] = useState('')
   const [amount1, setAmount1] = useState('')
-  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(poolAddress as Address)
+  
+  // Validate pool address format
+  const isValidAddress = poolAddress?.match(/^0x[a-fA-F0-9]{40}$/)
+  const validatedPoolAddress = isValidAddress ? poolAddress as Address : undefined
+  
+  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(validatedPoolAddress)
   const [lowerTick, setLowerTick] = useState(-887220)
   const [upperTick, setUpperTick] = useState(887220)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
   
-  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(poolAddress as Address)
+  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(validatedPoolAddress)
 
   // Find pool data from poolList
-  const pool = pools.find(p => p.address === (poolAddress as Address))
+  const pool = pools.find(p => p.address === validatedPoolAddress)
 
   const handleTickRangeChange = (lower: number, upper: number) => {
     setLowerTick(lower)
@@ -40,19 +45,35 @@ export function AddLiquidityPage() {
     }
   }
 
-  if (isLoading || poolDataLoading) {
+  if (!isValidAddress) {
     return (
-      <Box maxW="2xl" mx="auto" mt={8}>
-        <Text>Loading pool data...</Text>
+      <Box maxW="2xl" mx="auto" mt={8} p={6} bg="white" borderRadius="xl" borderWidth="1px">
+        <VStack spacing={4}>
+          <Text fontSize="xl" color="red.500">Invalid pool address format</Text>
+          <Button onClick={() => navigate('/pool')} variant="outline">Back to Pools</Button>
+        </VStack>
+      </Box>
+    )
+  }
+
+  if (poolsLoading || poolDataLoading) {
+    return (
+      <Box maxW="2xl" mx="auto" mt={8} p={6} bg="white" borderRadius="xl" borderWidth="1px">
+        <VStack spacing={4}>
+          <Spinner size="xl" />
+          <Text>Loading pool data...</Text>
+        </VStack>
       </Box>
     )
   }
 
   if (!pool) {
     return (
-      <Box maxW="2xl" mx="auto" mt={8}>
-        <Text>Pool not found</Text>
-        <Button onClick={() => navigate('/pool')}>Back to Pools</Button>
+      <Box maxW="2xl" mx="auto" mt={8} p={6} bg="white" borderRadius="xl" borderWidth="1px">
+        <VStack spacing={4}>
+          <Text fontSize="xl">Pool not found</Text>
+          <Button onClick={() => navigate('/pool')} variant="outline">Back to Pools</Button>
+        </VStack>
       </Box>
     )
   }
