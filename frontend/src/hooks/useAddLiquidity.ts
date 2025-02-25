@@ -103,12 +103,6 @@ export function useAddLiquidity(poolAddress: Address) {
     }
   }
 
-  const { writeAsync: addLiquidity } = useContractWrite({
-    address: MANAGER_ADDRESS,
-    abi: MANAGER_ABI,
-    functionName: 'mint',
-  })
-
   const addLiquidityPosition = useCallback(async (
     tickLower: number,
     tickUpper: number,
