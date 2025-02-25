@@ -8,7 +8,10 @@ export const INPUT_ERRORS = {
   POOL_EXISTS: "Pool already exists",
   SAME_TOKEN: "Cannot select the same token",
   NO_TOKENS: "Please select both tokens",
-  NO_FEE: "Please select a fee tier"
+  NO_FEE: "Please select a fee tier",
+  WALLET_NOT_CONNECTED: "Please connect your wallet",
+  WRAP_TURA: "Please wrap your TURA tokens first",
+  APPROVAL_FAILED: "Failed to approve tokens"
 } as const
 
 export type InputError = keyof typeof INPUT_ERRORS

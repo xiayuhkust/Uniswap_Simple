@@ -5,6 +5,8 @@ import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
 import IUniswapV3Manager from '../abi/IUniswapV3Manager.json'
 import { validateTicks } from '../constants/ticks'
 import { MANAGER_ADDRESS } from '../utils/contracts'
+import { WTURA_ADDRESS, TOKEN_DECIMALS } from '../constants/tokens'
+import { INPUT_ERRORS } from '../constants/errors'
 
 interface MintParams {
   tokenA: Address
@@ -44,7 +46,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     functionName: 'token0',
     enabled: !!poolAddress,
   })
-  const token0 = token0Data as Address | undefined
+  const token0 = token0Data ? (typeof token0Data === 'string' ? token0Data.toLowerCase() as Address : undefined) : undefined
 
   const { data: token1Data } = useContractRead({
     address: poolAddress,
@@ -52,38 +54,38 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     functionName: 'token1',
     enabled: !!poolAddress,
   })
-  const token1 = token1Data as Address | undefined
+  const token1 = token1Data ? (typeof token1Data === 'string' ? token1Data.toLowerCase() as Address : undefined) : undefined
 
   const { address: userAddress } = useAccount()
 
   const { data: token0AllowanceData } = useContractRead({
-    address: token0 as Address,
+    address: token0,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [userAddress, MANAGER_ADDRESS],
+    args: userAddress && token0 ? [userAddress, MANAGER_ADDRESS] : undefined,
     enabled: !!token0 && !!userAddress,
   })
-  const token0Allowance = token0AllowanceData as bigint | undefined
+  const token0Allowance = token0AllowanceData ? BigInt(token0AllowanceData.toString()) : undefined
 
   const { data: token1AllowanceData } = useContractRead({
-    address: token1 as Address,
+    address: token1,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [userAddress, MANAGER_ADDRESS],
+    args: userAddress && token1 ? [userAddress, MANAGER_ADDRESS] : undefined,
     enabled: !!token1 && !!userAddress,
   })
-  const token1Allowance = token1AllowanceData as bigint | undefined
+  const token1Allowance = token1AllowanceData ? BigInt(token1AllowanceData.toString()) : undefined
 
   const { writeAsync: approveToken0 } = useContractWrite({
-    address: token0 as Address,
+    address: token0,
     abi: erc20ABI,
-    functionName: 'approve',
+    functionName: 'approve'
   })
 
   const { writeAsync: approveToken1 } = useContractWrite({
-    address: token1 as Address,
+    address: token1,
     abi: erc20ABI,
-    functionName: 'approve',
+    functionName: 'approve'
   })
 
   const { writeAsync: addLiquidity } = useContractWrite({
@@ -93,12 +95,20 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
   })
 
   const checkAndApproveTokens = useCallback(async (amount0: string, amount1: string) => {
-    if (!token0 || !token1) return false
+    if (!token0 || !token1) {
+      throw new Error(INPUT_ERRORS.NO_TOKENS)
+    }
+    if (!userAddress) {
+      throw new Error(INPUT_ERRORS.WALLET_NOT_CONNECTED)
+    }
+    if (token0 === WTURA_ADDRESS || token1 === WTURA_ADDRESS) {
+      throw new Error(INPUT_ERRORS.WRAP_TURA)
+    }
     
     setIsApproving(true)
     try {
-      const amount0BigInt = parseUnits(amount0, 18)
-      const amount1BigInt = parseUnits(amount1, 18)
+      const amount0BigInt = parseUnits(amount0, TOKEN_DECIMALS)
+      const amount1BigInt = parseUnits(amount1, TOKEN_DECIMALS)
 
       if (!token0Allowance || token0Allowance < amount0BigInt) {
         await approveToken0({
@@ -123,7 +133,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         throw new Error('Insufficient token allowance')
       } else {
         console.error('Error approving tokens:', error)
-        throw new Error('Failed to approve tokens')
+        throw new Error(INPUT_ERRORS.APPROVAL_FAILED)
       }
     } finally {
       setIsApproving(false)
@@ -136,7 +146,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     functionName: 'fee',
     enabled: !!poolAddress
   })
-  const poolFee = poolFeeData as number | undefined
+  const poolFee = poolFeeData ? Number(poolFeeData) : undefined
 
   const addLiquidityPosition = useCallback(async (
     tickLower: number,
@@ -157,9 +167,11 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       // Add 20 minutes deadline
       const deadline = BigInt(Math.trunc(Date.now() / 1000) + 1200)
 
+      if (!token0 || !token1) throw new Error('Tokens not loaded')
+      
       const mintParams: MintParams = {
-        tokenA: token0 as Address,
-        tokenB: token1 as Address,
+        tokenA: token0,
+        tokenB: token1,
         fee: Number(poolFee),
         lowerTick: tickLower,
         upperTick: tickUpper,
