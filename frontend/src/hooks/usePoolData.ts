@@ -1,10 +1,8 @@
 import { useContractRead } from 'wagmi'
 import { type Address } from 'viem'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
-
-const DECIMALS = 18
-const Q96_SHIFT = 96n
-const ZERO_BIGINT = 0n
+import { DECIMALS, Q96_SHIFT, ZERO_BIGINT, stringToBigInt, calculatePrice, formatPrice } from '../utils/bigint'
+import { isValidAmount } from '../utils/validation'
 
 interface Slot0Result {
   sqrtPriceX96: bigint
@@ -42,7 +40,7 @@ export function usePoolData(poolAddress?: Address) {
 
   const calculateAmount1ForAmount0 = (amount0: string): string => {
     try {
-      if (!amount0 || isNaN(Number(amount0))) return ''
+      if (!amount0 || !isValidAmount(amount0)) return ''
       
       const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
       if (!slot0) return ''
@@ -57,22 +55,17 @@ export function usePoolData(poolAddress?: Address) {
       if (sqrtPriceX96 === 0n) return amount0
       
       // Convert amount0 to BigInt with proper decimal precision
-      // Convert to BigInt using string operations to avoid floating point precision issues
-      const amount0Scaled = amount0.includes('.') 
-        ? amount0.padEnd(amount0.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
-        : amount0 + '0'.repeat(DECIMALS)
-      const amount0BigInt = BigInt(amount0Scaled)
+      const amount0BigInt = stringToBigInt(amount0)
       
       // Calculate price maintaining precision using bit shifting
-      const priceX192 = sqrtPriceX96 * sqrtPriceX96
-      const price = priceX192 >> Q96_SHIFT
+      const price = calculatePrice(sqrtPriceX96)
       if (price === ZERO_BIGINT) return amount0
       
       // Calculate result maintaining precision with BigInt operations
       const result = (amount0BigInt * price) >> Q96_SHIFT
       
       // Convert back to decimal string with proper precision
-      return (Number(result) / (10 ** DECIMALS)).toString()
+      return formatPrice(result)
     } catch (error) {
       console.error('Error calculating amount1:', error)
       return ''
@@ -81,7 +74,7 @@ export function usePoolData(poolAddress?: Address) {
 
   const calculateAmount0ForAmount1 = (amount1: string): string => {
     try {
-      if (!amount1 || isNaN(Number(amount1))) return ''
+      if (!amount1 || !isValidAmount(amount1)) return ''
       
       const slot0 = slot0Data ? parseSlot0Data(slot0Data) : null
       if (!slot0) return ''
@@ -96,15 +89,10 @@ export function usePoolData(poolAddress?: Address) {
       if (sqrtPriceX96 === 0n) return amount1
       
       // Convert amount1 to BigInt with proper decimal precision
-      // Convert to BigInt using string operations to avoid floating point precision issues
-      const amount1Scaled = amount1.includes('.') 
-        ? amount1.padEnd(amount1.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
-        : amount1 + '0'.repeat(DECIMALS)
-      const amount1BigInt = BigInt(amount1Scaled)
+      const amount1BigInt = stringToBigInt(amount1)
       
       // Calculate price maintaining precision using bit shifting
-      const priceX192 = sqrtPriceX96 * sqrtPriceX96
-      const price = priceX192 >> Q96_SHIFT
+      const price = calculatePrice(sqrtPriceX96)
       if (price === ZERO_BIGINT) return amount1
       
       // Calculate result maintaining precision with BigInt operations
@@ -112,7 +100,7 @@ export function usePoolData(poolAddress?: Address) {
       const result = (amount1BigInt << Q96_SHIFT) / price
       
       // Convert back to decimal string with proper precision
-      return (Number(result) / (10 ** DECIMALS)).toString()
+      return formatPrice(result)
     } catch (error) {
       console.error('Error calculating amount0:', error)
       return ''
