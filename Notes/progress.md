@@ -82,12 +82,12 @@
   - [ ] Fee collection process
 
 ## Latest Updates (2025-02-24)
-- Fixed BigInt handling in price calculations:
+- Improved BigInt handling in price calculations:
   * Standardized ZERO_BIGINT usage across components ✓
-  * Fixed type mixing in calculatePrice function ✓
-  * Added proper Q96 precision handling ✓
-  * Improved price scaling and bit shifting ✓
-  * Enhanced error handling for edge cases ✓
+  * Added Q96 precision handling framework ✓
+  * Implemented price scaling mechanisms ✓
+  * Known Issue: BigInt type mixing persists in some calculations
+  * TODO: Resolve remaining BigInt type safety issues in next task
 - Improved number input validation and BigInt handling:
   * Standardized error messages with INPUT_ERRORS ✓
   * Fixed BigInt type mixing in price calculations ✓
