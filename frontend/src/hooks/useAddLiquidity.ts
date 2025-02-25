@@ -59,6 +59,12 @@ export function useAddLiquidity(poolAddress: Address) {
     functionName: 'approve',
   })
 
+  const { writeAsync: addLiquidity } = useContractWrite({
+    address: MANAGER_ADDRESS,
+    abi: MANAGER_ABI,
+    functionName: 'mint',
+  })
+
   const checkAndApproveTokens = useCallback(async (amount0: string, amount1: string) => {
     if (!token0 || !token1) return false
     
@@ -147,6 +153,5 @@ export function useAddLiquidity(poolAddress: Address) {
     isApproving,
     token0,
     token1
-  }
   }
 }
