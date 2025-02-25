@@ -166,11 +166,20 @@ export function AddLiquidityPage() {
                   return
                 }
 
-                const success = await checkAndApproveTokens(amount0, amount1)
-                if (!success) {
+                try {
+                  await checkAndApproveTokens(amount0, amount1)
+                  toast({
+                    title: "Tokens Approved",
+                    description: "Ready to add liquidity in next step",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                  })
+                } catch (error) {
+                  const err = error as Error
                   toast({
                     title: "Approval Failed",
-                    description: "Failed to approve tokens",
+                    description: err.message || "Failed to approve tokens",
                     status: "error",
                     duration: 3000,
                     isClosable: true,
@@ -188,7 +197,9 @@ export function AddLiquidityPage() {
                 })
               }}
             >
-              {isConnected ? 'Add Liquidity' : 'Connect Wallet'}
+              {!isConnected ? 'Connect Wallet' : 
+               isApproving ? 'Approving...' : 
+               'Add Liquidity'}
             </Button>
           </VStack>
         </Box>

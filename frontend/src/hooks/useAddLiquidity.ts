@@ -1,7 +1,12 @@
 import { useContractWrite, useContractRead, Address, erc20ABI } from 'wagmi'
 import { POOL_ABI } from '../constants/abis'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { parseUnits } from 'viem'
+
+interface AddLiquidityError extends Error {
+  code?: string;
+  reason?: string;
+}
 
 const MANAGER_ADDRESS = '0x0F6eF7a8d06f1Bb4f5a5B22f0dC5B8A4B5Aa68A6'
 
@@ -50,7 +55,7 @@ export function useAddLiquidity(poolAddress: Address) {
     functionName: 'approve',
   })
 
-  const checkAndApproveTokens = async (amount0: string, amount1: string) => {
+  const checkAndApproveTokens = useCallback(async (amount0: string, amount1: string) => {
     if (!token0 || !token1) return false
     
     setIsApproving(true)
@@ -72,8 +77,17 @@ export function useAddLiquidity(poolAddress: Address) {
 
       return true
     } catch (error) {
-      console.error('Error approving tokens:', error)
-      return false
+      const err = error as AddLiquidityError
+      if (err.code === 'INSUFFICIENT_FUNDS') {
+        throw new Error('Insufficient funds for token approval')
+      } else if (err.reason?.includes('ERC20: transfer amount exceeds balance')) {
+        throw new Error('Insufficient token balance')
+      } else if (err.reason?.includes('ERC20: transfer amount exceeds allowance')) {
+        throw new Error('Insufficient token allowance')
+      } else {
+        console.error('Error approving tokens:', error)
+        throw new Error('Failed to approve tokens')
+      }
     } finally {
       setIsApproving(false)
     }
