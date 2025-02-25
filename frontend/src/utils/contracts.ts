@@ -1,7 +1,9 @@
 import { useContractWrite, useContractRead, Address } from 'wagmi'
 import IUniswapV3Factory from '../abi/IUniswapV3Factory.json'
+import IUniswapV3Manager from '../abi/IUniswapV3Manager.json'
 
 export const FACTORY_ADDRESS = '0xdf5F4d3239391716A4F5928d57E2AaDd3f644C70'
+export const MANAGER_ADDRESS = '0xeA55332dDe678746aCC684D323e357Df05B6F767' // from deployment records
 
 export const FEES = {
   LOWEST: 500,   // 0.05%
@@ -30,4 +32,11 @@ export function useCreatePool() {
     abi: IUniswapV3Factory.abi,
     functionName: 'createPool',
   })
+}
+
+export function useManagerContract() {
+  return {
+    address: MANAGER_ADDRESS,
+    abi: IUniswapV3Manager.abi,
+  }
 }

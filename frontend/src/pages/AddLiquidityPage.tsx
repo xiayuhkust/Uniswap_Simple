@@ -8,6 +8,7 @@ import { usePoolData } from '../hooks/usePoolData'
 import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
+import { validateTicks, MIN_TICK, MAX_TICK } from '../constants/ticks'
 
 
 export function AddLiquidityPage() {
@@ -24,8 +25,8 @@ export function AddLiquidityPage() {
   const validatedPoolAddress = isValidAddress ? poolAddress as Address : undefined
   
   const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
-  const [lowerTick, setLowerTick] = useState(-887220)
-  const [upperTick, setUpperTick] = useState(887220)
+  const [lowerTick, setLowerTick] = useState(MIN_TICK)
+  const [upperTick, setUpperTick] = useState(MAX_TICK)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
   
   // Find pool data from poolList
@@ -48,6 +49,18 @@ export function AddLiquidityPage() {
   }
 
   const handleTickRangeChange = async (lower: number, upper: number) => {
+    if (!validateTicks(lower, upper)) {
+      setCalculationError("Invalid tick range")
+      toast({
+        title: "Invalid Range",
+        description: `Tick range must be between ${MIN_TICK} and ${MAX_TICK}, and lower must be less than upper`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      })
+      return
+    }
+
     setLowerTick(lower)
     setUpperTick(upper)
     
@@ -213,10 +226,10 @@ export function AddLiquidityPage() {
             <HStack spacing={4} width="100%">
               <Button
                 size="sm"
-                variant={lowerTick === -887220 && upperTick === 887220 ? "uniswap" : "outline"}
+                variant={lowerTick === MIN_TICK && upperTick === MAX_TICK ? "uniswap" : "outline"}
                 onClick={() => {
-                  setLowerTick(-887220)
-                  setUpperTick(887220)
+                  setLowerTick(MIN_TICK)
+                  setUpperTick(MAX_TICK)
                 }}
               >
                 Full Range
@@ -225,8 +238,8 @@ export function AddLiquidityPage() {
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  setLowerTick(-443610)
-                  setUpperTick(443610)
+                  setLowerTick(Math.floor(MIN_TICK / 2))
+                  setUpperTick(Math.floor(MAX_TICK / 2))
                 }}
               >
                 Concentrated
@@ -250,7 +263,7 @@ export function AddLiquidityPage() {
               <Button
               size="lg"
               variant="uniswap"
-              isDisabled={!isConnected || !amount0 || !amount1 || lowerTick >= upperTick || poolDataLoading || isApproving || !!validationError}
+              isDisabled={!isConnected || !amount0 || !amount1 || !validateTicks(lowerTick, upperTick) || poolDataLoading || isApproving || !!validationError}
               onClick={async () => {
                 const error = validateAmounts(amount0, amount1)
                 if (error) {
@@ -281,10 +294,10 @@ export function AddLiquidityPage() {
                   return
                 }
 
-                if (lowerTick >= upperTick) {
+                if (!validateTicks(lowerTick, upperTick)) {
                   toast({
                     title: "Invalid Price Range",
-                    description: "Lower tick must be less than upper tick",
+                    description: `Tick range must be between ${MIN_TICK} and ${MAX_TICK}, and lower tick (${lowerTick}) must be less than upper tick (${upperTick})`,
                     status: "error",
                     duration: 3000,
                     isClosable: true,
@@ -314,12 +327,15 @@ export function AddLiquidityPage() {
                 }
 
                 try {
-                  await addLiquidityPosition(
+                  const tx = await addLiquidityPosition(
                     lowerTick,
                     upperTick,
                     amount0,
                     amount1
                   )
+
+                  if (!tx) throw new Error('Transaction failed')
+
                   toast({
                     title: "Success",
                     description: "Liquidity added successfully",
@@ -338,6 +354,7 @@ export function AddLiquidityPage() {
                     duration: 3000,
                     isClosable: true,
                   })
+                  console.error('Error adding liquidity:', error)
                 }
               }}
             >
