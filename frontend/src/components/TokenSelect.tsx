@@ -2,7 +2,7 @@ import { Box, HStack, Text, Button, useDisclosure, Image } from '@chakra-ui/reac
 import { NumberInput } from './NumberInput'
 import type { Token } from '../types/token'
 import { TokenSelectModal } from './TokenSelectModal'
-import { WTURA_ADDRESS } from './Swap/TokenList'
+import { CONTRACT_ADDRESSES } from '../constants/addresses'
 
 export interface TokenSelectProps {
   value: string
@@ -58,7 +58,7 @@ export function TokenSelect({
                     fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
                   />
                   <Text fontWeight="medium" color="gray.700">
-                    {selectedToken.address === WTURA_ADDRESS ? 'TURA' : selectedToken.symbol}
+                    {selectedToken.address.toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : selectedToken.symbol}
                   </Text>
                 </HStack>
               ) : (
