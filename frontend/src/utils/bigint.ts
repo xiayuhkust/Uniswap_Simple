@@ -45,7 +45,10 @@ export function calculatePrice(sqrtPriceX96: bigint): bigint {
  */
 export function formatPrice(price: bigint, decimals: number = 6): string {
   if (price === 0n) return '0.000000';
-  const priceNum = Number(price);
-  const q96Num = Number(Q96);
-  return (priceNum / q96Num).toFixed(decimals);
+  // Convert to string with proper decimal places
+  const scaledPrice = (price * BigInt(10 ** decimals)) / Q96;
+  const priceStr = scaledPrice.toString().padStart(decimals + 1, '0');
+  const integerPart = priceStr.slice(0, -decimals) || '0';
+  const decimalPart = priceStr.slice(-decimals);
+  return `${integerPart}.${decimalPart}`;
 }
