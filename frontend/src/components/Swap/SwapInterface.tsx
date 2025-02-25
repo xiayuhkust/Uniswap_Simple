@@ -4,6 +4,8 @@ import { ArrowDownIcon } from '@chakra-ui/icons'
 import { useAccount, useConnect } from 'wagmi'
 import { TokenSelect } from '../TokenSelect'
 import { type Token } from '../../types/token'
+import { stringToBigInt } from '../../utils/bigint'
+import { isValidAmount } from '../../utils/validation'
 
 export function SwapInterface() {
   const { isConnected } = useAccount()
@@ -12,7 +14,23 @@ export function SwapInterface() {
   const [outputAmount, setOutputAmount] = useState('')
   const [inputToken, setInputToken] = useState<Token>()
   const [outputToken, setOutputToken] = useState<Token>()
+  const [validationError, setValidationError] = useState<string | null>(null)
   const toast = useToast()
+
+  const validateAmounts = (input: string, output: string): string | null => {
+    if (!input || !output) return "Please enter amounts"
+    if (!isValidAmount(input) || !isValidAmount(output)) return "Invalid amount format"
+    try {
+      const inputBigInt = stringToBigInt(input)
+      const outputBigInt = stringToBigInt(output)
+      if (inputBigInt <= 0n || outputBigInt <= 0n) {
+        return "Amount must be greater than 0"
+      }
+      return null
+    } catch {
+      return "Invalid amount format"
+    }
+  }
 
   const handleSwap = async () => {
     try {
@@ -24,8 +42,10 @@ export function SwapInterface() {
         throw new Error('Please select tokens')
       }
 
-      if (!inputAmount || !outputAmount) {
-        throw new Error('Please enter amounts')
+      const error = validateAmounts(inputAmount, outputAmount)
+      setValidationError(error)
+      if (error) {
+        throw new Error(error)
       }
 
       // TODO: Implement swap logic
@@ -107,7 +127,7 @@ export function SwapInterface() {
             width="100%"
             size="lg"
             variant="uniswap"
-            isDisabled={!inputAmount || !outputAmount || !inputToken || !outputToken}
+            isDisabled={!inputToken || !outputToken || validateAmounts(inputAmount, outputAmount) !== null}
             onClick={handleSwap}
           >
             Swap
