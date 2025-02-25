@@ -110,15 +110,23 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       const amount0BigInt = parseUnits(amount0, TOKEN_DECIMALS)
       const amount1BigInt = parseUnits(amount1, TOKEN_DECIMALS)
 
+      // Check if token is WTURA and handle differently
+      if (token0.toLowerCase() === WTURA_ADDRESS.toLowerCase()) {
+        throw new Error(INPUT_ERRORS.WRAP_TURA)
+      }
+      if (token1.toLowerCase() === WTURA_ADDRESS.toLowerCase()) {
+        throw new Error(INPUT_ERRORS.WRAP_TURA)
+      }
+
       if (!token0Allowance || token0Allowance < amount0BigInt) {
         await approveToken0({
-          args: [MANAGER_ADDRESS, (2n ** 256n) - 1n],
+          args: [MANAGER_ADDRESS, amount0BigInt]
         })
       }
 
       if (!token1Allowance || token1Allowance < amount1BigInt) {
         await approveToken1({
-          args: [MANAGER_ADDRESS, (2n ** 256n) - 1n],
+          args: [MANAGER_ADDRESS, amount1BigInt]
         })
       }
 
