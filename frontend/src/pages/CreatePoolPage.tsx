@@ -5,7 +5,7 @@ import { type Token } from '../types/token'
 import { TickRangeInput } from '../components/TickRangeInput'
 import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
-import { useGetPool, useCreatePool } from '../utils/contracts'
+import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
 
 export function CreatePoolPage() {
   const [token0, setToken0] = useState<Token>()
@@ -18,10 +18,11 @@ export function CreatePoolPage() {
   const toast = useToast()
   const { isConnected } = useAccount()
 
+  const feeValue = fee ? parseInt(fee.replace('%', '')) * 10000 : 0
   const { data: existingPool } = useGetPool(
     token0?.address as Address,
     token1?.address as Address,
-    fee ? parseInt(fee.replace('%', '')) * 10000 : 0
+    feeValue
   )
 
   const { write: createPool, isSuccess, isError } = useCreatePool()
@@ -60,23 +61,44 @@ export function CreatePoolPage() {
     }
 
     try {
-      const feeValue = parseInt(fee.replace('%', '')) * 10000
-      
-      if (existingPool && existingPool !== '0x0000000000000000000000000000000000000000') {
-        throw new Error('Pool already exists')
-      }
-
       if (!token0?.address || !token1?.address) {
         throw new Error('Invalid token addresses')
       }
 
+      if (!Object.values(FEES).includes(feeValue)) {
+        throw new Error('Invalid fee value')
+      }
+
+      if (existingPool && existingPool !== '0x0000000000000000000000000000000000000000') {
+        throw new Error('Pool already exists')
+      }
+
+      const [sortedToken0, sortedToken1] = sortTokens(
+        token0.address as Address,
+        token1.address as Address
+      )
+
       createPool?.({
-        args: [token0.address as Address, token1.address as Address, feeValue],
+        args: [sortedToken0, sortedToken1, feeValue],
       })
     } catch (err) {
+      let errorMessage = 'Unknown error occurred'
+      if (err instanceof Error) {
+        if (err.message.includes('TokensMustBeDifferent')) {
+          errorMessage = 'Cannot create pool with same token'
+        } else if (err.message.includes('ZeroAddressNotAllowed')) {
+          errorMessage = 'Invalid token address'
+        } else if (err.message.includes('UnsupportedFee')) {
+          errorMessage = 'Invalid fee value'
+        } else if (err.message.includes('PoolAlreadyExists')) {
+          errorMessage = 'Pool already exists'
+        } else {
+          errorMessage = err.message
+        }
+      }
       toast({
         title: "Error creating pool",
-        description: err instanceof Error ? err.message : "Unknown error occurred",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -84,7 +106,7 @@ export function CreatePoolPage() {
     }
   }
 
-  const handleTickRangeChange= (lower: number, upper: number) => {
+  const handleTickRangeChange = (lower: number, upper: number) => {
     setLowerTick(lower)
     setUpperTick(upper)
   }
