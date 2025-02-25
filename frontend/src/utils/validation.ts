@@ -28,7 +28,7 @@ export function validateAndFormatAmount(value: string): string {
  * Checks if a string represents a valid token amount
  */
 export function isValidAmount(value: string): boolean {
-  if (!value) return false
+  if (value === '') return false
   if (value === '.') return false
   if (isNaN(Number(value))) return false
   if (Number(value) < 0) return false

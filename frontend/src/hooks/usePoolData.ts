@@ -48,14 +48,8 @@ export function usePoolData(poolAddress?: Address) {
         return ''
       }
       
-      // For empty pools, use 1:1 ratio
-      if (slot0.sqrtPriceX96 === ZERO_BIGINT) {
-        return amount0
-      }
-      
       // Calculate price using BigInt throughout
       const sqrtPriceX96 = slot0.sqrtPriceX96
-      if (sqrtPriceX96 === ZERO_BIGINT) return amount0
       
       // Convert amount0 to BigInt with proper decimal precision
       const amount0BigInt = stringToBigInt(amount0)
@@ -87,14 +81,8 @@ export function usePoolData(poolAddress?: Address) {
         return ''
       }
       
-      // For empty pools, use 1:1 ratio
-      if (slot0.sqrtPriceX96 === ZERO_BIGINT) {
-        return amount1
-      }
-      
       // Calculate price using BigInt throughout
       const sqrtPriceX96 = slot0.sqrtPriceX96
-      if (sqrtPriceX96 === ZERO_BIGINT) return amount1
       
       // Convert amount1 to BigInt with proper decimal precision
       const amount1BigInt = stringToBigInt(amount1)
