@@ -1,4 +1,4 @@
-import { useContractWrite, useContractRead, Address, erc20ABI } from 'wagmi'
+import { useContractWrite, useContractRead, useAccount, Address, erc20ABI } from 'wagmi'
 import { useState, useCallback } from 'react'
 import { parseUnits } from 'viem'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
@@ -54,12 +54,14 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
   })
   const token1 = token1Data as Address | undefined
 
+  const { address: userAddress } = useAccount()
+
   const { data: token0AllowanceData } = useContractRead({
     address: token0 as Address,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [poolAddress, MANAGER_ADDRESS],
-    enabled: !!token0 && !!poolAddress,
+    args: [userAddress, MANAGER_ADDRESS],
+    enabled: !!token0 && !!userAddress,
   })
   const token0Allowance = token0AllowanceData as bigint | undefined
 
@@ -67,8 +69,8 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     address: token1 as Address,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [poolAddress, MANAGER_ADDRESS],
-    enabled: !!token1 && !!poolAddress,
+    args: [userAddress, MANAGER_ADDRESS],
+    enabled: !!token1 && !!userAddress,
   })
   const token1Allowance = token1AllowanceData as bigint | undefined
 
