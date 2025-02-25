@@ -1,5 +1,6 @@
 import { Input, InputProps } from '@chakra-ui/react'
 import { ChangeEvent } from 'react'
+import { validateAndFormatAmount, formatDisplayAmount } from '../utils/validation'
 
 interface NumberInputProps extends Omit<InputProps, 'onChange'> {
   value: string
@@ -8,17 +9,14 @@ interface NumberInputProps extends Omit<InputProps, 'onChange'> {
 
 export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    // Only allow positive numbers and decimals
-    if (newValue === '' || /^\d*\.?\d*$/.test(newValue)) {
-      onChange(newValue)
-    }
+    const newValue = validateAndFormatAmount(e.target.value)
+    onChange(newValue)
   }
 
   return (
     <Input
       type="text"
-      value={value}
+      value={formatDisplayAmount(value)}
       onChange={handleChange}
       variant="unstyled"
       fontSize="2xl"
@@ -26,6 +24,10 @@ export function NumberInput({ value, onChange, ...props }: NumberInputProps) {
       color="black"
       placeholder="0.0"
       _placeholder={{ color: 'gray.700' }}
+      pattern="^[0-9]*[.]?[0-9]*$"
+      inputMode="decimal"
+      autoComplete="off"
+      autoCorrect="off"
       {...props}
     />
   )
