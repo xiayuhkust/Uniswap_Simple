@@ -67,10 +67,10 @@ export const usePoolList = () => {
             token0Symbol: pair.symbols[0],
             token1Symbol: pair.symbols[1],
             fee: FEE_TIERS.MEDIUM,
-            volume7d: 1000000000000000000n,
+            volume7d: BigInt('1000000000000000000'),
             liquidity: pair.symbols[0] === 'TT1' && pair.symbols[1] === 'TT2' 
-              ? 1000000000000000000n  // Test pool with liquidity
-              : 0n,
+              ? BigInt('1000000000000000000')  // Test pool with liquidity
+              : BigInt(0),
             currentPrice: pair.symbols[0] === 'TT1' && pair.symbols[1] === 'TT2'
               ? 1.5  // Test price for non-empty pool
               : null

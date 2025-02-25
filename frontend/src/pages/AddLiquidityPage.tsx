@@ -138,7 +138,7 @@ export function AddLiquidityPage() {
               {`${pool.token0Symbol}/${pool.token1Symbol} Pool - ${(Number(pool.fee) / 10000).toFixed(2)}% Fee`}
             </Text>
 
-            {!pool.liquidity || pool.liquidity === 0n ? (
+            {!pool.liquidity || BigInt(pool.liquidity) === BigInt(0) ? (
               <Box p={4} bg="yellow.50" borderRadius="md">
                 <Text color="yellow.800">
                   This pool has no liquidity. You will be the first liquidity provider.

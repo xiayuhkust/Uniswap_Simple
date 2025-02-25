@@ -49,6 +49,13 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "liquidity",
+      "outputs": [{ "name": "", "type": "uint128" }],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [{ "name": "key", "type": "bytes32" }],
       "name": "positions",
       "outputs": [

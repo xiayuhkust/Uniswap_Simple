@@ -16,6 +16,7 @@ interface MintParams {
   amount1Desired: bigint
   amount0Min: bigint
   amount1Min: bigint
+  deadline: bigint
 }
 
 interface AddLiquidityHookReturn {
@@ -37,35 +38,39 @@ interface AddLiquidityError extends Error {
 export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
   const [isApproving, setIsApproving] = useState(false)
 
-  const { data: token0 } = useContractRead({
+  const { data: token0Data } = useContractRead({
     address: poolAddress,
     abi: POOL_ABI,
     functionName: 'token0',
     enabled: !!poolAddress,
   })
+  const token0 = token0Data as Address | undefined
 
-  const { data: token1 } = useContractRead({
+  const { data: token1Data } = useContractRead({
     address: poolAddress,
     abi: POOL_ABI,
     functionName: 'token1',
     enabled: !!poolAddress,
   })
+  const token1 = token1Data as Address | undefined
 
-  const { data: token0Allowance } = useContractRead({
+  const { data: token0AllowanceData } = useContractRead({
     address: token0 as Address,
     abi: erc20ABI,
     functionName: 'allowance',
     args: [poolAddress, MANAGER_ADDRESS],
     enabled: !!token0 && !!poolAddress,
   })
+  const token0Allowance = token0AllowanceData as bigint | undefined
 
-  const { data: token1Allowance } = useContractRead({
+  const { data: token1AllowanceData } = useContractRead({
     address: token1 as Address,
     abi: erc20ABI,
     functionName: 'allowance',
     args: [poolAddress, MANAGER_ADDRESS],
     enabled: !!token1 && !!poolAddress,
   })
+  const token1Allowance = token1AllowanceData as bigint | undefined
 
   const { writeAsync: approveToken0 } = useContractWrite({
     address: token0 as Address,
@@ -123,12 +128,13 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     }
   }, [token0, token1, token0Allowance, token1Allowance, approveToken0, approveToken1, setIsApproving])
 
-  const { data: poolFee } = useContractRead({
+  const { data: poolFeeData } = useContractRead({
     address: poolAddress,
     abi: POOL_ABI,
     functionName: 'fee',
     enabled: !!poolAddress
   })
+  const poolFee = poolFeeData as number | undefined
 
   const addLiquidityPosition = useCallback(async (
     tickLower: number,
@@ -146,6 +152,9 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       const amount1BigInt = parseUnits(amount1Desired, 18)
 
       // Create MintParams according to IUniswapV3Manager interface
+      // Add 20 minutes deadline
+      const deadline = BigInt(Math.floor(Date.now() / 1000) + 1200)
+
       const mintParams: MintParams = {
         tokenA: token0 as Address,
         tokenB: token1 as Address,
@@ -155,7 +164,8 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         amount0Desired: amount0BigInt,
         amount1Desired: amount1BigInt,
         amount0Min: 0n,
-        amount1Min: 0n
+        amount1Min: 0n,
+        deadline
       }
 
       const tx = await addLiquidity({
