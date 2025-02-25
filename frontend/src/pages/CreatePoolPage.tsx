@@ -156,8 +156,20 @@ export function CreatePoolPage() {
       return "Invalid price range"
     }
     try {
-      const amount0BigInt = BigInt(Math.floor(Number(token0Amount) * (10 ** DECIMALS)))
-      const amount1BigInt = BigInt(Math.floor(Number(token1Amount) * (10 ** DECIMALS)))
+      if (!token0Amount || !token1Amount) {
+        return "Please enter amounts for both tokens"
+      }
+      // Convert to BigInt using string operations to avoid floating point precision issues
+      const amount0Scaled = token0Amount.includes('.') 
+        ? token0Amount.padEnd(token0Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
+        : token0Amount + '0'.repeat(DECIMALS)
+      const amount1Scaled = token1Amount.includes('.')
+        ? token1Amount.padEnd(token1Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
+        : token1Amount + '0'.repeat(DECIMALS)
+      
+      const amount0BigInt = BigInt(amount0Scaled)
+      const amount1BigInt = BigInt(amount1Scaled)
+      
       if (amount0BigInt <= 0n || amount1BigInt <= 0n) {
         return "Amount must be greater than 0"
       }
@@ -210,8 +222,16 @@ export function CreatePoolPage() {
             isDisabled={!token0 || !token1 || !fee || !token0Amount || !token1Amount || 
               (() => {
                 try {
-                  const amount0BigInt = BigInt(Math.floor(Number(token0Amount) * (10 ** DECIMALS)))
-                  const amount1BigInt = BigInt(Math.floor(Number(token1Amount) * (10 ** DECIMALS)))
+                  if (!token0Amount || !token1Amount) return true
+                  const amount0Scaled = token0Amount.includes('.') 
+                    ? token0Amount.padEnd(token0Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
+                    : token0Amount + '0'.repeat(DECIMALS)
+                  const amount1Scaled = token1Amount.includes('.')
+                    ? token1Amount.padEnd(token1Amount.indexOf('.') + DECIMALS + 1, '0').replace('.', '')
+                    : token1Amount + '0'.repeat(DECIMALS)
+                  
+                  const amount0BigInt = BigInt(amount0Scaled)
+                  const amount1BigInt = BigInt(amount1Scaled)
                   return amount0BigInt <= 0n || amount1BigInt <= 0n
                 } catch {
                   return true
