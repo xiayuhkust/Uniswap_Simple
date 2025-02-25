@@ -4,12 +4,11 @@ import { parseUnits } from 'viem'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
 import IUniswapV3Manager from '../abi/IUniswapV3Manager.json'
 import { validateTicks } from '../constants/ticks'
-import { MANAGER_ADDRESS } from '../utils/contracts'
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { TOKEN_DECIMALS } from '../constants/tokens'
 import { INPUT_ERRORS } from '../constants/errors'
 
-const WTURA_ADDRESS = CONTRACT_ADDRESSES.WETH
+// Using CONTRACT_ADDRESSES.WETH directly
 
 interface MintParams {
   tokenA: Address
@@ -65,7 +64,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     address: token0,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: userAddress && token0 ? [userAddress, MANAGER_ADDRESS] : undefined,
+    args: userAddress && token0 ? [userAddress, CONTRACT_ADDRESSES.MANAGER] : undefined,
     enabled: !!token0 && !!userAddress,
   })
   const token0Allowance = token0AllowanceData ? BigInt(token0AllowanceData.toString()) : undefined
@@ -74,7 +73,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     address: token1,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: userAddress && token1 ? [userAddress, MANAGER_ADDRESS] : undefined,
+    args: userAddress && token1 ? [userAddress, CONTRACT_ADDRESSES.MANAGER] : undefined,
     enabled: !!token1 && !!userAddress,
   })
   const token1Allowance = token1AllowanceData ? BigInt(token1AllowanceData.toString()) : undefined
@@ -92,7 +91,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
   })
 
   const { writeAsync: addLiquidity } = useContractWrite({
-    address: MANAGER_ADDRESS,
+    address: CONTRACT_ADDRESSES.MANAGER,
     abi: MANAGER_ABI,
     functionName: 'mint'
   })
@@ -104,9 +103,6 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     if (!userAddress) {
       throw new Error(INPUT_ERRORS.WALLET_NOT_CONNECTED)
     }
-    if (token0?.toLowerCase() === WTURA_ADDRESS.toLowerCase() || token1?.toLowerCase() === WTURA_ADDRESS.toLowerCase()) {
-      throw new Error(INPUT_ERRORS.WRAP_TURA)
-    }
     
     setIsApproving(true)
     try {
@@ -115,13 +111,13 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
 
       if (!token0Allowance || token0Allowance < amount0BigInt) {
         await approveToken0({
-          args: [MANAGER_ADDRESS, (2n ** 256n) - 1n]
+          args: [CONTRACT_ADDRESSES.MANAGER, (2n ** 256n) - 1n]
         })
       }
 
       if (!token1Allowance || token1Allowance < amount1BigInt) {
         await approveToken1({
-          args: [MANAGER_ADDRESS, (2n ** 256n) - 1n]
+          args: [CONTRACT_ADDRESSES.MANAGER, (2n ** 256n) - 1n]
         })
       }
 

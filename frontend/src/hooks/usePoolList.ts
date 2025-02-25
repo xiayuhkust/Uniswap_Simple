@@ -29,25 +29,20 @@ export const usePoolList = () => {
   const publicClient = usePublicClient();
 
   useEffect(() => {
-    const factoryAddress = CONTRACT_ADDRESSES.FACTORY as HexString;
-    const TT1 = CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString;
-    const TT2 = CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString;
-    const WTURA = CONTRACT_ADDRESSES.WETH as HexString;
-
     const fetchPools = async () => {
       if (!publicClient) return;
       
       try {
         setIsLoading(true);
         const pairs: TokenPair[] = [
-          { tokens: [TT1, TT2], symbols: ['TT1', 'TT2'] },
-          { tokens: [TT1, WTURA], symbols: ['TT1', 'WTURA'] },
-          { tokens: [TT2, WTURA], symbols: ['TT2', 'WTURA'] }
+          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString, CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString], symbols: ['TT1', 'TT2'] },
+          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_1 as HexString, CONTRACT_ADDRESSES.WETH as HexString], symbols: ['TT1', 'WTURA'] },
+          { tokens: [CONTRACT_ADDRESSES.TEST_TOKEN_2 as HexString, CONTRACT_ADDRESSES.WETH as HexString], symbols: ['TT2', 'WTURA'] }
         ];
 
         const poolPromises = pairs.map(async (pair) => {
           const factory = {
-            address: factoryAddress,
+            address: CONTRACT_ADDRESSES.FACTORY as HexString,
             abi: FACTORY_ABI,
           };
 
@@ -57,7 +52,7 @@ export const usePoolList = () => {
             args: [pair.tokens[0], pair.tokens[1], FEE_TIERS.MEDIUM]
           });
 
-          if (poolAddress === '0x0000000000000000000000000000000000000000') {
+          if (poolAddress === CONTRACT_ADDRESSES.ZERO) {
             return null;
           }
 

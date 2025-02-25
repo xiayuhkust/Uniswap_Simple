@@ -1,3 +1,4 @@
+import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { INPUT_ERRORS } from '../constants/errors'
@@ -27,7 +28,7 @@ export function AddLiquidityPage() {
   const isValidAddress = poolAddress?.match(/^0x[a-fA-F0-9]{40}$/)
   const validatedPoolAddress = isValidAddress ? poolAddress as Address : undefined
   
-  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
+  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(validatedPoolAddress || CONTRACT_ADDRESSES.ZERO)
   const [lowerTick, setLowerTick] = useState(MIN_TICK)
   const [upperTick, setUpperTick] = useState(MAX_TICK)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
@@ -35,7 +36,7 @@ export function AddLiquidityPage() {
   // Find pool data from poolList
   const pool = pools.find(p => p.address === validatedPoolAddress)
 
-  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
+  const { slot0, isLoading: poolDataLoading, calculateAmount1ForAmount0, calculateAmount0ForAmount1 } = usePoolData(validatedPoolAddress || CONTRACT_ADDRESSES.ZERO)
 
   const [isCalculating, setIsCalculating] = useState(false)
   const [calculationError, setCalculationError] = useState<string | null>(null)

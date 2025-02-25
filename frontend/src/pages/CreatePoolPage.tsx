@@ -1,3 +1,4 @@
+import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { VStack, Button, Box, Text, useToast } from '@chakra-ui/react'
 import { TokenSelect } from '../components/TokenSelect'
 import { useState, useEffect } from 'react'
@@ -72,7 +73,7 @@ export function CreatePoolPage() {
         throw new Error('Fee must be selected')
       }
 
-      if (existingPool && existingPool !== '0x0000000000000000000000000000000000000000') {
+      if (existingPool && existingPool !== CONTRACT_ADDRESSES.ZERO) {
         throw new Error('Pool already exists')
       }
 

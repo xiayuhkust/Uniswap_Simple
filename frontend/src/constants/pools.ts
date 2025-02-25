@@ -1,11 +1,12 @@
 import { type Abi } from 'viem';
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json';
-import { TT1_ADDRESS, TT2_ADDRESS, WTURA_ADDRESS, FACTORY_ABI } from '../utils/contracts';
+import { CONTRACT_ADDRESSES } from '../constants/addresses';
+import { FACTORY_ABI } from '../utils/contracts';
 
 export const TOKENS = {
-  TT1: TT1_ADDRESS,
-  TT2: TT2_ADDRESS,
-  WTURA: WTURA_ADDRESS
+  TT1: CONTRACT_ADDRESSES.TEST_TOKEN_1,
+  TT2: CONTRACT_ADDRESSES.TEST_TOKEN_2,
+  WTURA: CONTRACT_ADDRESSES.WETH
 } as const
 
 export const TOKEN_PAIRS = [

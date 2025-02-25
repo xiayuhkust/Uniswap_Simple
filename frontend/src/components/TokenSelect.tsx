@@ -52,7 +52,7 @@ export function TokenSelect({
               {selectedToken ? (
                 <HStack spacing={2}>
                   <Image 
-                    src={selectedToken.logoURI || 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png'} 
+                    src={selectedToken?.logoURI || 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png'} 
                     boxSize="24px" 
                     borderRadius="full"
                     fallbackSrc="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png"
