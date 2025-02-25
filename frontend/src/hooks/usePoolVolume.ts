@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePublicClient } from 'wagmi';
 import { type Address } from 'viem';
+import { stringToBigInt } from '../utils/bigint';
 
 const SWAP_EVENT = {
   type: 'event',

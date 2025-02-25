@@ -3,6 +3,7 @@ import { usePublicClient } from 'wagmi';
 import { type Address } from 'viem';
 import { FEE_TIERS } from './usePoolVolume';
 import IUniswapV3Factory from '../abi/IUniswapV3Factory.json';
+import { stringToBigInt, ZERO_BIGINT } from '../utils/bigint';
 
 const FACTORY_ABI = IUniswapV3Factory.abi;
 
