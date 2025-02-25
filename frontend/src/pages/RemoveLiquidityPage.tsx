@@ -21,9 +21,10 @@ export function RemoveLiquidityPage() {
   const validatedPoolAddress = isValidAddress ? poolAddress as Address : undefined
   
   const { removeLiquidityPosition } = useRemoveLiquidity(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
-  const [lowerTick, setLowerTick] = useState(MIN_TICK)
-  const [upperTick, setUpperTick] = useState(MAX_TICK)
-  const [liquidity, setLiquidity] = useState<bigint>(0n)
+  // These variables will be used in future implementation of position management
+  const [lowerTick] = useState(MIN_TICK)
+  const [upperTick] = useState(MAX_TICK)
+  const [liquidity] = useState<bigint>(0n)
   const [isRemoving, setIsRemoving] = useState(false)
   
   // Find pool data from poolList
