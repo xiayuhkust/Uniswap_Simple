@@ -18,7 +18,7 @@ export function AddLiquidityPage() {
   const { pools, isLoading } = usePoolList()
   const [amount0, setAmount0] = useState('')
   const [amount1, setAmount1] = useState('')
-  const { checkAndApproveTokens, isApproving } = useAddLiquidity(poolAddress as Address)
+  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(poolAddress as Address)
   const [lowerTick, setLowerTick] = useState(-887220)
   const [upperTick, setUpperTick] = useState(887220)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
@@ -187,19 +187,44 @@ export function AddLiquidityPage() {
                   return
                 }
 
-                // Will implement actual liquidity addition in next step
-                toast({
-                  title: "Tokens Approved",
-                  description: "Ready to add liquidity in next step",
-                  status: "success",
-                  duration: 3000,
-                  isClosable: true,
-                })
+                try {
+                  const tx = await addLiquidityPosition(
+                    lowerTick,
+                    upperTick,
+                    amount0,
+                    amount1
+                  )
+                  toast({
+                    title: "Success",
+                    description: "Liquidity added successfully",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                  })
+                } catch (error) {
+                  const err = error as Error
+                  toast({
+                    title: "Failed to Add Liquidity",
+                    description: err.message || "Failed to add liquidity",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                  })
+                }
               }}
             >
               {!isConnected ? 'Connect Wallet' : 
                isApproving ? 'Approving...' : 
                'Add Liquidity'}
+            </Button>
+
+            <Button
+              size="lg"
+              variant="outline"
+              isDisabled={true}
+              _hover={{ bg: 'gray.100' }}
+            >
+              Withdraw Liquidity (Coming Soon)
             </Button>
           </VStack>
         </Box>
