@@ -57,14 +57,20 @@
   * React 18 with TypeScript 5.3
   * wagmi v1.4.13 for contract interactions
 - Features Tested:
-  * Token selection validation
-  * Fee tier validation (0.05%, 0.3%, 1%)
-  * Price range selection (Full Range and Concentrated)
+  * Token selection validation:
+    - TT1 (0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9)
+    - TT2 (0x8FDCE0D41f0A99B5f9FbcFAfd481ffcA61d01122)
+  * Fee tier validation:
+    - 0.05% (500)
+    - 0.3% (3000)
+  * Price range selection:
+    - Full Range (-887220 to 887220)
+    - Concentrated (-443610 to 443610)
   * Contract error handling:
-    - TokensMustBeDifferent
-    - ZeroAddressNotAllowed
-    - UnsupportedFee
-    - PoolAlreadyExists
+    - TokensMustBeDifferent (same token selection)
+    - ZeroAddressNotAllowed (null token address)
+    - UnsupportedFee (invalid fee value)
+    - PoolAlreadyExists (duplicate pool)
   * Token sorting before pool creation
   * Input validation for token amounts
 - Results:
