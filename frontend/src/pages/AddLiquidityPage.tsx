@@ -5,6 +5,7 @@ import { NumberInput } from '../components/NumberInput'
 import { TickRangeInput } from '../components/TickRangeInput'
 import { usePoolList } from '../hooks/usePoolList'
 import { usePoolData } from '../hooks/usePoolData'
+import { useAddLiquidity } from '../hooks/useAddLiquidity'
 import { useAccount } from 'wagmi'
 import { type Address } from 'viem'
 import { LiquidityMath } from '../utils/liquidityMath'
@@ -17,6 +18,7 @@ export function AddLiquidityPage() {
   const { pools, isLoading } = usePoolList()
   const [amount0, setAmount0] = useState('')
   const [amount1, setAmount1] = useState('')
+  const { checkAndApproveTokens, isApproving } = useAddLiquidity(poolAddress as Address)
   const [lowerTick, setLowerTick] = useState(-887220)
   const [upperTick, setUpperTick] = useState(887220)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
@@ -129,7 +131,7 @@ export function AddLiquidityPage() {
             <Button
               size="lg"
               variant="uniswap"
-              isDisabled={!isConnected || !amount0 || !amount1 || lowerTick >= upperTick || poolDataLoading}
+              isDisabled={!isConnected || !amount0 || !amount1 || lowerTick >= upperTick || poolDataLoading || isApproving}
               onClick={() => {
                 if (!isConnected) {
                   toast({
@@ -164,11 +166,23 @@ export function AddLiquidityPage() {
                   return
                 }
 
-                // Will implement actual liquidity addition in useAddLiquidity hook
+                const success = await checkAndApproveTokens(amount0, amount1)
+                if (!success) {
+                  toast({
+                    title: "Approval Failed",
+                    description: "Failed to approve tokens",
+                    status: "error",
+                    duration: 3000,
+                    isClosable: true,
+                  })
+                  return
+                }
+
+                // Will implement actual liquidity addition in next step
                 toast({
-                  title: "Coming soon",
-                  description: "Liquidity addition will be implemented in the next step",
-                  status: "info",
+                  title: "Tokens Approved",
+                  description: "Ready to add liquidity in next step",
+                  status: "success",
                   duration: 3000,
                   isClosable: true,
                 })
