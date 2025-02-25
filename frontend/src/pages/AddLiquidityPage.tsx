@@ -188,7 +188,6 @@ export function AddLiquidityPage() {
                 }
 
                 try {
-                  setIsApproving(true)
                   await addLiquidityPosition(
                     lowerTick,
                     upperTick,
