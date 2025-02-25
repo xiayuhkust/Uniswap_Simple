@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { VStack, Box, Text, Button, useToast, HStack } from '@chakra-ui/react'
+import { VStack, Box, Text, Button, useToast, HStack, Spinner } from '@chakra-ui/react'
 import { NumberInput } from '../components/NumberInput'
 import { TickRangeInput } from '../components/TickRangeInput'
 import { usePoolList } from '../hooks/usePoolList'
@@ -23,7 +23,7 @@ export function AddLiquidityPage() {
   const isValidAddress = poolAddress?.match(/^0x[a-fA-F0-9]{40}$/)
   const validatedPoolAddress = isValidAddress ? poolAddress as Address : undefined
   
-  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(validatedPoolAddress)
+  const { checkAndApproveTokens, addLiquidityPosition, isApproving } = useAddLiquidity(validatedPoolAddress || '0x0000000000000000000000000000000000000000' as Address)
   const [lowerTick, setLowerTick] = useState(-887220)
   const [upperTick, setUpperTick] = useState(887220)
   const [isAmount0Active, setIsAmount0Active] = useState(true)
