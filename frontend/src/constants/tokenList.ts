@@ -84,3 +84,12 @@ export const TOKEN_METADATA: Record<string, Token> = {
     priceChange24h: '0.0'
   }
 }
+
+// Helper function to convert TOKEN_METADATA object to an array
+export const getTokenList = (): Token[] => {
+  return Object.values(TOKEN_METADATA).map(token => ({
+    ...token,
+    // Ensure WTURA is displayed as TURA in the UI
+    symbol: token.address.toLowerCase() === CONTRACT_ADDRESSES.WETH.toLowerCase() ? 'TURA' : token.symbol
+  }));
+}

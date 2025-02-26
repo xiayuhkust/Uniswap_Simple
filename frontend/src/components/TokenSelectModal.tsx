@@ -12,7 +12,7 @@ import {
   Button
 } from '@chakra-ui/react'
 import type { Token } from '../types/token'
-import { TEST_TOKENS } from './Swap/TokenList'
+import { getTokenList } from '../constants/tokenList'
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
 
 interface TokenSelectModalProps {
@@ -36,7 +36,7 @@ export function TokenSelectModal({
         <ModalCloseButton color="black" />
         <ModalBody pb={6}>
           <VStack spacing={2} align="stretch">
-            {TEST_TOKENS.map((token) => (
+            {getTokenList().map((token) => (
               <Button
                 key={token.address}
                 onClick={() => {
