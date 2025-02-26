@@ -34,15 +34,41 @@ export const useWebSocket = () => {
   const toast = useToast();
 
   useEffect(() => {
-    // Create socket connection with proper configuration
-    const socketInstance = io(BACKEND_URL, {
-      transports: ['websocket', 'polling'], // Try WebSocket first, then fall back to polling
-      reconnectionAttempts: 5,              // Limit reconnection attempts
-      reconnectionDelay: 1000,              // Start with 1s delay
-      reconnectionDelayMax: 5000,           // Maximum 5s delay
-      timeout: 20000,                       // Connection timeout
-      forceNew: true,                       // Force a new connection
-      withCredentials: false                // No credentials needed for this app
+    console.log('Connecting to WebSocket at:', BACKEND_URL);
+    
+    // Create socket connection with direct URL configuration
+    const socketInstance = io(`${BACKEND_URL}`, {
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 30000
+    });
+    
+    // Log all socket events for debugging
+    socketInstance.onAny((event, ...args) => {
+      console.log(`Socket event: ${event}`, args);
+    });
+    
+    // Add a simple ping-pong test
+    setTimeout(() => {
+      console.log('Sending ping to server');
+      socketInstance.emit('ping');
+    }, 2000);
+    
+    socketInstance.on('pong', (data) => {
+      console.log('Received pong from server:', data);
+      toast({
+        title: 'WebSocket Test Successful',
+        description: `Server responded with: ${data.message}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    });
+    
+    // Debug connection events
+    socketInstance.on('connect_error', (error) => {
+      console.error('WebSocket connection error details:', error.message);
     });
 
     // Set up event handlers
@@ -60,7 +86,18 @@ export const useWebSocket = () => {
       console.error('WebSocket connection error:', error);
       toast({
         title: 'Connection Error',
-        description: 'Failed to connect to the server. Real-time updates are disabled.',
+        description: `Failed to connect to the server: ${error.message}. Real-time updates are disabled.`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    });
+
+    socketInstance.on('error', (error: Error) => {
+      console.error('WebSocket error:', error);
+      toast({
+        title: 'WebSocket Error',
+        description: `WebSocket error: ${error.message}. Real-time updates may be affected.`,
         status: 'error',
         duration: 5000,
         isClosable: true,
