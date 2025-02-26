@@ -28,8 +28,15 @@ export function useGetPool(tokenA: Address, tokenB: Address, fee: number) {
   })
 }
 
-export function useCreatePool() {
+export interface CreatePoolOptions {
+  onSuccess?: (data: { hash: string }) => void;
+  onError?: (error: Error) => void;
+  [key: string]: unknown;
+}
+
+export function useCreatePool(options?: CreatePoolOptions) {
   return useContractWrite({
+    ...options,
     address: CONTRACT_ADDRESSES.FACTORY,
     abi: FACTORY_ABI,
     functionName: 'createPool',

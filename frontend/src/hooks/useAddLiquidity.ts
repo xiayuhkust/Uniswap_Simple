@@ -24,7 +24,7 @@ interface MintParams {
 
 interface AddLiquidityHookReturn {
   checkAndApproveTokens: (amount0: string, amount1: string) => Promise<boolean>
-  addLiquidityPosition: (tickLower: number, tickUpper: number, amount0Desired: string, amount1Desired: string) => Promise<any>
+  addLiquidityPosition: (tickLower: number, tickUpper: number, amount0Desired: string, amount1Desired: string) => Promise<{ hash: string }>
   isApproving: boolean
   token0?: Address
   token1?: Address
@@ -136,7 +136,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     } finally {
       setIsApproving(false)
     }
-  }, [token0, token1, token0Allowance, token1Allowance, approveToken0, approveToken1, setIsApproving])
+  }, [token0, token1, token0Allowance, token1Allowance, approveToken0, approveToken1, userAddress, setIsApproving])
 
   const { data: poolFeeData } = useContractRead({
     address: poolAddress,
@@ -200,7 +200,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         throw new Error('Failed to add liquidity: ' + (err.reason || err.message))
       }
     }
-  }, [poolAddress, addLiquidity, token0, token1, poolFee, validateTicks])
+  }, [poolAddress, addLiquidity, token0, token1, poolFee])
 
   return {
     checkAndApproveTokens,
