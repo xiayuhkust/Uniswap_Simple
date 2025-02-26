@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { useToast } from '@chakra-ui/react';
 import io, { Socket } from 'socket.io-client';
 
+// Define the backend URL with TypeScript support for import.meta
+declare interface ImportMeta {
+  env: {
+    VITE_BACKEND_URL?: string;
+  };
+}
+
 // Define the backend URL
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 

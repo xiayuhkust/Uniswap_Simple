@@ -12,19 +12,22 @@ import {
   Spinner,
   HStack,
   Button,
-  useToast
+  useToast,
+  Badge
 } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { usePoolList } from '../../../hooks/usePoolList'
+import { usePoolListWebSocket } from '../../../hooks/usePoolListWebSocket'
 import { formatUnits } from 'viem'
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
+import { Pool } from '../../../types/pool'
 
 function formatFeeAmount(fee: number): string {
   return `${(fee / 10000).toFixed(2)}%`
 }
 
-function formatTokenAmount(amount: bigint): string {
-  return Number(formatUnits(amount, 18)).toLocaleString(undefined, {
+function formatTokenAmount(amount: string | bigint): string {
+  const bigintAmount = typeof amount === 'string' ? BigInt(amount) : amount;
+  return Number(formatUnits(bigintAmount, 18)).toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2
   })
@@ -32,11 +35,11 @@ function formatTokenAmount(amount: bigint): string {
 
 export function PoolList() {
   const navigate = useNavigate()
-  const { pools, isLoading, error, refetch } = usePoolList()
+  const { pools, loading, error, isConnected, refetch } = usePoolListWebSocket()
   const toast = useToast()
 
   // Show error toast if there's an error
-  useMemo(() => {
+  useEffect(() => {
     if (error) {
       toast({
         title: 'Error loading pools',
@@ -49,10 +52,15 @@ export function PoolList() {
   }, [error, toast]);
 
   const sortedPools = useMemo(() => 
-    [...(pools || [])].sort((a, b) => Number(b.volume7d - a.volume7d))
+    [...(pools || [])].sort((a, b) => {
+      // Handle potential undefined or null values
+      const volumeA = a.volume24h ? BigInt(a.volume24h) : BigInt(0);
+      const volumeB = b.volume24h ? BigInt(b.volume24h) : BigInt(0);
+      return Number(volumeB - volumeA);
+    })
   , [pools])
 
-  if (isLoading) {
+  if (loading) {
     return (
       <VStack spacing={4} width="100%">
         <Spinner />
@@ -80,10 +88,13 @@ export function PoolList() {
         <HStack justifyContent="space-between" width="100%">
           <Heading size="md">All Pools</Heading>
           <HStack>
+            <Badge colorScheme={isConnected ? "green" : "red"}>
+              {isConnected ? "Live Updates" : "Updates Paused"}
+            </Badge>
             <Button
               size="sm"
               onClick={() => refetch()}
-              isLoading={isLoading}
+              isLoading={loading}
             >
               Refresh
             </Button>
@@ -108,7 +119,7 @@ export function PoolList() {
               </Tr>
             </Thead>
             <Tbody>
-              {sortedPools.map((pool) => (
+              {sortedPools.map((pool: Pool) => (
                 <Tr key={pool.address}>
                   <Td>
                     <HStack spacing={1}>
@@ -118,8 +129,8 @@ export function PoolList() {
                     </HStack>
                   </Td>
                   <Td>{formatFeeAmount(pool.fee)}</Td>
-                  <Td>{formatTokenAmount(pool.liquidity)}</Td>
-                  <Td>{formatTokenAmount(pool.volume7d)} TURA</Td>
+                  <Td>{pool.liquidity ? formatTokenAmount(pool.liquidity) : 'No liquidity'}</Td>
+                  <Td>{pool.volume24h ? formatTokenAmount(pool.volume24h) : '0'} TURA</Td>
                   <Td>
                     <Button
                       size="sm"
