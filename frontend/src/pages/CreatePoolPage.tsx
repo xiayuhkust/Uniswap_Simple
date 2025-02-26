@@ -114,15 +114,47 @@ export function CreatePoolPage() {
   // Wait for liquidity addition transaction to be mined
   const { isLoading: isAddLiquidityConfirming } = useWaitForTransaction({
     hash: addLiquidityTxHash,
-    onSuccess: (receipt: any) => {
+    onSuccess: (receipt: ethers.providers.TransactionReceipt) => {
       console.log('Liquidity addition confirmed:', receipt);
-      toast({
-        title: "Success",
-        description: "Liquidity added successfully",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
+      
+      // Check for Mint events in the transaction receipt
+      const mintEvents = receipt.logs.filter((log: ethers.providers.Log) => {
+        // Check if this log is from the pool contract
+        if (log.address.toLowerCase() === poolAddressData?.toLowerCase()) {
+          // Try to parse it as a Mint event
+          try {
+            const iface = new ethers.utils.Interface([
+              'event Mint(address sender, address indexed owner, int24 indexed tickLower, int24 indexed tickUpper, uint128 amount, uint256 amount0, uint256 amount1)'
+            ]);
+            const parsedLog = iface.parseLog(log);
+            return parsedLog.name === 'Mint';
+          } catch {
+            return false;
+          }
+        }
+        return false;
       });
+      
+      if (mintEvents.length > 0) {
+        console.log('Mint events found:', mintEvents);
+        toast({
+          title: "Success",
+          description: "Liquidity added successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        console.warn('No Mint events found in transaction receipt');
+        toast({
+          title: "Warning",
+          description: "Transaction confirmed but no Mint events found. Check console for details.",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+      
       setIsAddingLiquidity(false);
     },
     onError: (error: Error) => {
@@ -216,9 +248,27 @@ export function CreatePoolPage() {
       // Wait for transaction confirmation is handled by useWaitForTransaction
     } catch (error) {
       console.error('Error adding liquidity:', error);
+      
+      // Extract detailed error message
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Log additional error details if available
+        if ('code' in error) {
+          console.error('Error code:', (error as any).code);
+        }
+        if ('reason' in error) {
+          console.error('Error reason:', (error as any).reason);
+        }
+        if ('data' in error) {
+          console.error('Error data:', (error as any).data);
+        }
+      }
+      
       toast({
         title: "Error",
-        description: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        description: `Error: ${errorMessage}`,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -230,7 +280,7 @@ export function CreatePoolPage() {
   // Wait for pool creation transaction to be mined
   const { isLoading: isPoolCreationConfirming } = useWaitForTransaction({
     hash: createPoolData?.hash,
-    onSuccess: async (receipt: any) => {
+    onSuccess: async (receipt: ethers.providers.TransactionReceipt) => {
       console.log('Pool creation transaction mined:', receipt);
       
       try {
@@ -262,7 +312,7 @@ export function CreatePoolPage() {
               // Wait before trying again
               await new Promise(resolve => setTimeout(resolve, 2000));
             }
-          } catch (err) {
+          } catch (err: unknown) {
             console.error(`Attempt ${attempts} failed:`, err);
             if (attempts < maxAttempts) {
               await new Promise(resolve => setTimeout(resolve, 2000));

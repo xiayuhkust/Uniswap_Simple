@@ -266,9 +266,37 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       
       console.log(`Balance before mint for ${token0}: ${ethers.utils.formatUnits(balanceBefore0, TOKEN_DECIMALS)}`)
       console.log(`Balance before mint for ${token1}: ${ethers.utils.formatUnits(balanceBefore1, TOKEN_DECIMALS)}`)
+      
+      // Verify token allowances before mint
+      const token0Contract2 = new ethers.Contract(token0, erc20ABI, provider)
+      const token1Contract2 = new ethers.Contract(token1, erc20ABI, provider)
+      
+      const currentAllowance0 = await token0Contract2.allowance(userAddress, CONTRACT_ADDRESSES.MANAGER)
+      const currentAllowance1 = await token1Contract2.allowance(userAddress, CONTRACT_ADDRESSES.MANAGER)
+      
+      console.log(`Current token0 allowance: ${ethers.utils.formatUnits(currentAllowance0, TOKEN_DECIMALS)}`)
+      console.log(`Current token1 allowance: ${ethers.utils.formatUnits(currentAllowance1, TOKEN_DECIMALS)}`)
+      
+      // Check if allowances are sufficient
+      if (currentAllowance0.lt(amount0BigInt)) {
+        throw new Error(`Insufficient token0 allowance: ${ethers.utils.formatUnits(currentAllowance0, TOKEN_DECIMALS)} < ${ethers.utils.formatUnits(amount0BigInt, TOKEN_DECIMALS)}`)
+      }
+      
+      if (currentAllowance1.lt(amount1BigInt)) {
+        throw new Error(`Insufficient token1 allowance: ${ethers.utils.formatUnits(currentAllowance1, TOKEN_DECIMALS)} < ${ethers.utils.formatUnits(amount1BigInt, TOKEN_DECIMALS)}`)
+      }
 
       // Create MintParams according to IUniswapV3Manager interface
       if (!token0 || !token1) throw new Error('Tokens not loaded')
+      
+      // Log contract addresses for debugging
+      console.log('Contract addresses:', {
+        manager: CONTRACT_ADDRESSES.MANAGER,
+        factory: CONTRACT_ADDRESSES.FACTORY,
+        pool: poolAddress,
+        token0: token0,
+        token1: token1
+      })
       
       // Format the parameters as a struct object to match the expected contract ABI
       const mintParams = {
@@ -295,18 +323,54 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         amount1Min: mintParams.amount1Min.toString()
       }))
 
-      const tx = await addLiquidity({
-        args: [mintParams],
-      })
-
-      console.log('Liquidity addition transaction submitted:', tx.hash)
+      // Implement retry mechanism with exponential backoff
+      let attempt = 0;
+      const maxAttempts = 3;
+      let lastError;
       
-      // Wait for transaction to be confirmed
-      console.log('Waiting for liquidity addition transaction to be confirmed...')
-      // For wagmi v1, we need to use the provider to wait for the transaction
-      const mintProvider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL)
-      const mintReceipt = await mintProvider.waitForTransaction(tx.hash)
-      console.log('Liquidity addition transaction confirmed:', mintReceipt.transactionHash)
+      while (attempt < maxAttempts) {
+        try {
+          console.log(`Mint attempt ${attempt + 1} of ${maxAttempts}`);
+          
+          const tx = await addLiquidity({
+            args: [mintParams],
+          });
+          
+          console.log('Liquidity addition transaction submitted:', tx.hash);
+          
+          // Wait for transaction to be confirmed
+          console.log('Waiting for liquidity addition transaction to be confirmed...');
+          const mintProvider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
+          const mintReceipt = await mintProvider.waitForTransaction(tx.hash);
+          console.log('Liquidity addition transaction confirmed:', mintReceipt.transactionHash);
+          console.log('Transaction receipt:', {
+            status: mintReceipt.status,
+            blockNumber: mintReceipt.blockNumber,
+            gasUsed: mintReceipt.gasUsed.toString(),
+            logs: mintReceipt.logs.map(log => ({
+              address: log.address,
+              topics: log.topics,
+              data: log.data
+            }))
+          });
+          
+          // If we get here, the transaction was successful
+          return tx;
+        } catch (error) {
+          lastError = error;
+          console.error(`Mint attempt ${attempt + 1} failed:`, error);
+          
+          // Exponential backoff
+          const backoffTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+          console.log(`Retrying in ${backoffTime / 1000} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, backoffTime));
+          
+          attempt++;
+        }
+      }
+      
+      // If we get here, all attempts failed
+      throw lastError;
       
       // Log token balances after mint
       console.log('Checking token balances after mint:')
@@ -329,6 +393,28 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     } catch (error) {
       const err = error as AddLiquidityError
       console.error('Error adding liquidity:', error)
+      
+      // Log detailed error information
+      console.error('Error details:', {
+        code: err.code,
+        reason: err.reason,
+        message: err.message,
+        data: err.data,
+        stack: err.stack
+      })
+      
+      // Log mint parameters for debugging
+      console.error('Mint parameters:', JSON.stringify({
+        tokenA: token0,
+        tokenB: token1,
+        fee: Number(poolFee),
+        lowerTick: tickLower,
+        upperTick: tickUpper,
+        amount0Desired: amount0BigInt.toString(),
+        amount1Desired: amount1BigInt.toString(),
+        amount0Min: '0',
+        amount1Min: '0'
+      }))
       
       if (err.code === '0x10074548') {
         throw new Error('Invalid tick range: Must be between MIN_TICK (-887220) and MAX_TICK (887220)')
