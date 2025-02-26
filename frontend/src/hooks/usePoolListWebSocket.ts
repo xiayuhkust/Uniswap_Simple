@@ -22,9 +22,18 @@ export function usePoolListWebSocket() {
   // Connect to WebSocket
   const { isConnected, subscribe } = useWebSocket();
   
-  // Handle WebSocket connection errors
+  // Handle WebSocket connection status changes
   useEffect(() => {
-    if (!isConnected && !loading) {
+    if (isConnected) {
+      console.log('WebSocket connected successfully. Real-time updates are enabled.');
+      toast({
+        title: 'Connection Established',
+        description: 'Connected to the server. Real-time updates are enabled.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } else if (!isConnected && !loading) {
       console.error('WebSocket connection failed. Check network and server status.');
       toast({
         title: 'Connection Error',

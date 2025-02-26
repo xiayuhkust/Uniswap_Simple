@@ -46,8 +46,15 @@ export const PoolList: FC = () => {
           <HStack justifyContent="space-between" width="100%">
             <Heading size="md" color="black">All Pools</Heading>
             <HStack>
-              <Badge colorScheme={isConnected ? "green" : "red"}>
-                {isConnected ? "Live Updates" : "Updates Paused"}
+              <Badge 
+                colorScheme={isConnected ? "green" : "red"}
+                px={2}
+                py={1}
+                borderRadius="full"
+                textTransform="uppercase"
+                fontWeight="bold"
+              >
+                {isConnected ? "LIVE UPDATES" : "UPDATES PAUSED"}
               </Badge>
               <Button
                 size="sm"
