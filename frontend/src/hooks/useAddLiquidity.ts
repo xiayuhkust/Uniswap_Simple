@@ -45,6 +45,7 @@ const MANAGER_ABI = IUniswapV3Manager.abi
 interface AddLiquidityError extends Error {
   code?: string;
   reason?: string;
+  data?: any;
 }
 
 export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
@@ -248,9 +249,13 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     if (!poolFee) throw new Error('Could not get pool fee')
     if (!userAddress) throw new Error('Wallet not connected')
     
+    // Declare these variables at a higher scope so they're available throughout the function
+    let amount0BigInt: bigint = 0n;
+    let amount1BigInt: bigint = 0n;
+    
     try {
-      const amount0BigInt = ethers.utils.parseUnits(amount0Desired, 18).toBigInt()
-      const amount1BigInt = ethers.utils.parseUnits(amount1Desired, 18).toBigInt()
+      amount0BigInt = ethers.utils.parseUnits(amount0Desired, 18).toBigInt()
+      amount1BigInt = ethers.utils.parseUnits(amount1Desired, 18).toBigInt()
 
       // Log token balances before mint
       console.log('Checking token balances before mint:')
@@ -354,6 +359,23 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
             }))
           });
           
+          // Log token balances after mint
+          console.log('Checking token balances after mint:')
+          
+          // Get balances after mint
+          const balanceAfter0 = await token0Contract.balanceOf(userAddress)
+          const balanceAfter1 = await token1Contract.balanceOf(userAddress)
+          
+          console.log(`Balance after mint for ${token0}: ${ethers.utils.formatUnits(balanceAfter0, TOKEN_DECIMALS)}`)
+          console.log(`Balance after mint for ${token1}: ${ethers.utils.formatUnits(balanceAfter1, TOKEN_DECIMALS)}`)
+          
+          // Calculate and log the difference
+          const diff0 = balanceBefore0.sub(balanceAfter0)
+          const diff1 = balanceBefore1.sub(balanceAfter1)
+          
+          console.log(`Tokens deducted for ${token0}: ${ethers.utils.formatUnits(diff0, TOKEN_DECIMALS)}`)
+          console.log(`Tokens deducted for ${token1}: ${ethers.utils.formatUnits(diff1, TOKEN_DECIMALS)}`)
+          
           // If we get here, the transaction was successful
           return tx;
         } catch (error) {
@@ -372,24 +394,9 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       // If we get here, all attempts failed
       throw lastError;
       
-      // Log token balances after mint
-      console.log('Checking token balances after mint:')
-      
-      // Get balances after mint
-      const balanceAfter0 = await token0Contract.balanceOf(userAddress)
-      const balanceAfter1 = await token1Contract.balanceOf(userAddress)
-      
-      console.log(`Balance after mint for ${token0}: ${ethers.utils.formatUnits(balanceAfter0, TOKEN_DECIMALS)}`)
-      console.log(`Balance after mint for ${token1}: ${ethers.utils.formatUnits(balanceAfter1, TOKEN_DECIMALS)}`)
-      
-      // Calculate and log the difference
-      const diff0 = balanceBefore0.sub(balanceAfter0)
-      const diff1 = balanceBefore1.sub(balanceAfter1)
-      
-      console.log(`Tokens deducted for ${token0}: ${ethers.utils.formatUnits(diff0, TOKEN_DECIMALS)}`)
-      console.log(`Tokens deducted for ${token1}: ${ethers.utils.formatUnits(diff1, TOKEN_DECIMALS)}`)
-      
-      return tx
+      // Note: The code below is unreachable after throwing lastError
+      // It should be moved inside the try block of the while loop before returning tx
+      // This is a logical error in the code structure
     } catch (error) {
       const err = error as AddLiquidityError
       console.error('Error adding liquidity:', error)
@@ -410,8 +417,8 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         fee: Number(poolFee),
         lowerTick: tickLower,
         upperTick: tickUpper,
-        amount0Desired: amount0BigInt.toString(),
-        amount1Desired: amount1BigInt.toString(),
+        amount0Desired: amount0BigInt ? amount0BigInt.toString() : '0',
+        amount1Desired: amount1BigInt ? amount1BigInt.toString() : '0',
         amount0Min: '0',
         amount1Min: '0'
       }))
