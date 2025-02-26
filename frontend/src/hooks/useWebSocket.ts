@@ -3,6 +3,7 @@ import { useToast } from '@chakra-ui/react';
 import io, { Socket } from 'socket.io-client';
 
 // Define the backend URL with TypeScript support for import.meta
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare interface ImportMeta {
   env: {
     VITE_BACKEND_URL?: string;
@@ -33,8 +34,16 @@ export const useWebSocket = () => {
   const toast = useToast();
 
   useEffect(() => {
-    // Create socket connection
-    const socketInstance = io(BACKEND_URL);
+    // Create socket connection with proper configuration
+    const socketInstance = io(BACKEND_URL, {
+      transports: ['websocket', 'polling'], // Try WebSocket first, then fall back to polling
+      reconnectionAttempts: 5,              // Limit reconnection attempts
+      reconnectionDelay: 1000,              // Start with 1s delay
+      reconnectionDelayMax: 5000,           // Maximum 5s delay
+      timeout: 20000,                       // Connection timeout
+      forceNew: true,                       // Force a new connection
+      withCredentials: false                // No credentials needed for this app
+    });
 
     // Set up event handlers
     socketInstance.on('connect', () => {

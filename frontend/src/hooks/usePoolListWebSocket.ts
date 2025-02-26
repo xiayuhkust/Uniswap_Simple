@@ -4,6 +4,7 @@ import { Pool } from '../types/pool';
 import { useToast } from '@chakra-ui/react';
 
 // Define the backend URL with TypeScript support for import.meta
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare interface ImportMeta {
   env: {
     VITE_BACKEND_URL?: string;
@@ -24,9 +25,10 @@ export function usePoolListWebSocket() {
   // Handle WebSocket connection errors
   useEffect(() => {
     if (!isConnected && !loading) {
+      console.error('WebSocket connection failed. Check network and server status.');
       toast({
         title: 'Connection Error',
-        description: 'Failed to connect to the server. Real-time updates are disabled.',
+        description: 'Failed to connect to the server. Real-time updates are disabled. Please check your network connection and server status.',
         status: 'error',
         duration: 5000,
         isClosable: true,
