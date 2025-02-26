@@ -28,8 +28,9 @@ export function useGetPool(tokenA: Address, tokenB: Address, fee: number) {
   })
 }
 
-export function useCreatePool() {
+export function useCreatePool(options?: any) {
   return useContractWrite({
+    ...options,
     address: CONTRACT_ADDRESSES.FACTORY,
     abi: FACTORY_ABI,
     functionName: 'createPool',

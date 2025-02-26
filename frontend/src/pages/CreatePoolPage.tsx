@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { VStack, Button, Box, Text, useToast } from '@chakra-ui/react'
 import { useAccount } from 'wagmi'
 import type { Address } from 'wagmi'
+import { ethers } from 'ethers'
 
 import { TokenSelect } from '../components/TokenSelect'
 import { TickRangeInput } from '../components/TickRangeInput'
 
 import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { MIN_TICK, MAX_TICK } from '../constants/ticks'
-import { useGetPool, useCreatePool, FEES, sortTokens } from '../utils/contracts'
+import { useGetPool, useCreatePool, FEES, sortTokens, FACTORY_ABI, MANAGER_ABI } from '../utils/contracts'
 import { isValidAmount } from '../utils/validation'
 import { INPUT_ERRORS } from '../constants/errors'
 
@@ -23,6 +24,9 @@ export function CreatePoolPage() {
   const [fee, setFee] = useState<string>('')
   const [lowerTick, setLowerTick] = useState(MIN_TICK)
   const [upperTick, setUpperTick] = useState(MAX_TICK)
+  // We need to track the pool address for adding liquidity
+  const [isCreatingPool, setIsCreatingPool] = useState(false)
+  const [isAddingLiquidity, setIsAddingLiquidity] = useState(false)
   const toast = useToast()
   const { isConnected } = useAccount()
 
@@ -33,28 +37,260 @@ export function CreatePoolPage() {
     feeValue
   )
 
-  const { write: createPool, isSuccess, isError } = useCreatePool()
-
-  useEffect(() => {
-    if (isSuccess) {
+  const { write: createPool, isSuccess: isCreatePoolSuccess, isError: isCreatePoolError, data: createPoolData } = useCreatePool({
+    onSuccess: (data: { hash: string }) => {
+      console.log('Pool creation transaction submitted:', data.hash);
       toast({
-        title: "Success",
-        description: "Pool created successfully",
+        title: "Transaction Submitted",
+        description: `Pool creation transaction submitted. Waiting for confirmation...`,
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Pool creation error:', error);
+    }
+  })
+
+  // Function to add liquidity to the pool
+  const addLiquidityToPool = useCallback(async (poolAddress: Address) => {
+    try {
+      setIsAddingLiquidity(true);
+      console.log(`Adding liquidity to pool ${poolAddress}`);
+      toast({
+        title: "Adding Liquidity",
+        description: "Preparing to add liquidity to the pool...",
+        status: "loading",
+        duration: 5000,
+        isClosable: true,
+      });
+      
+      // Approve tokens
+      console.log(`Approving tokens: ${token0Amount} ${token0?.symbol}, ${token1Amount} ${token1?.symbol}`);
+      toast({
+        title: "Approving Tokens",
+        description: `Approving ${token0Amount} ${token0?.symbol} and ${token1Amount} ${token1?.symbol}`,
+        status: "loading",
+        duration: 5000,
+        isClosable: true,
+      });
+      
+      // Create contract instances
+      const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
+      const signer = provider.getSigner();
+      
+      // Approve tokens
+      const token0Contract = new ethers.Contract(
+        token0?.address as Address,
+        ['function approve(address spender, uint256 amount) returns (bool)'],
+        signer
+      );
+      
+      const token1Contract = new ethers.Contract(
+        token1?.address as Address,
+        ['function approve(address spender, uint256 amount) returns (bool)'],
+        signer
+      );
+      
+      // Approve max amount
+      const maxAmount = ethers.constants.MaxUint256;
+      await token0Contract.approve(CONTRACT_ADDRESSES.MANAGER, maxAmount);
+      await token1Contract.approve(CONTRACT_ADDRESSES.MANAGER, maxAmount);
+      
+      console.log('Tokens approved successfully');
+      toast({
+        title: "Tokens Approved",
+        description: "Tokens approved successfully",
         status: "success",
         duration: 5000,
         isClosable: true,
-      })
+      });
+      
+      // Add liquidity
+      console.log(`Adding liquidity: ${lowerTick}, ${upperTick}, ${token0Amount}, ${token1Amount}`);
+      toast({
+        title: "Adding Liquidity",
+        description: `Adding ${token0Amount} ${token0?.symbol} and ${token1Amount} ${token1?.symbol} to the pool`,
+        status: "loading",
+        duration: 5000,
+        isClosable: true,
+      });
+      
+      // Create manager contract instance
+      const managerContract = new ethers.Contract(
+        CONTRACT_ADDRESSES.MANAGER,
+        MANAGER_ABI,
+        signer
+      );
+      
+      // Convert amounts to BigNumber
+      const amount0Desired = ethers.utils.parseUnits(token0Amount, 18);
+      const amount1Desired = ethers.utils.parseUnits(token1Amount, 18);
+      
+      // Create mint params
+      const mintParams = {
+        tokenA: token0?.address,
+        tokenB: token1?.address,
+        fee: feeValue,
+        lowerTick,
+        upperTick,
+        amount0Desired,
+        amount1Desired,
+        amount0Min: 0,
+        amount1Min: 0
+      };
+      
+      // Call mint function
+      const tx = await managerContract.mint(mintParams);
+      console.log('Liquidity addition transaction submitted:', tx.hash);
+      toast({
+        title: "Transaction Submitted",
+        description: `Liquidity addition transaction submitted. Waiting for confirmation...`,
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+      
+      // Wait for transaction to be mined
+      const receipt = await tx.wait();
+      console.log('Liquidity addition transaction mined:', receipt);
+      
+      if (receipt.status === 1) {
+        // Transaction successful
+        console.log('Liquidity added successfully');
+        toast({
+          title: "Success",
+          description: "Liquidity added successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        // Transaction failed
+        console.error('Liquidity addition transaction failed');
+        toast({
+          title: "Error",
+          description: "Liquidity addition transaction failed",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error('Error adding liquidity:', error);
+      toast({
+        title: "Error",
+        description: `Error adding liquidity: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsAddingLiquidity(false);
     }
-    if (isError) {
+  }, [token0, token1, token0Amount, token1Amount, lowerTick, upperTick, feeValue, toast]);
+  
+  useEffect(() => {
+    if (isCreatePoolSuccess && createPoolData) {
+      // Wait for transaction to be mined
+      const waitForTransaction = async () => {
+        try {
+          console.log('Waiting for pool creation transaction to be mined...');
+          toast({
+            title: "Creating Pool",
+            description: "Waiting for transaction to be mined...",
+            status: "loading",
+            duration: 10000,
+            isClosable: true,
+          });
+          
+          // Wait for transaction receipt
+          const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
+          const receipt = await provider.waitForTransaction(createPoolData.hash);
+          console.log('Pool creation transaction mined:', receipt);
+          
+          if (receipt.status === 1) {
+            // Transaction successful
+            // Get the pool address from the transaction logs
+            const [sortedToken0, sortedToken1] = sortTokens(
+              token0?.address as Address,
+              token1?.address as Address
+            );
+            
+            // Get pool address from factory
+            const poolAddress = await getPoolAddress(sortedToken0, sortedToken1, feeValue);
+            console.log('Created pool address:', poolAddress);
+            
+            toast({
+              title: "Pool Created",
+              description: `Pool created successfully at ${poolAddress}`,
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            });
+            
+            // Now add liquidity to the pool
+            addLiquidityToPool(poolAddress);
+          } else {
+            // Transaction failed
+            console.error('Pool creation transaction failed');
+            toast({
+              title: "Error",
+              description: "Pool creation transaction failed",
+              status: "error",
+              duration: 5000,
+              isClosable: true,
+            });
+          }
+        } catch (error) {
+          console.error('Error waiting for transaction:', error);
+          toast({
+            title: "Error",
+            description: `Error waiting for transaction: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } finally {
+          setIsCreatingPool(false);
+        }
+      };
+      
+      waitForTransaction();
+    }
+    
+    if (isCreatePoolError) {
+      setIsCreatingPool(false);
       toast({
         title: "Error",
         description: "Failed to create pool",
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
+      });
     }
-  }, [isSuccess, isError, toast])
+  }, [isCreatePoolSuccess, isCreatePoolError, createPoolData, toast, token0, token1, feeValue, addLiquidityToPool, getPoolAddress])
+
+  // Function to get pool address from factory
+  const getPoolAddress = useCallback(async (token0Address: Address, token1Address: Address, fee: number): Promise<Address> => {
+    try {
+      console.log(`Getting pool address for tokens ${token0Address}, ${token1Address} with fee ${fee}`);
+      const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
+      const factoryContract = new ethers.Contract(
+        CONTRACT_ADDRESSES.FACTORY,
+        FACTORY_ABI,
+        provider
+      );
+      
+      const poolAddress = await factoryContract.getPool(token0Address, token1Address, fee);
+      console.log('Pool address from factory:', poolAddress);
+      return poolAddress;
+    } catch (error) {
+      console.error('Error getting pool address:', error);
+      throw error;
+    }
+  }, []);
 
   const handleCreatePool = async () => {
     if (!isConnected) {
@@ -69,6 +305,8 @@ export function CreatePoolPage() {
     }
 
     try {
+      setIsCreatingPool(true);
+      
       if (!token0?.address || !token1?.address) {
         throw new Error('Invalid token addresses')
       }
@@ -85,11 +323,16 @@ export function CreatePoolPage() {
         token0.address as Address,
         token1.address as Address
       )
+      
+      console.log(`Creating pool for tokens ${sortedToken0}, ${sortedToken1} with fee ${feeValue}`);
+      console.log(`Token amounts: ${token0Amount} ${token0.symbol}, ${token1Amount} ${token1.symbol}`);
+      console.log(`Tick range: ${lowerTick} - ${upperTick}`);
 
       createPool?.({
         args: [sortedToken0, sortedToken1, feeValue],
       })
     } catch (err) {
+      setIsCreatingPool(false);
       let errorMessage = 'Unknown error occurred'
       if (err instanceof Error) {
         if (err.message.includes('TokensMustBeDifferent')) {
@@ -211,7 +454,9 @@ export function CreatePoolPage() {
             variant="uniswap"
             isDisabled={!token0 || !token1 || !fee || !token0Amount || !token1Amount || 
               !isValidAmount(token0Amount) || !isValidAmount(token1Amount) || 
-              lowerTick >= upperTick}
+              lowerTick >= upperTick || isCreatingPool || isAddingLiquidity}
+            isLoading={isCreatingPool || isAddingLiquidity}
+            loadingText={isCreatingPool ? "Creating Pool" : isAddingLiquidity ? "Adding Liquidity" : ""}
             onClick={() => {
               const error = validatePool()
               if (error) {
@@ -228,7 +473,7 @@ export function CreatePoolPage() {
             }}
             _hover={{ opacity: 0.8 }}
           >
-            Create Pool
+            {isCreatingPool ? "Creating Pool" : isAddingLiquidity ? "Adding Liquidity" : "Create Pool"}
           </Button>
         </VStack>
       </Box>
