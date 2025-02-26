@@ -254,8 +254,18 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     let amount1BigInt: bigint = 0n;
     
     try {
-      amount0BigInt = ethers.utils.parseUnits(amount0Desired, 18).toBigInt()
-      amount1BigInt = ethers.utils.parseUnits(amount1Desired, 18).toBigInt()
+      // Log the raw input values
+      console.log(`Raw input amount0: ${amount0Desired}`)
+      console.log(`Raw input amount1: ${amount1Desired}`)
+      console.log(`Using TOKEN_DECIMALS: ${TOKEN_DECIMALS}`)
+      
+      // Convert to BigInt using TOKEN_DECIMALS
+      amount0BigInt = ethers.utils.parseUnits(amount0Desired, TOKEN_DECIMALS).toBigInt()
+      amount1BigInt = ethers.utils.parseUnits(amount1Desired, TOKEN_DECIMALS).toBigInt()
+      
+      // Log the converted values
+      console.log(`Converted amount0: ${amount0BigInt.toString()} (${ethers.utils.formatUnits(amount0BigInt, TOKEN_DECIMALS)} tokens)`)
+      console.log(`Converted amount1: ${amount1BigInt.toString()} (${ethers.utils.formatUnits(amount1BigInt, TOKEN_DECIMALS)} tokens)`)
 
       // Log token balances before mint
       console.log('Checking token balances before mint:')
