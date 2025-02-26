@@ -1,96 +1,28 @@
-# Pool Creation and Liquidity Addition Test Checklist
+# Token Selection Component Testing Checklist
 
-## WebSocket Connection
-- [x] WebSocket connection is established between frontend and backend
-- [x] "LIVE UPDATES" badge is displayed in the UI
-- [x] Connection status is properly reflected in the UI
-- [x] Ping-pong test is successful (backend responds to ping with pong)
+## Success Criteria for Token Selection Component
 
-## PoolList Component
-- [ ] PoolList component loads successfully
-- [ ] Initial pool data is fetched from backend API
-- [ ] Loading spinner is displayed while fetching data
-- [ ] Error messages are displayed when API requests fail
-- [ ] WebSocket connection status is correctly reflected in the UI
-- [ ] "LIVE UPDATES" badge is green when connected
-- [ ] "UPDATES PAUSED" badge is red when disconnected
-- [ ] Refresh button triggers a new API request
-- [ ] Pool data is updated in real-time when new pools are created
-- [ ] Pool data is updated in real-time when existing pools are updated
+### Token List Display
+- [ ] All tokens (TT1-TT8 and TURA) should be displayed in the token selection dropdown
+- [ ] WTURA should be displayed as "TURA" in the UI
+- [ ] Each token should display its correct symbol, name, and logo
+- [ ] Token list should be populated from the unified TOKEN_METADATA in constants/tokenList.ts
 
-## Pool Creation Process
-- [ ] Pool creation transaction is submitted successfully
-- [ ] Pool creation transaction is mined successfully
-- [ ] Pool address is correctly retrieved from the factory contract
-- [ ] Pool creation event is emitted and captured by the backend
-- [ ] Pool appears in the backend API response at `/api/pools`
-- [ ] Pool appears in the frontend UI
+### Token Selection Functionality
+- [ ] Clicking on a token in the dropdown should select it and close the modal
+- [ ] Selected token should be displayed in the token input field
+- [ ] Token symbol should be displayed correctly (WTURA as TURA)
+- [ ] Token logo should be displayed correctly
 
-## Liquidity Addition Process
-- [ ] Token approvals are completed successfully
-- [ ] Liquidity addition transaction is submitted successfully
-- [ ] Liquidity addition transaction is mined successfully
-- [ ] Pool contains the correct amount of tokens after liquidity addition
-- [ ] Pool is not empty after creation
+### Integration with Other Components
+- [ ] Token selection should work in the Create Pool page
+- [ ] Selected tokens should be properly passed to parent components
+- [ ] Token symbols should be correctly displayed in pool creation forms
 
-## Error Handling
-- [ ] Proper error messages are displayed for failed transactions
-- [ ] Loading states are shown during transaction processing
-- [ ] Success messages are displayed for completed transactions
-- [ ] Network errors are handled gracefully
-- [ ] WebSocket reconnection attempts are made when connection is lost
-
-## Console Logs for Verification
-Expected console logs for successful pool creation:
-```javascript
-// Pool creation
-console.log('Pool creation transaction submitted:', data.hash);
-console.log('Waiting for pool creation transaction to be mined...');
-console.log('Pool creation transaction mined:', receipt);
-console.log('Created pool address:', poolAddress);
-
-// Token approvals
-console.log('Approving tokens:', token0Amount, token0?.symbol, token1Amount, token1?.symbol);
-console.log('Tokens approved successfully');
-
-// Liquidity addition
-console.log('Adding liquidity:', lowerTick, upperTick, token0Amount, token1Amount);
-console.log('Liquidity addition transaction submitted:', tx.hash);
-console.log('Liquidity addition transaction mined:', receipt);
-console.log('Liquidity added successfully');
-```
-
-## Backend Event Listener Verification
-Expected backend logs for pool creation event:
-```javascript
-console.log('Received PoolCreated event:', eventData);
-console.log('New pool created:', poolAddress);
-console.log('Notifying clients about new pool');
-```
-
-## WebSocket Event Verification
-Expected WebSocket events for pool updates:
-```javascript
-// When a new pool is created
-socket.on('pool:created', (data) => {
-  console.log('New pool created:', data);
-});
-
-// When a pool is updated
-socket.on('pool:updated', (data) => {
-  console.log('Pool updated:', data);
-});
-
-// When the pool cache is updated
-socket.on('cache:pools', (data) => {
-  console.log('Pool cache updated:', data);
-});
-```
-
-## Test Parameters
-For testing pool creation with the following parameters:
-- Token pair: WTURA/TT1
-  - WTURA: 0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be
-  - TT1: 0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9
-- Fee rate: 0.05%
-- Initial liquidity ratio: 1:111
+## Testing Steps
+1. Navigate to http://localhost:5173/pool/create
+2. Click on the "Select Token" button for either token input
+3. Verify that all tokens (TT1-TT8 and TURA) are displayed in the dropdown
+4. Select different tokens and verify that they are correctly displayed in the input field
+5. Verify that WTURA is displayed as "TURA" in both the dropdown and input field
+6. Complete the pool creation form with different token combinations to verify integration
