@@ -8,6 +8,27 @@ import { CONTRACT_ADDRESSES } from '../constants/addresses'
 import { TOKEN_DECIMALS } from '../constants/tokens'
 import { INPUT_ERRORS } from '../constants/errors'
 
+// ERC20 ABI for balance checking and allowance
+const ERC20_ABI = [
+  {
+    name: 'balanceOf',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }]
+  },
+  {
+    name: 'allowance',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' }
+    ],
+    outputs: [{ name: '', type: 'uint256' }]
+  }
+]
+
 // Using CONTRACT_ADDRESSES.WETH directly
 
 interface AddLiquidityHookReturn {
@@ -118,41 +139,67 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       const amount0BigInt = ethers.utils.parseUnits(amount0, TOKEN_DECIMALS).toBigInt()
       const amount1BigInt = ethers.utils.parseUnits(amount1, TOKEN_DECIMALS).toBigInt()
 
-      // Use Promise.all to check both token allowances in parallel
-      const approvalPromises = []
+      // Log initial token balances
+      console.log('Checking token balances before approval:')
+      const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL)
       
+      // Get token contracts
+      const token0Contract = new ethers.Contract(token0, ERC20_ABI, provider)
+      const token1Contract = new ethers.Contract(token1, ERC20_ABI, provider)
+      
+      // Get initial balances
+      const initialBalance0 = await token0Contract.balanceOf(userAddress)
+      const initialBalance1 = await token1Contract.balanceOf(userAddress)
+      
+      console.log(`Initial ${token0} balance: ${ethers.utils.formatUnits(initialBalance0, TOKEN_DECIMALS)}`)
+      console.log(`Initial ${token1} balance: ${ethers.utils.formatUnits(initialBalance1, TOKEN_DECIMALS)}`)
+
+      // Check and log allowances
+      console.log(`Token0 allowance: ${token0Allowance ? ethers.utils.formatUnits(token0Allowance, TOKEN_DECIMALS) : '0'}`)
+      console.log(`Token1 allowance: ${token1Allowance ? ethers.utils.formatUnits(token1Allowance, TOKEN_DECIMALS) : '0'}`)
+      
+      // Process approvals sequentially, following the official implementation
+      // First approve token0 if needed
       if (!token0Allowance || token0Allowance < amount0BigInt) {
-        console.log(`Approving ${token0} for ${amount0BigInt} tokens`)
-        approvalPromises.push(
-          approveToken0({
-            args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256]
-          }).then(tx => {
-            console.log(`Token0 approval transaction submitted: ${tx.hash}`)
-            return tx
-          })
-        )
+        console.log(`Approving ${token0} for ${ethers.utils.formatUnits(amount0BigInt, TOKEN_DECIMALS)} tokens`)
+        const tx0 = await approveToken0({
+          args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256]
+        })
+        console.log(`Token0 approval transaction submitted: ${tx0.hash}`)
+        
+        // Wait for transaction to be confirmed
+        console.log('Waiting for token0 approval transaction to be confirmed...')
+        await tx0.wait()
+        console.log('Token0 approval transaction confirmed')
       } else {
-        console.log(`Token0 already has sufficient allowance: ${token0Allowance}`)
+        console.log(`Token0 already has sufficient allowance: ${ethers.utils.formatUnits(token0Allowance, TOKEN_DECIMALS)}`)
       }
-
+      
+      // Then approve token1 if needed
       if (!token1Allowance || token1Allowance < amount1BigInt) {
-        console.log(`Approving ${token1} for ${amount1BigInt} tokens`)
-        approvalPromises.push(
-          approveToken1({
-            args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256]
-          }).then(tx => {
-            console.log(`Token1 approval transaction submitted: ${tx.hash}`)
-            return tx
-          })
-        )
+        console.log(`Approving ${token1} for ${ethers.utils.formatUnits(amount1BigInt, TOKEN_DECIMALS)} tokens`)
+        const tx1 = await approveToken1({
+          args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256]
+        })
+        console.log(`Token1 approval transaction submitted: ${tx1.hash}`)
+        
+        // Wait for transaction to be confirmed
+        console.log('Waiting for token1 approval transaction to be confirmed...')
+        await tx1.wait()
+        console.log('Token1 approval transaction confirmed')
       } else {
-        console.log(`Token1 already has sufficient allowance: ${token1Allowance}`)
+        console.log(`Token1 already has sufficient allowance: ${ethers.utils.formatUnits(token1Allowance, TOKEN_DECIMALS)}`)
       }
-
-      // Wait for all approval transactions to be submitted
-      if (approvalPromises.length > 0) {
-        await Promise.all(approvalPromises)
-      }
+      
+      // Get updated allowances after approvals
+      const token0Contract2 = new ethers.Contract(token0, erc20ABI, provider)
+      const token1Contract2 = new ethers.Contract(token1, erc20ABI, provider)
+      
+      const updatedAllowance0 = await token0Contract2.allowance(userAddress, CONTRACT_ADDRESSES.MANAGER)
+      const updatedAllowance1 = await token1Contract2.allowance(userAddress, CONTRACT_ADDRESSES.MANAGER)
+      
+      console.log(`Updated token0 allowance: ${ethers.utils.formatUnits(updatedAllowance0, TOKEN_DECIMALS)}`)
+      console.log(`Updated token1 allowance: ${ethers.utils.formatUnits(updatedAllowance1, TOKEN_DECIMALS)}`)
 
       return true
     } catch (error) {
@@ -195,36 +242,83 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     if (!token0 || !token1) throw new Error('Tokens not loaded')
     if (!validateTicks(tickLower, tickUpper)) throw new Error('Invalid tick range')
     if (!poolFee) throw new Error('Could not get pool fee')
+    if (!userAddress) throw new Error('Wallet not connected')
     
     try {
       const amount0BigInt = ethers.utils.parseUnits(amount0Desired, 18).toBigInt()
       const amount1BigInt = ethers.utils.parseUnits(amount1Desired, 18).toBigInt()
 
+      // Log token balances before mint
+      console.log('Checking token balances before mint:')
+      const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL)
+      
+      // Get token contracts
+      const token0Contract = new ethers.Contract(token0, ERC20_ABI, provider)
+      const token1Contract = new ethers.Contract(token1, ERC20_ABI, provider)
+      
+      // Get balances before mint
+      const balanceBefore0 = await token0Contract.balanceOf(userAddress)
+      const balanceBefore1 = await token1Contract.balanceOf(userAddress)
+      
+      console.log(`Balance before mint for ${token0}: ${ethers.utils.formatUnits(balanceBefore0, TOKEN_DECIMALS)}`)
+      console.log(`Balance before mint for ${token1}: ${ethers.utils.formatUnits(balanceBefore1, TOKEN_DECIMALS)}`)
+
       // Create MintParams according to IUniswapV3Manager interface
       if (!token0 || !token1) throw new Error('Tokens not loaded')
       
-      // Format the parameters as an array to match the expected contract ABI
-      const mintParams = [
-        token0,
-        token1,
-        Number(poolFee),
-        tickLower,
-        tickUpper,
-        amount0BigInt,
-        amount1BigInt,
-        0n,
-        0n
-      ]
+      // Format the parameters as a struct object to match the expected contract ABI
+      const mintParams = {
+        tokenA: token0,
+        tokenB: token1,
+        fee: Number(poolFee),
+        lowerTick: tickLower,
+        upperTick: tickUpper,
+        amount0Desired: amount0BigInt,
+        amount1Desired: amount1BigInt,
+        amount0Min: 0n,
+        amount1Min: 0n
+      }
 
-      console.log('Adding liquidity with params:', JSON.stringify(mintParams, (_, v) => 
-        typeof v === 'bigint' ? v.toString() : v
-      ))
+      console.log('Adding liquidity with params:', JSON.stringify({
+        tokenA: mintParams.tokenA,
+        tokenB: mintParams.tokenB,
+        fee: mintParams.fee,
+        lowerTick: mintParams.lowerTick,
+        upperTick: mintParams.upperTick,
+        amount0Desired: mintParams.amount0Desired.toString(),
+        amount1Desired: mintParams.amount1Desired.toString(),
+        amount0Min: mintParams.amount0Min.toString(),
+        amount1Min: mintParams.amount1Min.toString()
+      }))
 
       const tx = await addLiquidity({
         args: [mintParams],
       })
 
       console.log('Liquidity addition transaction submitted:', tx.hash)
+      
+      // Wait for transaction to be confirmed
+      console.log('Waiting for liquidity addition transaction to be confirmed...')
+      const receipt = await tx.wait()
+      console.log('Liquidity addition transaction confirmed:', receipt)
+      
+      // Log token balances after mint
+      console.log('Checking token balances after mint:')
+      
+      // Get balances after mint
+      const balanceAfter0 = await token0Contract.balanceOf(userAddress)
+      const balanceAfter1 = await token1Contract.balanceOf(userAddress)
+      
+      console.log(`Balance after mint for ${token0}: ${ethers.utils.formatUnits(balanceAfter0, TOKEN_DECIMALS)}`)
+      console.log(`Balance after mint for ${token1}: ${ethers.utils.formatUnits(balanceAfter1, TOKEN_DECIMALS)}`)
+      
+      // Calculate and log the difference
+      const diff0 = balanceBefore0.sub(balanceAfter0)
+      const diff1 = balanceBefore1.sub(balanceAfter1)
+      
+      console.log(`Tokens deducted for ${token0}: ${ethers.utils.formatUnits(diff0, TOKEN_DECIMALS)}`)
+      console.log(`Tokens deducted for ${token1}: ${ethers.utils.formatUnits(diff1, TOKEN_DECIMALS)}`)
+      
       return tx
     } catch (error) {
       const err = error as AddLiquidityError
@@ -249,7 +343,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         throw new Error('Failed to add liquidity: ' + (err.reason || err.message))
       }
     }
-  }, [poolAddress, addLiquidity, token0, token1, poolFee])
+  }, [poolAddress, addLiquidity, token0, token1, poolFee, userAddress])
 
   return {
     checkAndApproveTokens,
