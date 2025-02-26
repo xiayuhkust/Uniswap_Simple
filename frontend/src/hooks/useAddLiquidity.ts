@@ -33,7 +33,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     address: poolAddress,
     abi: POOL_ABI,
     functionName: 'token0',
-    enabled: !!poolAddress,
+    enabled: !!poolAddress && poolAddress !== CONTRACT_ADDRESSES.ZERO,
   })
   const token0 = token0Data ? (typeof token0Data === 'string' ? token0Data.toLowerCase() as Address : undefined) : undefined
 
@@ -41,7 +41,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     address: poolAddress,
     abi: POOL_ABI,
     functionName: 'token1',
-    enabled: !!poolAddress,
+    enabled: !!poolAddress && poolAddress !== CONTRACT_ADDRESSES.ZERO,
   })
   const token1 = token1Data ? (typeof token1Data === 'string' ? token1Data.toLowerCase() as Address : undefined) : undefined
 
@@ -181,7 +181,7 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     address: poolAddress,
     abi: POOL_ABI,
     functionName: 'fee',
-    enabled: !!poolAddress
+    enabled: !!poolAddress && poolAddress !== CONTRACT_ADDRESSES.ZERO
   })
   const poolFee = poolFeeData ? Number(poolFeeData) : undefined
 

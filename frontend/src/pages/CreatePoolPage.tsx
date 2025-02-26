@@ -79,13 +79,8 @@ export function CreatePoolPage() {
     try {
       console.log(`Getting pool address for tokens ${token0Address}, ${token1Address} with fee ${fee}`);
       
-      // Use the poolAddressData if available, otherwise make a direct call
-      if (poolAddressData && token0Address === token0?.address && token1Address === token1?.address && fee === feeValue) {
-        console.log('Using cached pool address:', poolAddressData);
-        return poolAddressData as Address;
-      }
-      
-      // Fallback to direct contract call using JsonRpcProvider
+      // Always make a direct contract call to get the latest pool address
+      // This ensures we get the correct address after pool creation
       const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
       const factoryContract = new ethers.Contract(
         CONTRACT_ADDRESSES.FACTORY,
@@ -93,14 +88,22 @@ export function CreatePoolPage() {
         provider
       );
       
+      // Add a small delay to ensure the blockchain has time to update
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       const poolAddress = await factoryContract.getPool(token0Address, token1Address, fee);
       console.log('Pool address from factory:', poolAddress);
+      
+      if (poolAddress === CONTRACT_ADDRESSES.ZERO) {
+        console.warn('Factory returned zero address for pool. This may indicate the pool was not created successfully.');
+      }
+      
       return poolAddress;
     } catch (error) {
       console.error('Error getting pool address:', error);
       throw error;
     }
-  }, [poolAddressData, token0, token1, feeValue]);
+  }, []);
 
   // We'll use the useAddLiquidity hook for token approvals and liquidity addition
   // This hook handles all the token approval and liquidity addition logic
@@ -231,14 +234,41 @@ export function CreatePoolPage() {
       console.log('Pool creation transaction mined:', receipt);
       
       try {
+        // Add a delay to ensure the blockchain state is updated
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
         // Get the pool address from the factory
         const [sortedToken0, sortedToken1] = sortTokens(
           token0?.address as Address,
           token1?.address as Address
         );
         
-        const poolAddress = await getPoolAddress(sortedToken0, sortedToken1, feeValue);
-        console.log('Pool address:', poolAddress);
+        console.log(`Getting pool address for sorted tokens: ${sortedToken0}, ${sortedToken1}, fee: ${feeValue}`);
+        
+        // Make multiple attempts to get the pool address
+        let poolAddress: Address | null = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+          attempts++;
+          try {
+            poolAddress = await getPoolAddress(sortedToken0, sortedToken1, feeValue);
+            console.log(`Attempt ${attempts}: Pool address: ${poolAddress}`);
+            
+            if (poolAddress && poolAddress !== CONTRACT_ADDRESSES.ZERO) {
+              break;
+            } else {
+              // Wait before trying again
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+          } catch (err) {
+            console.error(`Attempt ${attempts} failed:`, err);
+            if (attempts < maxAttempts) {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+          }
+        }
         
         if (poolAddress && poolAddress !== CONTRACT_ADDRESSES.ZERO) {
           // Update the pool address data
@@ -397,6 +427,10 @@ export function CreatePoolPage() {
       return
     }
     setToken0(token)
+    // Reset pool address data when tokens change
+    if (poolAddressData && poolAddressData !== CONTRACT_ADDRESSES.ZERO) {
+      console.log('Resetting pool address data due to token change')
+    }
   }
 
   const handleToken1Select = (token: Token) => {
@@ -411,6 +445,10 @@ export function CreatePoolPage() {
       return
     }
     setToken1(token)
+    // Reset pool address data when tokens change
+    if (poolAddressData && poolAddressData !== CONTRACT_ADDRESSES.ZERO) {
+      console.log('Resetting pool address data due to token change')
+    }
   }
 
   const validatePool = () => {
@@ -454,6 +492,14 @@ export function CreatePoolPage() {
             selectedToken={token1}
             onTokenSelect={handleToken1Select}
           />
+          
+          {/* Show error message if trying to use the same token */}
+          {token0 && token1 && token0.address === token1.address && (
+            <Box width="100%" p={3} borderWidth="1px" borderRadius="md" bg="red.50">
+              <Text color="red.500" fontWeight="medium">Cannot create pool with the same token</Text>
+            </Box>
+          )}
+          
           <TickRangeInput onRangeChange={handleTickRangeChange} />
           <Box width="100%">
             <Text mb={2} color="black">Fee Tier</Text>
@@ -482,6 +528,13 @@ export function CreatePoolPage() {
                   <>
                     <Text fontWeight="bold" color="blue.600">Creating Pool...</Text>
                     <Text fontSize="sm">Please confirm the transaction in your wallet</Text>
+                  </>
+                )}
+                
+                {isCreatePoolError && (
+                  <>
+                    <Text fontWeight="bold" color="red.500">Pool Creation Failed</Text>
+                    <Text fontSize="sm">There was an error creating the pool. Please try again.</Text>
                   </>
                 )}
                 
