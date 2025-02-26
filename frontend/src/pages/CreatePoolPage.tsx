@@ -97,7 +97,18 @@ export function CreatePoolPage() {
   // Token0 approval
   const { config: approveToken0Config } = usePrepareContractWrite({
     address: token0?.address as Address,
-    abi: ['function approve(address spender, uint256 amount) returns (bool)'],
+    abi: [
+      {
+        name: 'approve',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' }
+        ],
+        outputs: [{ name: '', type: 'bool' }]
+      }
+    ],
     functionName: 'approve',
     args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256],
     enabled: !!token0?.address
@@ -136,7 +147,18 @@ export function CreatePoolPage() {
   // Token1 approval
   const { config: approveToken1Config } = usePrepareContractWrite({
     address: token1?.address as Address,
-    abi: ['function approve(address spender, uint256 amount) returns (bool)'],
+    abi: [
+      {
+        name: 'approve',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' }
+        ],
+        outputs: [{ name: '', type: 'bool' }]
+      }
+    ],
     functionName: 'approve',
     args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256],
     enabled: !!token1?.address
@@ -178,17 +200,17 @@ export function CreatePoolPage() {
     abi: MANAGER_ABI,
     functionName: 'mint',
     args: [
-      {
-        tokenA: token0?.address,
-        tokenB: token1?.address,
-        fee: feeValue,
+      [
+        token0?.address,
+        token1?.address,
+        feeValue,
         lowerTick,
         upperTick,
-        amount0Desired: token0Amount ? ethers.utils.parseUnits(token0Amount, 18) : 0,
-        amount1Desired: token1Amount ? ethers.utils.parseUnits(token1Amount, 18) : 0,
-        amount0Min: 0,
-        amount1Min: 0
-      }
+        token0Amount ? ethers.utils.parseUnits(token0Amount, 18) : 0n,
+        token1Amount ? ethers.utils.parseUnits(token1Amount, 18) : 0n,
+        0n,
+        0n
+      ]
     ],
     enabled: !!token0?.address && !!token1?.address && !!poolAddressData && 
              poolAddressData !== CONTRACT_ADDRESSES.ZERO && 
@@ -250,40 +272,56 @@ export function CreatePoolPage() {
         isClosable: true,
       });
       
-      // Approve token0
-      if (approveToken0) {
-        approveToken0();
-      } else {
-        throw new Error(`Cannot approve ${token0?.symbol}`);
+      // Sequential approvals to avoid race conditions
+      try {
+        // Approve token0
+        if (approveToken0) {
+          await approveToken0();
+          console.log(`${token0?.symbol} approval initiated`);
+        } else {
+          throw new Error(`Cannot approve ${token0?.symbol}`);
+        }
+        
+        // Small delay to ensure transactions are processed in order
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Approve token1
+        if (approveToken1) {
+          await approveToken1();
+          console.log(`${token1?.symbol} approval initiated`);
+        } else {
+          throw new Error(`Cannot approve ${token1?.symbol}`);
+        }
+        
+        // Small delay before adding liquidity
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Add liquidity
+        console.log(`Adding liquidity: ${lowerTick}, ${upperTick}, ${token0Amount}, ${token1Amount}`);
+        toast({
+          title: "Adding Liquidity",
+          description: `Adding ${token0Amount} ${token0?.symbol} and ${token1Amount} ${token1?.symbol} to the pool`,
+          status: "loading",
+          duration: 5000,
+          isClosable: true,
+        });
+        
+        if (addLiquidity) {
+          addLiquidity();
+        } else {
+          throw new Error('Cannot add liquidity');
+        }
+      } catch (error) {
+        console.error('Error in approval or liquidity addition:', error);
+        toast({
+          title: "Error",
+          description: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        setIsAddingLiquidity(false);
       }
-      
-      // Wait for token0 approval to complete before approving token1
-      // This is handled by the useWaitForTransaction hooks
-      
-      // Approve token1
-      if (approveToken1) {
-        approveToken1();
-      } else {
-        throw new Error(`Cannot approve ${token1?.symbol}`);
-      }
-      
-      // Add liquidity
-      console.log(`Adding liquidity: ${lowerTick}, ${upperTick}, ${token0Amount}, ${token1Amount}`);
-      toast({
-        title: "Adding Liquidity",
-        description: `Adding ${token0Amount} ${token0?.symbol} and ${token1Amount} ${token1?.symbol} to the pool`,
-        status: "loading",
-        duration: 5000,
-        isClosable: true,
-      });
-      
-      // Add liquidity
-      if (addLiquidity) {
-        addLiquidity();
-      } else {
-        throw new Error('Cannot add liquidity');
-      }
-      
     } catch (error) {
       console.error('Error adding liquidity:', error);
       toast({
