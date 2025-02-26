@@ -53,6 +53,26 @@ export function CreatePoolPage() {
     }
   })
 
+  // Function to get pool address from factory
+  const getPoolAddress = useCallback(async (token0Address: Address, token1Address: Address, fee: number): Promise<Address> => {
+    try {
+      console.log(`Getting pool address for tokens ${token0Address}, ${token1Address} with fee ${fee}`);
+      const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
+      const factoryContract = new ethers.Contract(
+        CONTRACT_ADDRESSES.FACTORY,
+        FACTORY_ABI,
+        provider
+      );
+      
+      const poolAddress = await factoryContract.getPool(token0Address, token1Address, fee);
+      console.log('Pool address from factory:', poolAddress);
+      return poolAddress;
+    } catch (error) {
+      console.error('Error getting pool address:', error);
+      throw error;
+    }
+  }, []);
+
   // Function to add liquidity to the pool
   const addLiquidityToPool = useCallback(async (poolAddress: Address) => {
     try {
@@ -270,27 +290,7 @@ export function CreatePoolPage() {
         isClosable: true,
       });
     }
-  }, [isCreatePoolSuccess, isCreatePoolError, createPoolData, toast, token0, token1, feeValue, addLiquidityToPool, getPoolAddress])
-
-  // Function to get pool address from factory
-  const getPoolAddress = useCallback(async (token0Address: Address, token1Address: Address, fee: number): Promise<Address> => {
-    try {
-      console.log(`Getting pool address for tokens ${token0Address}, ${token1Address} with fee ${fee}`);
-      const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL);
-      const factoryContract = new ethers.Contract(
-        CONTRACT_ADDRESSES.FACTORY,
-        FACTORY_ABI,
-        provider
-      );
-      
-      const poolAddress = await factoryContract.getPool(token0Address, token1Address, fee);
-      console.log('Pool address from factory:', poolAddress);
-      return poolAddress;
-    } catch (error) {
-      console.error('Error getting pool address:', error);
-      throw error;
-    }
-  }, []);
+  }, [isCreatePoolSuccess, isCreatePoolError, createPoolData, toast, token0, token1, feeValue, addLiquidityToPool, getPoolAddress]);
 
   const handleCreatePool = async () => {
     if (!isConnected) {

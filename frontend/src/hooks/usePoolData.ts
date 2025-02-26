@@ -119,16 +119,26 @@ export function usePoolData(poolAddress?: Address) {
     }
   }
 
-  const parseSlot0Data = (data: any): Slot0Result => {
+  const parseSlot0Data = (data: unknown): Slot0Result => {
     try {
+      const slot0Data = data as {
+        sqrtPriceX96?: { toString: () => string };
+        tick?: number;
+        observationIndex?: number;
+        observationCardinality?: number;
+        observationCardinalityNext?: number;
+        feeProtocol?: number;
+        unlocked?: boolean;
+      };
+      
       return {
-        sqrtPriceX96: BigInt(data?.sqrtPriceX96?.toString() || '0'),
-        tick: Number(data?.tick || 0),
-        observationIndex: Number(data?.observationIndex || 0),
-        observationCardinality: Number(data?.observationCardinality || 0),
-        observationCardinalityNext: Number(data?.observationCardinalityNext || 0),
-        feeProtocol: Number(data?.feeProtocol || 0),
-        unlocked: Boolean(data?.unlocked)
+        sqrtPriceX96: BigInt(slot0Data?.sqrtPriceX96?.toString() || '0'),
+        tick: Number(slot0Data?.tick || 0),
+        observationIndex: Number(slot0Data?.observationIndex || 0),
+        observationCardinality: Number(slot0Data?.observationCardinality || 0),
+        observationCardinalityNext: Number(slot0Data?.observationCardinalityNext || 0),
+        feeProtocol: Number(slot0Data?.feeProtocol || 0),
+        unlocked: Boolean(slot0Data?.unlocked)
       }
     } catch (error) {
       console.error('Error parsing slot0 data:', error)
