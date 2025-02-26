@@ -132,7 +132,7 @@ export function CreatePoolPage() {
         isClosable: true,
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Token0 approval error:', error);
       toast({
         title: "Error",
@@ -182,7 +182,7 @@ export function CreatePoolPage() {
         isClosable: true,
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Token1 approval error:', error);
       toast({
         title: "Error",
@@ -225,7 +225,7 @@ export function CreatePoolPage() {
   
   const { isLoading: isAddLiquidityConfirming } = useWaitForTransaction({
     hash: addLiquidityData?.hash,
-    onSuccess: (receipt) => {
+    onSuccess: (receipt: any) => {
       console.log('Liquidity addition confirmed:', receipt);
       toast({
         title: "Success",
@@ -236,7 +236,7 @@ export function CreatePoolPage() {
       });
       setIsAddingLiquidity(false);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Liquidity addition error:', error);
       toast({
         title: "Error",
@@ -338,7 +338,7 @@ export function CreatePoolPage() {
   // Wait for pool creation transaction to be mined
   const { isLoading: isPoolCreationConfirming } = useWaitForTransaction({
     hash: createPoolData?.hash,
-    onSuccess: async (receipt) => {
+    onSuccess: async (receipt: any) => {
       console.log('Pool creation transaction mined:', receipt);
       
       try {
@@ -376,7 +376,7 @@ export function CreatePoolPage() {
         setIsCreatingPool(false);
       }
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Error waiting for pool creation transaction:', error);
       toast({
         title: "Error",
