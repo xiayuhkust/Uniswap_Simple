@@ -200,7 +200,7 @@ export function CreatePoolPage() {
       console.log('Liquidity addition transaction:', tx);
       
       // Set the transaction hash for the useWaitForTransaction hook
-      setAddLiquidityTxHash(tx.hash);
+      setAddLiquidityTxHash(tx.hash as `0x${string}`);
       
       toast({
         title: "Success",
