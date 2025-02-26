@@ -169,8 +169,10 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         
         // Wait for transaction to be confirmed
         console.log('Waiting for token0 approval transaction to be confirmed...')
-        await tx0.wait()
-        console.log('Token0 approval transaction confirmed')
+        // For wagmi v1, we need to use the provider to wait for the transaction
+        const provider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL)
+        const receipt0 = await provider.waitForTransaction(tx0.hash)
+        console.log('Token0 approval transaction confirmed:', receipt0.transactionHash)
       } else {
         console.log(`Token0 already has sufficient allowance: ${ethers.utils.formatUnits(token0Allowance, TOKEN_DECIMALS)}`)
       }
@@ -185,8 +187,10 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         
         // Wait for transaction to be confirmed
         console.log('Waiting for token1 approval transaction to be confirmed...')
-        await tx1.wait()
-        console.log('Token1 approval transaction confirmed')
+        // For wagmi v1, we need to use the provider to wait for the transaction
+        const provider1 = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL)
+        const receipt1 = await provider1.waitForTransaction(tx1.hash)
+        console.log('Token1 approval transaction confirmed:', receipt1.transactionHash)
       } else {
         console.log(`Token1 already has sufficient allowance: ${ethers.utils.formatUnits(token1Allowance, TOKEN_DECIMALS)}`)
       }
@@ -299,8 +303,10 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
       
       // Wait for transaction to be confirmed
       console.log('Waiting for liquidity addition transaction to be confirmed...')
-      const receipt = await tx.wait()
-      console.log('Liquidity addition transaction confirmed:', receipt)
+      // For wagmi v1, we need to use the provider to wait for the transaction
+      const mintProvider = new ethers.providers.JsonRpcProvider(import.meta.env.VITE_TURA_RPC_URL)
+      const mintReceipt = await mintProvider.waitForTransaction(tx.hash)
+      console.log('Liquidity addition transaction confirmed:', mintReceipt.transactionHash)
       
       // Log token balances after mint
       console.log('Checking token balances after mint:')
