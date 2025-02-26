@@ -1,0 +1,85 @@
+{
+  "name": "Uniswap Simple Token List",
+  "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png",
+  "keywords": ["uniswap", "default", "list"],
+  "timestamp": "2025-02-26T00:00:00.000Z",
+  "tokens": [
+    {
+      "chainId": 1337,
+      "address": "0xF0e8a104Cc6ecC7bBa4Dc89473d1C64593eA69be",
+      "name": "Wrapped TURA",
+      "symbol": "WTURA",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0x3F26F01Fa9A5506c9109B5Ad15343363909fc0b9",
+      "name": "Test Token 1",
+      "symbol": "TT1",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0xC8f7D7989a409472945B00177396F4e9B8601dF3",
+      "name": "Test Token 2",
+      "symbol": "TT2",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0x8Ba1cD55391a3FC2B4A76aC0D99058D0572aF608",
+      "name": "Test Token 3",
+      "symbol": "TT3",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0x74DfD646cA939e0aBfbd37dA9F5fb7F885cE44Cb",
+      "name": "Test Token 4",
+      "symbol": "TT4",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0xe26Cc979Fee6213160ee903474D3E39CA8486A8a",
+      "name": "Test Token 5",
+      "symbol": "TT5",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0xD6F72636B35A065eAAe03522800AfEFfB91416fF",
+      "name": "Test Token 6",
+      "symbol": "TT6",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0xFd04a3b44A875DCa7d6751acDe7F578d34e35B75",
+      "name": "Test Token 7",
+      "symbol": "TT7",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x0D8775F648430679A709E98d2b0Cb6250d2887EF/logo.png"
+    },
+    {
+      "chainId": 1337,
+      "address": "0xdE1E1D1730587Cbcf06995FADbF06DEAedA9869D",
+      "name": "Test Token 8",
+      "symbol": "TT8",
+      "decimals": 18,
+      "logoURI": "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x1985365e9f78359a9B6AD760e32412f4a445E862/logo.png"
+    }
+  ],
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  }
+}
