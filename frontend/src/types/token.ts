@@ -6,4 +6,7 @@ export interface Token {
   name: string
   decimals: number
   logoURI: string
+  price?: string
+  priceChange24h?: string
+  balance?: string
 }

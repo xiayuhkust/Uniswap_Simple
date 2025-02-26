@@ -1,7 +1,7 @@
 import { CONTRACT_ADDRESSES } from './addresses'
 import type { Token } from '../types/token'
 
-export const TOKEN_METADATA: Record<string, Omit<Token, 'balance'>> = {
+export const TOKEN_METADATA: Record<string, Token> = {
   [CONTRACT_ADDRESSES.WETH]: {
     address: CONTRACT_ADDRESSES.WETH,
     symbol: 'WTURA',
