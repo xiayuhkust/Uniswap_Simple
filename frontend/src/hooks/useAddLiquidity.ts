@@ -1,6 +1,6 @@
 import { useContractWrite, useContractRead, useAccount, Address, erc20ABI } from 'wagmi'
 import { useState, useCallback } from 'react'
-import { parseUnits } from 'viem'
+import { ethers } from 'ethers'
 import IUniswapV3Pool from '../abi/IUniswapV3Pool.json'
 import IUniswapV3Manager from '../abi/IUniswapV3Manager.json'
 import { validateTicks } from '../constants/ticks'
@@ -9,18 +9,6 @@ import { TOKEN_DECIMALS } from '../constants/tokens'
 import { INPUT_ERRORS } from '../constants/errors'
 
 // Using CONTRACT_ADDRESSES.WETH directly
-
-interface MintParams {
-  tokenA: Address
-  tokenB: Address
-  fee: number
-  lowerTick: number
-  upperTick: number
-  amount0Desired: bigint
-  amount1Desired: bigint
-  amount0Min: bigint
-  amount1Min: bigint
-}
 
 interface AddLiquidityHookReturn {
   checkAndApproveTokens: (amount0: string, amount1: string) => Promise<boolean>
@@ -79,13 +67,35 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
 
   const { writeAsync: approveToken0 } = useContractWrite({
     address: token0,
-    abi: erc20ABI,
+    abi: [
+      {
+        name: 'approve',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' }
+        ],
+        outputs: [{ name: '', type: 'bool' }]
+      }
+    ],
     functionName: 'approve'
   })
 
   const { writeAsync: approveToken1 } = useContractWrite({
     address: token1,
-    abi: erc20ABI,
+    abi: [
+      {
+        name: 'approve',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [
+          { name: 'spender', type: 'address' },
+          { name: 'amount', type: 'uint256' }
+        ],
+        outputs: [{ name: '', type: 'bool' }]
+      }
+    ],
     functionName: 'approve'
   })
 
@@ -105,32 +115,61 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     
     setIsApproving(true)
     try {
-      const amount0BigInt = parseUnits(amount0, TOKEN_DECIMALS)
-      const amount1BigInt = parseUnits(amount1, TOKEN_DECIMALS)
+      const amount0BigInt = ethers.utils.parseUnits(amount0, TOKEN_DECIMALS).toBigInt()
+      const amount1BigInt = ethers.utils.parseUnits(amount1, TOKEN_DECIMALS).toBigInt()
 
+      // Use Promise.all to check both token allowances in parallel
+      const approvalPromises = []
+      
       if (!token0Allowance || token0Allowance < amount0BigInt) {
-        await approveToken0({
-          args: [CONTRACT_ADDRESSES.MANAGER, (2n ** 256n) - 1n]
-        })
+        console.log(`Approving ${token0} for ${amount0BigInt} tokens`)
+        approvalPromises.push(
+          approveToken0({
+            args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256]
+          }).then(tx => {
+            console.log(`Token0 approval transaction submitted: ${tx.hash}`)
+            return tx
+          })
+        )
+      } else {
+        console.log(`Token0 already has sufficient allowance: ${token0Allowance}`)
       }
 
       if (!token1Allowance || token1Allowance < amount1BigInt) {
-        await approveToken1({
-          args: [CONTRACT_ADDRESSES.MANAGER, (2n ** 256n) - 1n]
-        })
+        console.log(`Approving ${token1} for ${amount1BigInt} tokens`)
+        approvalPromises.push(
+          approveToken1({
+            args: [CONTRACT_ADDRESSES.MANAGER, ethers.constants.MaxUint256]
+          }).then(tx => {
+            console.log(`Token1 approval transaction submitted: ${tx.hash}`)
+            return tx
+          })
+        )
+      } else {
+        console.log(`Token1 already has sufficient allowance: ${token1Allowance}`)
+      }
+
+      // Wait for all approval transactions to be submitted
+      if (approvalPromises.length > 0) {
+        await Promise.all(approvalPromises)
       }
 
       return true
     } catch (error) {
       const err = error as AddLiquidityError
+      console.error('Error approving tokens:', error)
+      
       if (err.code === 'INSUFFICIENT_FUNDS') {
         throw new Error('Insufficient funds for token approval')
       } else if (err.reason?.includes('ERC20: transfer amount exceeds balance')) {
         throw new Error('Insufficient token balance')
       } else if (err.reason?.includes('ERC20: transfer amount exceeds allowance')) {
         throw new Error('Insufficient token allowance')
+      } else if (err.reason?.includes('execution reverted')) {
+        throw new Error(`Transaction reverted: ${err.reason}`)
+      } else if (err.message?.includes('user rejected transaction')) {
+        throw new Error('Transaction rejected by user')
       } else {
-        console.error('Error approving tokens:', error)
         throw new Error(INPUT_ERRORS.APPROVAL_FAILED)
       }
     } finally {
@@ -158,28 +197,34 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
     if (!poolFee) throw new Error('Could not get pool fee')
     
     try {
-      const amount0BigInt = parseUnits(amount0Desired, 18)
-      const amount1BigInt = parseUnits(amount1Desired, 18)
+      const amount0BigInt = ethers.utils.parseUnits(amount0Desired, 18).toBigInt()
+      const amount1BigInt = ethers.utils.parseUnits(amount1Desired, 18).toBigInt()
 
       // Create MintParams according to IUniswapV3Manager interface
       if (!token0 || !token1) throw new Error('Tokens not loaded')
       
-      const mintParams: MintParams = {
-        tokenA: token0,
-        tokenB: token1,
-        fee: Number(poolFee),
-        lowerTick: tickLower,
-        upperTick: tickUpper,
-        amount0Desired: amount0BigInt,
-        amount1Desired: amount1BigInt,
-        amount0Min: 0n,
-        amount1Min: 0n
-      }
+      // Format the parameters as an array to match the expected contract ABI
+      const mintParams = [
+        token0,
+        token1,
+        Number(poolFee),
+        tickLower,
+        tickUpper,
+        amount0BigInt,
+        amount1BigInt,
+        0n,
+        0n
+      ]
+
+      console.log('Adding liquidity with params:', JSON.stringify(mintParams, (_, v) => 
+        typeof v === 'bigint' ? v.toString() : v
+      ))
 
       const tx = await addLiquidity({
         args: [mintParams],
       })
 
+      console.log('Liquidity addition transaction submitted:', tx.hash)
       return tx
     } catch (error) {
       const err = error as AddLiquidityError
@@ -195,6 +240,10 @@ export function useAddLiquidity(poolAddress: Address): AddLiquidityHookReturn {
         throw new Error('Price slippage too high')
       } else if (err.reason?.includes('L')) {
         throw new Error('Liquidity amount must be greater than 0')
+      } else if (err.reason?.includes('execution reverted')) {
+        throw new Error(`Transaction reverted: ${err.reason}`)
+      } else if (err.message?.includes('user rejected transaction')) {
+        throw new Error('Transaction rejected by user')
       } else {
         console.error('Error details:', err)
         throw new Error('Failed to add liquidity: ' + (err.reason || err.message))
